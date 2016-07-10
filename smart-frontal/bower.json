@@ -1,0 +1,41 @@
+{
+  "name": "iRestFrontCode",
+  "version": "1.0.0",
+  "authors": [
+    "Abloomy"
+  ],
+  "description": "Abloomy Software",
+  "main": "app.js",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.5.5",
+    "angular-animate": "~1.4.7",
+    "angular-bootstrap": "^1.2.4",
+    "angular-cookies": "~1.4.7",
+    "angular-loading-bar": "~0.8.0",
+    "angular-messages": "~1.4.7",
+    "angular-resource": "~1.4.7",
+    "angular-route": "~1.4.7",
+    "angular-sanitize": "~1.4.7",
+    "angular-translate": "~2.8.1",
+    "angular-translate-loader-static-files": "~2.8.1",
+    "angular-ui-tree": "~2.9.0",
+	"angular-ui-router": "^0.2.17",
+    "bootstrap": "~3.3.5",
+    "highcharts-ng": "~0.0.11",
+	"highcharts.com": "~4.1.9",
+    "jquery": "~2.1.4",
+    "ng-file-upload": "~11.2.3",
+    "ngAnimate-animate.css": "~0.1.1",
+    "ngInfiniteScroll": "^1.2.2",
+    "oclazyload": "^1.0.9"
+  },
+  "devDependencies": {}
+}
