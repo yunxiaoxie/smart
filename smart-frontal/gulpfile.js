@@ -52,7 +52,7 @@ gulp.task('bootstrap', function() {
         .pipe(notify({ message: 'bootstrap task complete' }));
 });
 
-gulp.task('sass:compile', function() {
+gulp.task('sass:compile', ['clean'], function() {
     return gulp.src('./sass/**/*.scss')
         .pipe(sass().on('error', sass.logError))
         .pipe(cssimport())
@@ -88,7 +88,6 @@ gulp.task('images', function() {
         .pipe(notify({ message: 'Images task complete' }));
 });
 
-// 清理
 gulp.task('clean', function() {
     return gulp.src(['dist/css'], {read: false})
         .pipe(clean());
