@@ -1,9 +1,9 @@
 'use strict';
 // 载入外挂
 var gulp = require('gulp'),
-    sass = require('gulp-ruby-sass'),
+    sass = require('gulp-sass'),
     autoprefixer = require('gulp-autoprefixer'),
-    minifycss = require('gulp-minify-css'),
+    minifycss = require('gulp-clean-css'),
     cssimport = require("gulp-cssimport"),
     jshint = require('gulp-jshint'),
     uglify = require('gulp-uglify'),
@@ -14,8 +14,31 @@ var gulp = require('gulp'),
     notify = require('gulp-notify'),
     cache = require('gulp-cache'),
     livereload = require('gulp-livereload'),
+    group = require('gulp-group-files'),
     less = require('gulp-less');
 
+var sassFiles = {
+    "xxx" : {
+        src: "./xxx/styles/sass/index.scss",
+        dest: "./xxx/styles/"
+    },
+    "yyy" : {
+        src: "./yyy/styles/sass/index.scss",
+        dest: "./yyy/styles/"
+    }
+};
+
+gulp.task('sass:compile2',function (){
+    return group(sassFiles,function (key,fileset){
+        return gulp.src(fileset.src)
+            .pipe(sass().on('error', sass.logError))
+            .pipe(gulp.dest(fileset.dest));
+    })();
+});
+
+gulp.task('sass:watch',function (){
+    gulp.watch('**/*.scss',['sass:compile'])
+});
 
 gulp.task('bootstrap', function() {
     return gulp.src('public/javascripts/lib/bootstrap/less/bootstrap.less')
@@ -28,14 +51,15 @@ gulp.task('bootstrap', function() {
         .pipe(gulp.dest('public/javascripts/lib/bootstrap/dist/css'))
         .pipe(notify({ message: 'bootstrap task complete' }));
 });
-// 样式
-gulp.task('styles', function() {
-    return sass('css/main.scss', { style: 'expanded'})
+
+gulp.task('sass:compile', function() {
+    return gulp.src('./sass/**/*.scss')
+        .pipe(sass().on('error', sass.logError))
         .pipe(cssimport())
         .pipe(concat('main.css'))
         .pipe(autoprefixer('last 2 version', 'safari 5', 'ie 8', 'ie 9', 'opera 12.1', 'ios 6', 'android 4'))
         .pipe(gulp.dest('dist/css'))
-        .pipe(rename({ suffix: '.min' }))
+        .pipe(rename({suffix: '.min'}))
         .pipe(minifycss({
             processImport: true
         }))
@@ -66,21 +90,21 @@ gulp.task('images', function() {
 
 // 清理
 gulp.task('clean', function() {
-    return gulp.src(['public/stylesheets', 'public/javascripts', 'public/images'], {read: false})
+    return gulp.src(['dist/css'], {read: false})
         .pipe(clean());
 });
 
 // 预设任务
-gulp.task('default',['styles', 'scripts', 'images']);
+gulp.task('default',['sass:compile', 'scripts', 'images']);
 
 // 看手
 gulp.task('watch', function() {
 
     // 看守所有.scss档
-    gulp.watch('public/stylesheets/**/*.scss', ['styles']);
+    gulp.watch('public/stylesheets/**/*.scss', ['sass:compile']);
 
     // 看守所有.js档
-    gulp.watch('public/javascripts/**/*.js', ['scripts']);
+    gulp.watch('public/javascripts/**/*.js', ['sass:compile']);
 
     // 看守所有图片档
     gulp.watch('public/images/**/*', ['images']);
