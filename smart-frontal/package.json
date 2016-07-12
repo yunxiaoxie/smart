@@ -16,6 +16,7 @@
     "gulp-clean": "^0.3.1",
     "gulp-clean-css": "^2.0.11",
     "gulp-concat": "^2.6.0",
+    "gulp-connect": "^4.1.0",
     "gulp-cssimport": "^2.1.1",
     "gulp-group-files": "^2.0.0",
     "gulp-imagemin": "^2.3.0",

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bootstrap In Practice - Landing Page Example</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!-- Bootstrap -->
+<link href="lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet"/>
+<link href="lib/font-awesome/css/font-awesome.css" rel="stylesheet" />
+<link href="dist/css/main.css" rel="stylesheet" />
+<script src="lib/jquery/dist/jquery.js"></script>
+<script src="dist/js/main.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label class="control-label col-xs-2">产品类型:</label>
+                <div class="col-xs-2">
+                    <select class="form-control">
+                        <option>薪易贷</option>
+                        <option>商易贷</option>
+                    </select>
+                </div>
+                <label class="control-label col-xs-2">进件编号:</label>
+                <div class="col-xs-2">
+                    <input type="text" class="form-control" placeholder="进件编号">
+                </div>
+                <label class="control-label col-xs-2">客户姓名:</label>
+                <div class="col-xs-2">
+                    <input type="text" class="form-control" placeholder="客户姓名">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-xs-2">证件号码:</label>
+                <div class="col-xs-2">
+                    <input type="text" class="form-control" placeholder="证件号码">
+                </div>
+                <label class="control-label col-xs-2">申请时间:</label>
+                <div class="col-xs-2">
+                    <div class="input-group date form_date" data-date="" data-date-format="yyyy-mm-dd" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
+                        <input class="form-control" type="text" value="" readonly>
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                    </div>
+                    <input type="hidden" id="dtp_input2" value="" /><br/>
+                </div>
+                <label class="control-label col-xs-2">影像资料是否完整:</label>
+                <div class="col-xs-2">
+                    <select class="form-control">
+                        <option>是</option>
+                        <option>否</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-xs-offset-6">
+                    <button type="button" class="btn btn-primary">查询</button>
+                    <button type="reset" class="btn btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="row">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>申请号</th>
+                    <th>姓名</th>
+                    <th>申请时间</th>
+                    <th>申请金额</th>
+                    <th>产品名称</th>
+                    <th>是否重复申请</th>
+                    <th>是否影像资料完整</th>
+                    <th>办理状态</th>
+                    <th>客户经理</th>
+                    <th>客服专员</th>
+                    <th>录入人员姓名</th>
+                    <th>业务办理</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>150721085101010001</td>
+                    <td>John</td>
+                    <td>2015-07-21 11:49:14</td>
+                    <td>10000</td>
+                    <td>商易贷-4.0-12期</td>
+                    <td>否</td>
+                    <td>否</td>
+                    <td>录入中(录入补件完成)</td>
+                    <td>刘成帅(00338)</td>
+                    <td>张会旺(00689)</td>
+                    <td>testusere11</td>
+                    <td>操作</td>
+                </tr>
+                <tr>
+                    <td>150721085101010001</td>
+                    <td>John</td>
+                    <td>2015-07-21 11:49:14</td>
+                    <td>10000</td>
+                    <td>商易贷-4.0-12期</td>
+                    <td>否</td>
+                    <td>否</td>
+                    <td>录入中(录入补件完成)</td>
+                    <td>刘成帅(00338)</td>
+                    <td>张会旺(00689)</td>
+                    <td>testusere11</td>
+                    <td>操作</td>
+                </tr>
+                <tr>
+                    <td>150721085101010001</td>
+                    <td>John</td>
+                    <td>2015-07-21 11:49:14</td>
+                    <td>10000</td>
+                    <td>商易贷-4.0-12期</td>
+                    <td>否</td>
+                    <td>否</td>
+                    <td>录入中(录入补件完成)</td>
+                    <td>刘成帅(00338)</td>
+                    <td>张会旺(00689)</td>
+                    <td>testusere11</td>
+                    <td>操作</td>
+                </tr>
+                <tr>
+                    <td>150721085101010001</td>
+                    <td>John</td>
+                    <td>2015-07-21 11:49:14</td>
+                    <td>10000</td>
+                    <td>商易贷-4.0-12期</td>
+                    <td>否</td>
+                    <td>否</td>
+                    <td>录入中(录入补件完成)</td>
+                    <td>刘成帅(00338)</td>
+                    <td>张会旺(00689)</td>
+                    <td>testusere11</td>
+                    <td>操作</td>
+                </tr>
+                <tr>
+                    <td>150721085101010001</td>
+                    <td>John</td>
+                    <td>2015-07-21 11:49:14</td>
+                    <td>10000</td>
+                    <td>商易贷-4.0-12期</td>
+                    <td>否</td>
+                    <td>否</td>
+                    <td>录入中(录入补件完成)</td>
+                    <td>刘成帅(00338)</td>
+                    <td>张会旺(00689)</td>
+                    <td>testusere11</td>
+                    <td>操作</td>
+                </tr>
+                <tr>
+                    <td>150721085101010001</td>
+                    <td>John</td>
+                    <td>2015-07-21 11:49:14</td>
+                    <td>10000</td>
+                    <td>商易贷-4.0-12期</td>
+                    <td>否</td>
+                    <td>否</td>
+                    <td>录入中(录入补件完成)</td>
+                    <td>刘成帅(00338)</td>
+                    <td>张会旺(00689)</td>
+                    <td>testusere11</td>
+                    <td>操作</td>
+                </tr>
+                <tr>
+                    <td>150721085101010001</td>
+                    <td>John</td>
+                    <td>2015-07-21 11:49:14</td>
+                    <td>10000</td>
+                    <td>商易贷-4.0-12期</td>
+                    <td>否</td>
+                    <td>否</td>
+                    <td>录入中(录入补件完成)</td>
+                    <td>刘成帅(00338)</td>
+                    <td>张会旺(00689)</td>
+                    <td>testusere11</td>
+                    <td>操作</td>
+                </tr>
+                <tr>
+                    <td>150721085101010001</td>
+                    <td>John</td>
+                    <td>2015-07-21 11:49:14</td>
+                    <td>10000</td>
+                    <td>商易贷-4.0-12期</td>
+                    <td>否</td>
+                    <td>否</td>
+                    <td>录入中(录入补件完成)</td>
+                    <td>刘成帅(00338)</td>
+                    <td>张会旺(00689)</td>
+                    <td>testusere11</td>
+                    <td>操作</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div><!-- //container -->
+</body>
+</html>

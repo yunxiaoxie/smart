@@ -1,8 +1,9 @@
 'use strict';
 // 载入外挂
 var gulp = require('gulp'),
+    connect = require('gulp-connect'),
     sass = require('gulp-sass'),
-    autoprefixer = require('gulp-autoprefixer'),
+    //autoprefixer = require('gulp-autoprefixer'),
     minifycss = require('gulp-clean-css'),
     cssimport = require("gulp-cssimport"),
     jshint = require('gulp-jshint'),
@@ -57,17 +58,17 @@ gulp.task('sass:compile', ['clean'], function() {
         .pipe(sass().on('error', sass.logError))
         .pipe(cssimport())
         .pipe(concat('main.css'))
-        .pipe(autoprefixer('last 2 version', 'safari 5', 'ie 8', 'ie 9', 'opera 12.1', 'ios 6', 'android 4'))
         .pipe(gulp.dest('dist/css'))
         .pipe(rename({suffix: '.min'}))
         .pipe(minifycss({
             processImport: true
         }))
         .pipe(gulp.dest('dist/css'))
-        .pipe(notify({ message: 'Styles task complete' }));
+        .pipe(notify({ message: 'Styles task complete' }))
+        .pipe(connect.reload());
 });
 
-// 脚本
+
 gulp.task('scripts', function() {
     return gulp.src('js/**/*.js')
         .pipe(jshint('.jshintrc'))
@@ -77,10 +78,9 @@ gulp.task('scripts', function() {
         .pipe(rename({ suffix: '.min' }))
         .pipe(uglify())
         .pipe(gulp.dest('dist/js'))
-        .pipe(notify({ message: 'Scripts task complete' }));
+        //.pipe(notify({ message: 'Scripts task complete' }));
 });
 
-// 图片
 gulp.task('images', function() {
     return gulp.src('public/images/**/*')
         .pipe(cache(imagemin({ optimizationLevel: 3, progressive: true, interlaced: true })))
@@ -93,27 +93,29 @@ gulp.task('clean', function() {
         .pipe(clean());
 });
 
-// 预设任务
-gulp.task('default',['sass:compile', 'scripts', 'images']);
 
-// 看手
-gulp.task('watch', function() {
-
-    // 看守所有.scss档
-    gulp.watch('public/stylesheets/**/*.scss', ['sass:compile']);
-
-    // 看守所有.js档
-    gulp.watch('public/javascripts/**/*.js', ['sass:compile']);
-
-    // 看守所有图片档
-    gulp.watch('public/images/**/*', ['images']);
-
-    // 建立即时重整伺服器
-    var server = livereload();
-
-    // 看守所有位在 dist/  目录下的档案，一旦有更动，便进行重整
-    gulp.watch(['public/dist/**']).on('change', function(file) {
-        server.changed(file.path);
+gulp.task('connect', function () {
+    connect.server({
+        root: './',
+        port: 8888,
+        host: '127.0.0.1',
+        livereload: true
     });
-
 });
+
+gulp.task('js', function () {
+    gulp.src('./**/*.js')
+        .pipe(connect.reload());
+});
+gulp.task('html', function () {
+  gulp.src('./**/*.html')
+    .pipe(connect.reload());
+});
+ 
+gulp.task('watch', function () {
+  //gulp.watch('public/javascripts/**/*.js', ['sass:compile']);
+  gulp.watch(['sass/**/*.scss','sass/**/*.css'], ['sass:compile']);
+  gulp.watch(['./*.html'], ['html']);
+});
+gulp.task('default',['connect', 'watch']);
+
