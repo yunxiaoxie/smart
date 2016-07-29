@@ -53,7 +53,7 @@ gulp.task('bootstrap', function() {
         .pipe(notify({ message: 'bootstrap task complete' }));
 });
 
-gulp.task('sass:compile', ['clean'], function() {
+gulp.task('sass:compile', ['css:clean'], function() {
     return gulp.src('./sass/**/*.scss')
         .pipe(sass().on('error', sass.logError))
         .pipe(cssimport())
@@ -69,7 +69,7 @@ gulp.task('sass:compile', ['clean'], function() {
 });
 
 
-gulp.task('scripts', function() {
+gulp.task('js:compile', ['js:clean'], function() {
     return gulp.src('js/**/*.js')
         .pipe(jshint('.jshintrc'))
         .pipe(jshint.reporter('default'))
@@ -88,8 +88,12 @@ gulp.task('images', function() {
         .pipe(notify({ message: 'Images task complete' }));
 });
 
-gulp.task('clean', function() {
+gulp.task('css:clean', function() {
     return gulp.src(['dist/css'], {read: false})
+        .pipe(clean());
+});
+gulp.task('js:clean', function() {
+    return gulp.src(['dist/js'], {read: false})
         .pipe(clean());
 });
 

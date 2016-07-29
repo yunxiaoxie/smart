@@ -76,7 +76,7 @@
   "jquery"        : false,    // jQuery
   "mocha"         : true,     // Mocha
   "mootools"      : false,    // MooTools
-  "node"          : false,    // Node.js
+  "node"          : true,    // Node.js
   "nonstandard"   : false,    // Widely adopted globals (escape, unescape, etc)
   "phantom"       : false,    // PhantomJS
   "prototypejs"   : false,    // Prototype and Scriptaculous
@@ -87,6 +87,8 @@
   "worker"        : false,    // Web Workers
   "wsh"           : false,    // Windows Scripting Host
   "yui"           : false,    // Yahoo User Interface
+
+  "predef"        : ["angular"], //resolve 'angular' is not defined
 
   // Custom Globals
   "globals"       : {}        // additional predefined global variables

@@ -1,16 +1,4 @@
 /**
-* App主模块。
-* author: yunxiaoxie
-* date: 2016-7-28
-*/
-
-'use strict';
-angular.module('iRestApp', [
-	'ngMessages',
-	'ui.bootstrap',
-	'iRestApp.basicServer'
-]);
-/**
 *iRestApp基础服务。
 *author: yunxiaoxie
 *date: 2016-7-28
@@ -22,7 +10,7 @@ angular.module('iRestApp.basicServer', [])
 .controller('FormCtrl', ['$scope','$filter', function($scope, $filter){
   
   $scope.dat = new Date();
-  $scope.format = "yyyy-MM-dd hh:ii";
+  $scope.format = "yyyy-MM-dd hh:mm:ss";
   //$scope.altInputFormats = ['yyyy/M!/d!'];
   var dateFilter = $filter('date');
 
