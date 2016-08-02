@@ -26,27 +26,30 @@
     <div class="row">
         <form class="form-horizontal" name="myForm" method="post" ng-submit="submit()" novalidate>
             <div class="form-group">
-                <label class="control-label col-xs-2">产品类型:</label>
+                <label class="control-label col-xs-2">姓名:</label>
                 <div class="col-xs-2">
-                    <select class="form-control" ng-model="formData.category" ng-options="node.id as node.label for node in [{id:'Y',label:'是'}, {id:'N',label:'否'}]">
+                    <input type="text" class="form-control" placeholder="姓名" name="name" ng-model="formData.name">
+                </div>
+                <label class="control-label col-xs-2">性别:</label>
+                <div class="col-xs-2">
+                    <select class="form-control" 
+                            ng-model="formData.sex" 
+                            ng-options="node.id as node.label for node in [{id:'M',label:'男'}, {id:'W',label:'女'}]">
                         <option value="">请选择</option>
                     </select>
                 </div>
-                <label class="control-label col-xs-2">进件编号:</label>
+                <label class="control-label col-xs-2">年龄:</label>
                 <div class="col-xs-2">
-                    <input type="text" class="form-control" placeholder="进件编号" name="idno" ng-model="formData.idno">
+                    <input type="text" class="form-control" placeholder="年龄" name="age" ng-model="formData.age">
                 </div>
-                <label class="control-label col-xs-2">客户姓名:</label>
-                <div class="col-xs-2">
-                    <input type="text" class="form-control" placeholder="客户姓名" name="name" ng-model="formData.name">
-                </div>
+                
             </div>
             <div class="form-group">
-                <label class="control-label col-xs-2">证件号码:</label>
+                <label class="control-label col-xs-2">地址:</label>
                 <div class="col-xs-2">
-                    <input type="text" class="form-control" placeholder="证件号码" name="num" ng-model="formData.num">
+                    <input type="text" class="form-control" placeholder="证件号码" name="address" ng-model="formData.address">
                 </div>
-                <label class="control-label col-xs-2">申请时间:</label>
+                <label class="control-label col-xs-2">出生日期:</label>
                 <div class="col-xs-2">
                     <!-- <div class="input-group date form_date" data-date="" data-date-format="yyyy-mm-dd" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
                         <input class="form-control" type="text" value="" readonly name="askdate" ng-model="formData.askdate">
@@ -67,11 +70,41 @@
                             current-text="今天" 
                             alt-input-formats="altInputFormats" readonly />
                 </div>
-                <label class="control-label col-xs-2">影像资料是否完整:</label>
+                <label class="control-label col-xs-2">资料是否完整:</label>
                 <div class="col-xs-2">
                     <select class="form-control" ng-model="formData.resourceIsComplete" ng-options="node.id as node.label for node in [{id:'Y',label:'是'}, {id:'N',label:'否'}]">
                         <option value="">请选择</option>
                     </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-xs-2">个人性趣:</label>
+                <div class="col-xs-2">
+                    <div ng-repeat="tag in [{id:1, name:'看书'},{id:2, name:'跑步'},{id:3, name:'打球'}]">
+                      <div>
+                         <input type="checkbox" 
+                                id="{{tag.id}}"
+                                name="{{tag.name}}" 
+                                ng-checked="isSelected(tag.id)" 
+                                ng-click="updateSelection($event,tag.id)">
+                         {{ tag.name }}
+                      </div>
+                    </div>
+                </div>
+                <label class="control-label col-xs-2">出生时间:</label>
+                <div class="col-xs-2">
+                    
+                </div>
+                <label class="control-label col-xs-2">是否显示:</label>
+                <div class="col-xs-2">
+                    <label class="radio-inline">
+                      <input name="display" type="radio" value="true" ng-model="formData.display" ng-checked="true" required>
+                      显示
+                    </label>
+                    <label class="radio-inline">
+                      <input name="display" type="radio" value="false" ng-model="formData.display">
+                      隐藏
+                    </label>
                 </div>
             </div>
             <div class="form-group">
