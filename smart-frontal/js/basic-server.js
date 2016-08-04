@@ -7,7 +7,7 @@
 'use strict';
 angular.module('iRestApp.basicServer', [])
 /**表单示例控制器*/
-.controller('FormCtrl', ['$scope','$filter', function($scope, $filter){
+.controller('FormCtrl', ['$scope','$filter', '$http', function($scope, $filter, $http){
   
   $scope.dat = new Date();
   $scope.format = "yyyy-MM-dd hh:mm:ss";
@@ -26,11 +26,15 @@ angular.module('iRestApp.basicServer', [])
 
   /**提交表单*/
   $scope.submit = function() {
-  	console.log($scope.formData);
-  	console.log(dateFilter($scope.formData.dat, 'yyyy-MM-dd'));
+  	//console.log($scope.formData);
+  	//console.log(dateFilter($scope.formData.dat, 'yyyy-MM-dd'));
+
+    $http.post('http://127.0.0.1:3000/formSave', $scope.formData).success(function(data){
+        alert(JSON.stringify(data));
+    }).error(function(data) {
+        alert("failure message:" + JSON.stringify({data:data}));
+    });
   };
-
-
 
 
   $scope.selected = [];
