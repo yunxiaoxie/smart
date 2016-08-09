@@ -1,0 +1,10 @@
+<div ng-repeat="tag in data" >
+                      <label class="checkbox-inline">
+                         <input type="checkbox" 
+                                id="{{tag.id}}"
+                                name="{{tag.name}}"
+                                ng-checked="isSelected(tag.id)" 
+                                ng-click="updateSelection($event,tag.id)" />
+                         {{ tag.name }}
+                      </label>
+                    </div>

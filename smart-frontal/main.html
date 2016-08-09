@@ -2,6 +2,7 @@
 <html ng-app="iRestApp">
 <head>
 <title>Angular + Bootstrap Form Example</title>
+<meta charset='utf-8' />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <!-- Bootstrap -->
 <link href="lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet"/>
@@ -11,7 +12,6 @@
 <script src="lib/jquery/dist/jquery.js"></script>
 <script src="lib/angular/angular.js"></script>
 <script src="lib/angular-messages/angular-messages.js"></script>
-<script src="lib/angular-bootstrap/ui-bootstrap.js"></script>
 <script src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>
 <script src="lib/angular-i18n/angular-locale_zh-cn.js"></script>
 
@@ -20,6 +20,7 @@
 
 
 <script src="dist/js/main.js"></script>
+
 </head>
 <body>
 <div class="container" ng-controller="FormCtrl">
@@ -28,89 +29,73 @@
             <div class="form-group">
                 <label class="control-label col-xs-2">姓名:</label>
                 <div class="col-xs-2">
-                    <input type="text" class="form-control" placeholder="姓名" name="name" ng-model="formData.name">
+                    <input type="text" 
+                       class="form-control" 
+                       placeholder='姓名'
+                       name='name'
+                       cha-valid
+                       minlength="6"
+                       maxlength="10" 
+                       ng-model="formData.name" required />
+                    <span class="error-messages" ng-show="isShow(myForm.name)" ng-messages="myForm.name.$error">
+                       <span ng-messages-include="html/error-messages.html"></span>
+                    </span>
                 </div>
                 <label class="control-label col-xs-2">性别:</label>
                 <div class="col-xs-2">
-                    <select class="form-control" 
-                            ng-model="formData.sex" 
-                            ng-options="node.id as node.label for node in [{id:'M',label:'男'}, {id:'W',label:'女'}]">
-                        <option value="">请选择</option>
-                    </select>
+                    <qk-select-sex />
                 </div>
                 <label class="control-label col-xs-2">年龄:</label>
                 <div class="col-xs-2">
-                    <input type="text" class="form-control" placeholder="年龄" name="age" ng-model="formData.age">
+                    <input type="number" 
+                           class="form-control" 
+                           placeholder="年龄" 
+                           name="age" 
+                           ng-model="formData.age" 
+                           ng-required='true' />
+                    <span class="error-messages" ng-show=isShow(myForm.age) ng-messages="myForm.age.$error">
+                      <span ng-messages-include="html/error-messages.html"></span>
+                    </span>
                 </div>
                 
             </div>
             <div class="form-group">
                 <label class="control-label col-xs-2">地址:</label>
                 <div class="col-xs-2">
-                    <input type="text" class="form-control" placeholder="证件号码" name="address" ng-model="formData.address">
+                    <input type="text" 
+                           maxlength="30" 
+                           class="form-control" 
+                           placeholder="证件号码" 
+                           name="address" 
+                           ng-model="formData.address" />
                 </div>
                 <label class="control-label col-xs-2">出生日期:</label>
                 <div class="col-xs-2">
-                    <!-- <div class="input-group date form_date" data-date="" data-date-format="yyyy-mm-dd" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
-                        <input class="form-control" type="text" value="" readonly name="askdate" ng-model="formData.askdate">
-                        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-                    </div>
-                    <input type="hidden" id="dtp_input2" value="" /><br/> -->
-                    <input 
-                            type="text" 
-                            class="form-control" 
-                            ng-click="open1()" 
-                            uib-datepicker-popup="{{format}}" 
-                            ng-model="formData.dat" 
-                            is-open="popup1.opened" 
-                            ng-disabled="disabled(date, mode)"
-                            ng-required="true" 
-                            close-text="关闭" 
-                            clear-text="清空" 
-                            current-text="今天" 
-                            alt-input-formats="altInputFormats" readonly />
+                    <qk-date-picker />
                 </div>
                 <label class="control-label col-xs-2">资料是否完整:</label>
                 <div class="col-xs-2">
-                    <select class="form-control" ng-model="formData.resourceIsComplete" ng-options="node.id as node.label for node in [{id:'Y',label:'是'}, {id:'N',label:'否'}]">
-                        <option value="">请选择</option>
-                    </select>
+                    <qk-select-yn />
                 </div>
             </div>
             <div class="form-group">
                 <label class="control-label col-xs-2">个人性趣:</label>
                 <div class="col-xs-2">
-                    <div ng-repeat="tag in [{id:1, name:'看书'},{id:2, name:'跑步'},{id:3, name:'打球'}]">
-                      <div>
-                         <input type="checkbox" 
-                                id="{{tag.id}}"
-                                name="{{tag.name}}" 
-                                ng-checked="isSelected(tag.id)" 
-                                ng-click="updateSelection($event,tag.id)">
-                         {{ tag.name }}
-                      </div>
-                    </div>
+                    <qk-checkbox />
                 </div>
-                <label class="control-label col-xs-2">出生时间:</label>
+                <label class="control-label col-xs-2">联系电话:</label>
                 <div class="col-xs-2">
                     
                 </div>
                 <label class="control-label col-xs-2">是否显示:</label>
                 <div class="col-xs-2">
-                    <label class="radio-inline">
-                      <input name="display" type="radio" value="true" ng-model="formData.display" ng-checked="true" required>
-                      显示
-                    </label>
-                    <label class="radio-inline">
-                      <input name="display" type="radio" value="false" ng-model="formData.display">
-                      隐藏
-                    </label>
+                    <qk-radio />
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-xs-offset-6">
-                    <button type="submit" class="btn btn-primary">提交</button>
-                    <button type="reset" class="btn btn-primary">重置</button>
+                    <button type="submit" class="btn btn-primary" ng-disabled="myForm.$invalid" >提交</button>
+                    <button type="button" class="btn btn-primary" ng-disabled="myForm.$invalid" >重置</button>
                 </div>
             </div>
         </form>
