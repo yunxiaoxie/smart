@@ -1,6 +1,14 @@
-<span ng-repeat="tag in data" >
-                      <label class="radio-inline">
-                      <input name="display" type="radio" value="{{tag.id}}" ng-model="formData.display" ng-checked="true" >
-                      {{tag.label}}
-                    </label>
-                    </span>
+<div ng-init="radioData = $ctrl.getData()">
+<span ng-repeat="tag in radioData">
+  <label class="radio-inline">
+  <input name="display" 
+         type="radio" 
+         ng-true-value={{tag.id}}
+         value="{{tag.id}}" 
+         hassubscope=true
+         qk-model="$ctrl.model" 
+         />
+  {{tag.label}}
+</label>
+</span>
+</div>

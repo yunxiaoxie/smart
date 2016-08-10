@@ -27,89 +27,19 @@ angular.module('iRestApp.basicServer', [])
 
 }])
 /*============================directives================================*/
-.directive('qkSelectSex', [function(){
-	return {
-		restrict: 'EA',
-    replace: true,
-    scope: true,
-		templateUrl: 'html/qk-select-sex.html',
-    controller: ['$scope', function ($scope) {
-      $scope.required = false;
-
-      // you could get data by $http too.
-      $scope.dataOptions = [{id:'M',label:'男'}, {id:'W',label:'女'}];
-    }]
-	};
-}])
-.directive('qkSelectYn', [function(){
-  return {
-    restrict: 'EA',
-    replace: true,
-    templateUrl: 'html/qk-select-yn.html'
-  };
-}])
-.directive('qkRadio', [function(){
-  return {
-    restrict: 'EA',
-    replace: true,
-    scope: true,
-    templateUrl: 'html/qk-radio.html',
-    controller: ['$scope', function ($scope) {
-      $scope.required = false;
-
-      // you could get data by $http too.
-      $scope.data = [{id:'true',label:'显示'}, {id:'false',label:'隐藏'}];
-    }]
-  };
-}])
-.directive('qkCheckbox', [function(){
-  return {
-    restrict: 'EA',
-    replace: true,
-    scope: true,
-    templateUrl: 'html/qk-checkbox.html',
-    controller: ['$scope', function ($scope) {
-      // you could get data by $http too.
-      $scope.data = [{id:1, name:'看书'},{id:2, name:'跑步'},{id:3, name:'打球'}];
-      $scope.selected = [];
-      $scope.selectedTags = [];
-
-      $scope.isSelected = function(id){
-        return $scope.selected.indexOf(id)>=0;
-      };
-
-      $scope.updateSelection = function($event, id){
-        var checkbox = $event.target;
-        var action = (checkbox.checked?'add':'remove');
-        updateSelected(action,id,checkbox.name);
-      };
-
-      var updateSelected = function(action,id,name) {
-        if(action === 'add' && $scope.selected.indexOf(id) === -1){
-          $scope.selected.push(id);
-          $scope.selectedTags.push(name);
-        }
-        if(action === 'remove' && $scope.selected.indexOf(id) !== -1){
-          var idx = $scope.selected.indexOf(id);
-          $scope.selected.splice(idx,1);
-          $scope.selectedTags.splice(idx,1);
-        }
-        if ($scope.formData) {
-          $scope.formData.selected = $scope.selected;
-        }
-      };
-    }]
-  };
-}])
+.directive('qkSelectSex', FormDirectiveFactory('MW'))
+.directive('qkSelectYn', FormDirectiveFactory('YN'))
+.directive('qkRadio', FormDirectiveFactory('radio'))
+.directive('qkCheckbox', FormDirectiveFactory('checkbox'))
 .directive('qkDatePicker', function(){
   return {
     restrict: 'EA',
     replace: true,
+    scope: false,
     templateUrl: 'html/qk-date-picker.html',
     controller: ['$scope', function ($scope){
       $scope.dat = new Date();
       $scope.format = "yyyy-MM-dd";
-
       $scope.popup = {
         opened: false
       };
@@ -150,4 +80,86 @@ angular.module('iRestApp.basicServer', [])
         }
     };
 }])
+/**dynamic model*/
+.directive('qkModel', ['$compile',  function($compile) {
+    var model = 'qk-model';
+    return {
+        restrict: 'A',
+        terminal: true,
+        priority: 100000,
+        controller: ['$scope', '$element', '$attrs', '$parse', function ($scope, $element, $attrs, $parse) {
+          this.getData = function() {
+            /**
+             * 判断是否有subscope
+             * ng-repeat有subscope，所以，动态生成的表单修改后不会看到数据。
+             */
+            if ($attrs.hassubscope && $attrs.hassubscope == 'true') {
+              return '$parent.' + $parse($element.attr(model))($scope);
+            } else {
+              return $parse($element.attr(model))($scope);
+            }
+          };
+        }],
+        link: function (scope, elem, attrs, ctrl) {
+            var data = ctrl.getData();
+            var name = data ? data : elem.attr(model);
+            elem.removeAttr(model);
+            elem.attr('ng-model', name);
+            $compile(elem)(scope);
+        }
+    };
+}])
+
+/**
+ * 表单创建工厂。
+ * key--控件数据
+ * type--控件类型
+ */
+function FormDirectiveFactory(key) {
+  return ['$log', function($log){
+  return {
+    restrict: 'EA',
+    replace: true,
+    scope: false,                           //继承并不隔离
+    templateUrl: function(el, attrs){
+      var url = '',
+          type = el.context.localName;
+      if (type && type.indexOf('select') !== -1) {
+        return 'html/qk-select.html';
+      } else if (type && type.indexOf('radio') !== -1) {
+        return 'html/qk-radio.html';
+      } else if (type && type.indexOf('checkbox') !== -1) {
+        return 'html/qk-checkbox.html';
+      } else {
+        $log.error('Not supported type:', type);
+        return '';
+      }
+    },
+    controllerAs: '$ctrl',
+    bindToController: {                     //bind to Controller only，not scope.
+      required : '@',
+      model: '@'
+    },
+    controller: ['$log', function ($log) {
+      // you could get data by $http too.
+      this.getData = function() {
+        if ('YN' === key) {
+          return [{id:'Y',label:'是'}, {id:'N',label:'否'}];
+        } else if ('MW' === key) {
+          return [{id:'M',label:'男'}, {id:'W',label:'女'}];
+        } else if ('radio' === key) {
+          return [{id:1,label:'显示'}, {id:0,label:'隐藏'}];
+        } else if ('checkbox' === key) {
+          return [{id:1, name:'看书', model:"formData.intrest.book"},
+                  {id:2, name:'跑步', model:"formData.intrest.play"},
+                  {id:3, name:'打球', model:"formData.intrest.ball"}];
+        } else {
+          $log.error('Not supported key:', key);
+          return null;
+        }
+      }
+    }]
+  };
+}];
+}
 ;

@@ -1,10 +1,12 @@
-<div ng-repeat="tag in data" >
-                      <label class="checkbox-inline">
-                         <input type="checkbox" 
-                                id="{{tag.id}}"
-                                name="{{tag.name}}"
-                                ng-checked="isSelected(tag.id)" 
-                                ng-click="updateSelection($event,tag.id)" />
-                         {{ tag.name }}
-                      </label>
-                    </div>
+<div ng-init="checkboxData = $ctrl.getData()">
+<div ng-repeat="tag in checkboxData" >
+  <label class="checkbox-inline">
+     <input type="checkbox" 
+            id="{{tag.id}}"
+            name="intrest"
+            hassubscope=true
+            qk-model="tag.model" />
+     {{ tag.name }}
+  </label>
+</div>
+</div>
