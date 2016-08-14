@@ -1,5 +1,6 @@
 <select class="form-control" 
         ng-required={{$ctrl.required}}
+        qk-model="$ctrl.model"
         ng-options="node.id as node.label for node in {{$ctrl.getData()}}">
     <option value="">请选择</option>
 </select>

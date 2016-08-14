@@ -31,27 +31,111 @@ angular.module('iRestApp.basicServer', [])
 .directive('qkSelectYn', FormDirectiveFactory('YN'))
 .directive('qkRadio', FormDirectiveFactory('radio'))
 .directive('qkCheckbox', FormDirectiveFactory('checkbox'))
-.directive('qkDatePicker', function(){
-  return {
-    restrict: 'EA',
-    replace: true,
-    scope: false,
-    templateUrl: 'html/qk-date-picker.html',
-    controller: ['$scope', function ($scope){
-      $scope.dat = new Date();
-      $scope.format = "yyyy-MM-dd";
-      $scope.popup = {
-        opened: false
-      };
-      $scope.open = function () {
-        $scope.popup.opened = true;
-      };
-      $scope.disabled = function(date , mode){ 
-        return (mode === 'day' && (date.getDay() === 0 || date.getDay() === 6));
-      };
-    }]
-  };
-})
+.directive('qkDatePicker', FormDirectiveFactory('date'))
+// .directive('qkDatePicker', [function(){
+//   return {
+//     require: 'ngModel',
+//     templateUrl: "html/qk-date-picker.html",
+//     controllerAs: '$ctrl',
+//     scope:{},
+//       bindToController: {                     //bind to Controller only，not scope.
+//         required : '@',
+//         model: '@'
+//       },
+//       controller: ['$log', function ($log) {
+//         this.format = "yyyy-MM-dd";
+//         this.popup = {
+//           opened: false
+//         };
+//         this.open = function () {
+//           this.popup.opened = true;
+//         };
+//         this.disabled = function(date , mode){ 
+//           return (mode === 'day' && (date.getDay() === 0 || date.getDay() === 6));
+//         };
+//       }],
+//     link: function (scope, elem, attrs, ngModel) {      
+//       var toView = function (modelValue) {
+        
+//       };
+      
+//       var toModel = function (viewValue) {
+//         return viewValue.test;
+//       };
+//       scope.$watch('test', function() {
+//                 ngModel.$setViewValue({ test: scope.test});
+//             });
+      
+//       ngModel.$formatters.unshift(toView);
+//       ngModel.$parsers.unshift(toModel);
+//     }
+//   };
+// }])
+/*============================custom directives==========================*/
+.directive('timeDuration', function () {  
+    var tpl = "<div class='input-inline'> \
+            <input class='form-control' type='text' ng-model='num' /> \
+            <select class='form-control' ng-model='unit'> \
+                <option value='seconds'>Seconds</option> \
+                <option value='minutes'>Minutes</option> \
+                <option value='hours'>Hours</option> \
+                <option value='days'>Days</option> \
+            </select> \
+           </div>";
+
+    return {
+        restrict: 'E',
+        template: tpl,
+        require: 'ngModel',
+        replace: true,
+        link: function(scope, iElement, iAttrs, ngModelCtrl) {
+            // Units of time
+            var multiplierMap = {seconds: 1, minutes: 60, hours: 3600, days: 86400},
+                multiplierTypes = ['seconds', 'minutes', 'hours', 'days'];
+
+            ngModelCtrl.$formatters.push(function toView(modelValue) {
+                var unit = 'minutes', num = 0, i, unitName;
+
+                modelValue = parseInt(modelValue || 0);
+
+                // Figure out the largest unit of time the model value
+                // fits into. For example, 3600 is 1 hour, but 1800 is 30 minutes.
+                for (i = multiplierTypes.length-1; i >= 0; i--) {
+                    unitName = multiplierTypes[i];
+                    if (modelValue % multiplierMap[unitName] === 0) {
+                        unit = unitName;
+                        break;
+                    }
+                }
+                if (modelValue) {
+                    num = modelValue / multiplierMap[unit];
+                }
+                return {
+                    unit: unit,
+                    num:  num
+                };
+            });
+
+            ngModelCtrl.$parsers.push(function toModel(viewValue) {
+                var unit = viewValue.unit, num = viewValue.num, multiplier;
+                multiplier = multiplierMap[unit];
+                return num * multiplier;
+            });
+
+            scope.$watch('unit + num', function() {
+                ngModelCtrl.$setViewValue({ unit: scope.unit, num: scope.num });
+            });
+
+            ngModelCtrl.$render = function() {
+                if (!ngModelCtrl.$viewValue) {
+                    ngModelCtrl.$viewValue = { unit: 'hours', num: 1 };
+                }
+                scope.unit = ngModelCtrl.$viewValue.unit;
+                scope.num  = ngModelCtrl.$viewValue.num;
+            };
+        }
+    };
+}) 
 //非法字符校验
 .directive('chaValid', ['$timeout', function ($timeout) {
     return {
@@ -74,7 +158,7 @@ angular.module('iRestApp.basicServer', [])
                     }
                     ngModel.$setValidity("chaValid", validity);
                     return validity ? n : undefined;
-                }, 300)
+                }, 300);
             });
 
         }
@@ -93,7 +177,7 @@ angular.module('iRestApp.basicServer', [])
              * 判断是否有subscope
              * ng-repeat有subscope，所以，动态生成的表单修改后不会看到数据。
              */
-            if ($attrs.hassubscope && $attrs.hassubscope == 'true') {
+            if ($attrs.hassubscope && $attrs.hassubscope === 'true') {
               return '$parent.' + $parse($element.attr(model))($scope);
             } else {
               return $parse($element.attr(model))($scope);
@@ -108,7 +192,7 @@ angular.module('iRestApp.basicServer', [])
             $compile(elem)(scope);
         }
     };
-}])
+}]);
 
 /**
  * 表单创建工厂。
@@ -117,49 +201,61 @@ angular.module('iRestApp.basicServer', [])
  */
 function FormDirectiveFactory(key) {
   return ['$log', function($log){
-  return {
-    restrict: 'EA',
-    replace: true,
-    scope: false,                           //继承并不隔离
-    templateUrl: function(el, attrs){
-      var url = '',
-          type = el.context.localName;
-      if (type && type.indexOf('select') !== -1) {
-        return 'html/qk-select.html';
-      } else if (type && type.indexOf('radio') !== -1) {
-        return 'html/qk-radio.html';
-      } else if (type && type.indexOf('checkbox') !== -1) {
-        return 'html/qk-checkbox.html';
-      } else {
-        $log.error('Not supported type:', type);
-        return '';
-      }
-    },
-    controllerAs: '$ctrl',
-    bindToController: {                     //bind to Controller only，not scope.
-      required : '@',
-      model: '@'
-    },
-    controller: ['$log', function ($log) {
-      // you could get data by $http too.
-      this.getData = function() {
-        if ('YN' === key) {
-          return [{id:'Y',label:'是'}, {id:'N',label:'否'}];
-        } else if ('MW' === key) {
-          return [{id:'M',label:'男'}, {id:'W',label:'女'}];
-        } else if ('radio' === key) {
-          return [{id:1,label:'显示'}, {id:0,label:'隐藏'}];
-        } else if ('checkbox' === key) {
-          return [{id:1, name:'看书', model:"formData.intrest.book"},
-                  {id:2, name:'跑步', model:"formData.intrest.play"},
-                  {id:3, name:'打球', model:"formData.intrest.ball"}];
+    return {
+      restrict: 'EA',
+      replace: true,
+      scope: false,                           //继承并不隔离
+      templateUrl: function(el, attrs){
+        var type = el.context.localName;
+        if (type && type.indexOf('select') !== -1) {
+          return 'html/qk-select.html';
+        } else if (type && type.indexOf('radio') !== -1) {
+          return 'html/qk-radio.html';
+        } else if (type && type.indexOf('checkbox') !== -1) {
+          return 'html/qk-checkbox.html';
+        } else if (type && type.indexOf('date') !== -1) {
+          return 'html/qk-date-picker.html';
         } else {
-          $log.error('Not supported key:', key);
-          return null;
+          $log.error('Not supported type:', type);
+          return '';
         }
-      }
-    }]
-  };
-}];
-}
-;
+      },
+      controllerAs: '$ctrl',
+      bindToController: {                     //bind to Controller only，not scope.
+        required : '@',
+        model: '@'
+      },
+      controller: ['$log', function ($log) {
+        // you could get data by $http too.
+        this.getData = function() {
+          if ('YN' === key) {
+            return [{id:'Y',label:'是'}, {id:'N',label:'否'}];
+          } else if ('MW' === key) {
+            return [{id:'M',label:'男'}, {id:'W',label:'女'}];
+          } else if ('radio' === key) {
+            return [{id:1,label:'显示'}, {id:0,label:'隐藏'}];
+          } else if ('checkbox' === key) {
+            return [{id:1, name:'看书', model:"formData.intrest.book"},
+                    {id:2, name:'跑步', model:"formData.intrest.play"},
+                    {id:3, name:'打球', model:"formData.intrest.ball"}];
+          } else {
+            $log.error('Not supported key:', key);
+            return null;
+          }
+        };
+
+
+        this.format = "yyyy-MM-dd";
+        this.popup = {
+          opened: false
+        };
+        this.open = function () {
+          this.popup.opened = true;
+        };
+        // this.disabled = function(date , mode){ 
+        //   return (mode === 'day' && (date.getDay() === 0 || date.getDay() === 6));
+        // };
+      }]
+    };
+  }];
+};

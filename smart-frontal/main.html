@@ -26,6 +26,9 @@
 <div class="container" ng-controller="FormCtrl">
     <div class="row">
         <form class="form-horizontal" name="myForm" method="post" ng-submit="submit()" novalidate>
+            <div col-xs-6>
+                <label class="control-label">标准控件</label>
+            </div>
             <div class="form-group">
                 <label class="control-label col-xs-2">姓名:</label>
                 <div class="col-xs-2">
@@ -43,7 +46,7 @@
                 </div>
                 <label class="control-label col-xs-2">性别:</label>
                 <div class="col-xs-2">
-                    <qk-select-sex qk-model="formData.sex" />
+                    <qk-select-sex model="formData.sex" />
                 </div>
                 <label class="control-label col-xs-2">年龄:</label>
                 <div class="col-xs-2">
@@ -72,11 +75,11 @@
                 </div>
                 <label class="control-label col-xs-2">出生日期:</label>
                 <div class="col-xs-2">
-                    <qk-date-picker />
+                    <qk-date-picker model="formData.birthday" />
                 </div>
                 <label class="control-label col-xs-2">资料是否完整:</label>
                 <div class="col-xs-2">
-                    <qk-select-yn qk-model="formData.resourceIsComplete" />
+                    <qk-select-yn model="formData.resourceIsComplete" />
                 </div>
             </div>
             <div class="form-group">
@@ -118,6 +121,17 @@
                     </label>
                 </div>
             </div>
+
+            <div col-xs-6>
+                <label class="control-label">自定义控件</label>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-xs-2">时间戳(秒):</label>
+                <div class="col-md-2">
+                  <time-duration ng-model="formData.dutime" />
+                </div>
+            </div>
+
             <div class="form-group">
                 <div class="col-xs-offset-6">
                     <button type="submit" class="btn btn-primary" ng-disabled="myForm.$invalid" >提交</button>

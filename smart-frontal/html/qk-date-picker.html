@@ -1,12 +1,12 @@
 <input 
-                            type="text" 
-                            class="form-control" 
-                            ng-click="open()" 
-                            uib-datepicker-popup="{{format}}" 
-                            ng-model="formData.dat" 
-                            is-open="popup.opened" 
-                            ng-disabled="disabled(date, mode)"
-                            close-text="关闭" 
-                            clear-text="清空" 
-                            current-text="今天" 
-                            alt-input-formats="altInputFormats" readonly />
+       type="text" 
+       class="form-control" 
+       ng-click="$ctrl.open()" 
+       uib-datepicker-popup="{{$ctrl.format}}" 
+       qk-model="$ctrl.model" 
+       is-open="$ctrl.popup.opened" 
+       ng-disabled="$ctrl.disabled(date, mode)"
+       close-text="关闭" 
+       clear-text="清空" 
+       current-text="今天" 
+       alt-input-formats="altInputFormats" readonly />
