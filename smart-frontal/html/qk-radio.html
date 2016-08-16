@@ -1,12 +1,11 @@
-<div ng-init="radioData = $ctrl.getData()">
-<span ng-repeat="tag in radioData">
+<div ng-init="vm.getData()">
+<span ng-repeat="tag in data">
   <label class="radio-inline">
-  <input name="display" 
+  <input name="{{vm.name}}" 
          type="radio" 
-         ng-true-value={{tag.id}}
+         ng-true-value="{{tag.id}}"
          value="{{tag.id}}" 
-         hassubscope=true
-         qk-model="$ctrl.model" 
+         ng-model="vm.model" 
          />
   {{tag.label}}
 </label>

@@ -46,7 +46,7 @@
                 </div>
                 <label class="control-label col-xs-2">性别:</label>
                 <div class="col-xs-2">
-                    <qk-select-sex model="formData.sex" />
+                    <qk-select model="formData.sex" code='1002' required='true' />
                 </div>
                 <label class="control-label col-xs-2">年龄:</label>
                 <div class="col-xs-2">
@@ -75,25 +75,39 @@
                 </div>
                 <label class="control-label col-xs-2">出生日期:</label>
                 <div class="col-xs-2">
-                    <qk-date-picker model="formData.birthday" />
+                    <qk-date-picker model="formData.birthday"  />
                 </div>
                 <label class="control-label col-xs-2">资料是否完整:</label>
                 <div class="col-xs-2">
-                    <qk-select-yn model="formData.resourceIsComplete" />
+                    <qk-select model="formData.resourceIsComplete" code='1001' />
                 </div>
             </div>
             <div class="form-group">
                 <label class="control-label col-xs-2">个人性趣:</label>
                 <div class="col-xs-2">
-                    <qk-checkbox />
+                    <qk-checkbox model="formData.intrest" code='1004' required='false' />
                 </div>
-                <label class="control-label col-xs-2">联系电话:</label>
+                <label class="control-label col-xs-2">是否完成:</label>
                 <div class="col-xs-2">
-                    
+                    <qk-radio name="complete" model="formData.complete" code='1005' />
                 </div>
                 <label class="control-label col-xs-2">是否显示:</label>
                 <div class="col-xs-2">
-                    <qk-radio model="formData.display" />
+                    <qk-radio name="display" model="formData.display" code='1003' />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-xs-2">科目:</label>
+                <div class="col-xs-2">
+                    <qk-checkbox model="formData.book" code='1006' required='false' />
+                </div>
+                <label class="control-label col-xs-2">是否完成:</label>
+                <div class="col-xs-2">
+                    <qk-radio name="complete" model="formData.complete2" code='1005' />
+                </div>
+                <label class="control-label col-xs-2">是否显示:</label>
+                <div class="col-xs-2">
+                    <qk-radio name="display" model="formData.display2" code='1003' />
                 </div>
             </div>
 

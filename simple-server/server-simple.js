@@ -30,6 +30,30 @@ var app = connect()
         if (req.originalUrl.indexOf('/formSave') !== -1) {
             res.end(JSON.stringify(req.body));
         }
+        if (req.originalUrl.indexOf('/getDataByCode') !== -1) {
+          var data = null;
+          switch(String(req.body.code)) {
+              case '1001':
+                data = [{id:'Y',label:'是'}, {id:'N',label:'否'}];break;
+              case '1002':
+                data = [{id:'M',label:'男'}, {id:'W',label:'女'}];break;
+              case '1003':
+                data = [{id:1,label:'显示'}, {id:0,label:'隐藏'}];break;
+              case '1004':
+                data = [{id:1, name:'看书', model:"book"},
+                        {id:2, name:'跑步', model:"play"},
+                        {id:3, name:'打球', model:"ball"}];break;
+              case '1005':
+                data = [{id:'wc',label:'已完成'}, {id:'wwc',label:'未完成'}];break;
+              case '1006':
+                data = [{id:1, name:'语文', model:"yw"},
+                        {id:2, name:'数学', model:"sx"},
+                        {id:3, name:'英语', model:"english"}];break;
+              default:
+                data = null;
+          }
+          res.end(JSON.stringify(data));
+        }
     })
     .listen(3000);
 console.log('Server started on port 3000.');

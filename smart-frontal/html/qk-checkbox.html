@@ -1,11 +1,11 @@
-<div ng-init="checkboxData = $ctrl.getData()">
-<div ng-repeat="tag in checkboxData" >
+<div ng-init="vm.getData()">
+<div ng-repeat="tag in data" >
   <label class="checkbox-inline">
      <input type="checkbox" 
             id="{{tag.id}}"
+            ng-true-value="{{tag.id}}"
             name="intrest"
-            hassubscope=true
-            qk-model="tag.model" />
+            ng-model="vm.model[tag.model]" />
      {{ tag.name }}
   </label>
 </div>
