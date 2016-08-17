@@ -24,6 +24,7 @@
 </head>
 <body>
 <div class="container" ng-controller="FormCtrl">
+<div uib-alert ng-repeat="alert in alerts" type="{{alert.type}}" close="alert.close()">{{ alert.msg }}</div>
     <div class="row">
         <form class="form-horizontal" name="myForm" method="post" ng-submit="submit()" novalidate>
             <div col-xs-6>
@@ -143,6 +144,27 @@
                 <label class="control-label col-xs-2">时间戳(秒):</label>
                 <div class="col-md-2">
                   <time-duration ng-model="formData.dutime" />
+                </div>
+            </div>
+
+             <div col-xs-6>
+                <label class="control-label">第三方(ui-bootstrap)控件</label>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-xs-2">下拉框:</label>
+                <div class="col-md-2">
+                  <div class="btn-group" uib-dropdown ng-init="dropdownItems=['第一项','第二项','第三项']">
+                     <button id="single-button" type="button" class="btn btn-primary" uib-dropdown-toggle >
+                         请选择 <span class="caret"></span>
+                     </button>
+                     <ul class="dropdown-menu" uib-dropdown-menu  >
+                         <li ng-repeat="item in dropdownItems">
+                             <a href="#">{{item}}</a>
+                         </li>
+                         <li class="divider"></li>
+                         <li ><a href="#">其他</a></li>
+                     </ul>
+                 </div>
                 </div>
             </div>
 

@@ -19,7 +19,7 @@ angular.module('iRestApp', [
 'use strict';
 angular.module('iRestApp.basicServer', [])
 /**表单示例控制器*/
-.controller('FormCtrl', ['$scope','$filter', '$http', 'UtilsService', function($scope, $filter, $http, UtilsService){
+.controller('FormCtrl', ['$scope','$filter', '$http', 'UtilsService', 'alertService', function($scope, $filter, $http, UtilsService, alertService){
   var dateFilter = $filter('date');
   $scope.submitted = false;
   $scope.isShow = function(field) {
@@ -29,8 +29,10 @@ angular.module('iRestApp.basicServer', [])
   /**提交表单*/
   $scope.submit = function() {
     $scope.submitted = true;
+    alertService.add("warning", "This is a warning.");
+    alertService.add("danger", "This is an error!");
   	console.log(dateFilter($scope.formData.birthday, 'yyyy-MM-dd'));
-    $http.post('http://127.0.0.1:3000/formSave', $scope.formData).success(function(data){
+    $http.post('/formSave', $scope.formData).success(function(data){
         alert(JSON.stringify(data));
     }).error(function(data) {
         alert("failure message:" + JSON.stringify({data:data}));
@@ -44,45 +46,7 @@ angular.module('iRestApp.basicServer', [])
 .directive('qkRadio', FormDirectiveFactory())
 .directive('qkCheckbox', FormDirectiveFactory())
 .directive('qkDatePicker', FormDirectiveFactory())
-// .directive('qkDatePicker', [function(){
-//   return {
-//     require: 'ngModel',
-//     templateUrl: "html/qk-date-picker.html",
-//     controllerAs: '$ctrl',
-//     scope:{},
-//       bindToController: {                     //bind to Controller only，not scope.
-//         required : '@',
-//         model: '@'
-//       },
-//       controller: ['$log', function ($log) {
-//         this.format = "yyyy-MM-dd";
-//         this.popup = {
-//           opened: false
-//         };
-//         this.open = function () {
-//           this.popup.opened = true;
-//         };
-//         this.disabled = function(date , mode){ 
-//           return (mode === 'day' && (date.getDay() === 0 || date.getDay() === 6));
-//         };
-//       }],
-//     link: function (scope, elem, attrs, ngModel) {      
-//       var toView = function (modelValue) {
-        
-//       };
-      
-//       var toModel = function (viewValue) {
-//         return viewValue.test;
-//       };
-//       scope.$watch('test', function() {
-//                 ngModel.$setViewValue({ test: scope.test});
-//             });
-      
-//       ngModel.$formatters.unshift(toView);
-//       ngModel.$parsers.unshift(toModel);
-//     }
-//   };
-// }])
+
 /*============================custom directives==========================*/
 .directive('timeDuration', function () {  
     var tpl = "<div class='input-inline'> \
@@ -227,7 +191,7 @@ angular.module('iRestApp.basicServer', [])
         },
         querySync : function(sUrl, sData, sMethod) {
           sMethod ? sMethod : sMethod = "post";
-          var deferred = $q.defer(); // 声明延后执行，表示要去监控后面的执行  
+          var deferred = $q.defer(); // 声明延后执行，表示要去监控后面的执行
           $http({
               method: sMethod,
               url: sUrl,
@@ -244,6 +208,89 @@ angular.module('iRestApp.basicServer', [])
           return deferred.promise;
         }
     }
+}])
+/**
+ * level: success、info、warning、danger
+ */
+.factory('alertService', function($rootScope) {
+    var alertService = {};
+
+    // create an array of alerts available globally
+    $rootScope.alerts = [];
+
+    alertService.add = function(type, msg) {
+      $rootScope.alerts.push({'type': type, 'msg': msg, 'close': function(){alertService.closeAlert(this);}});
+    };
+
+    alertService.closeAlert = function(alert) {
+      alertService.closeAlertIdx($rootScope.alerts.indexOf(alert));
+    };
+ 
+    alertService.closeAlertIdx = function(index) {
+      $rootScope.alerts.splice(index, 1);
+    };
+
+    return alertService;
+  })
+/**
+ *
+ * 基础拦截器
+ *
+ * */
+.factory('errorInterceptor', ['$rootScope','$window','$q', '$log' ,function ($rootScope,$window,$q,$log) {
+    //定义拦截器(拦截所有请求，修改“../”为域名)
+    return {
+        'request': function(request){
+            if (request.url && request.url.substr(0,1) === '/') {
+              $log.info(request.url);
+              request.url = 'http://127.0.0.1:3000/' + request.url;
+            }
+            return request;
+        },
+        'response': function (response) {
+            if(!response.data) return response;
+            //广播post完成事件
+            if(response.config.method == ('POST')) {
+                $rootScope.$broadcast('formPosted',response.config.url);
+            } 
+            var exception = [12001,12002,12003];
+            if(response.data.msgNo){
+                var erroCode = parseInt(response.data.msgNo);
+                var errMsg=response.data.msg;
+            } else
+                var erroCode = 10000;
+
+            switch (erroCode) {
+                case 10000:
+                    if(response.config.method.toUpperCase() == 'DELETE' && response.status == 200)
+                        $rootScope.$broadcast('msgError', 900001);
+                    //else if(response.config.method.toUpperCase() == 'POST' || response.config.method.toUpperCase() == 'PUT')
+                    //    $rootScope.$broadcast('msgError', 900002);
+                    break;
+                case 10005:
+                    $rootScope.$broadcast('relogin');
+                    $rootScope.$broadcast('msgError', erroCode,errMsg);
+
+                    break;
+                case 10006:
+                    $rootScope.$broadcast('relogin');
+                    $rootScope.$broadcast('msgError', erroCode,errMsg);
+
+                    break;
+                case 10007:
+                    $rootScope.$broadcast('relogin');
+                    $rootScope.$broadcast('msgError', erroCode,errMsg);
+
+                    break;
+                default :
+                    if(_.indexOf(exception,erroCode) < 0) {
+                        $rootScope.$broadcast('msgError', erroCode,errMsg);
+                    }
+            };
+            return response;
+
+        }
+    };
 }])
 
 /**
@@ -280,32 +327,14 @@ function FormDirectiveFactory() {
         // you could get data by $http too.
         this.getData = function() {
           if ($attrs.code) {
-            console.log(UtilsService, $attrs.code)
-            UtilsService.querySync('http://127.0.0.1:3000/getDataByCode', {code:$attrs.code}).then(function (data) {
-                $log.info('code:', $attrs.code);
+            UtilsService.querySync('/getDataByCode', {code:$attrs.code}).then(function (data) {
                 $scope.data = data;
             }, function () {
                 $log('Not supported code:', $attrs.code);
             });
           }
           
-          // if ('YN' === key) {
-          //   return [{id:'Y',label:'是'}, {id:'N',label:'否'}];
-          // } else if ('MW' === key) {
-          //   return [{id:'M',label:'男'}, {id:'W',label:'女'}];
-          // } else if ('radio' === key) {
-          //   return [{id:1,label:'显示'}, {id:0,label:'隐藏'}];
-          // } else if ('checkbox' === key) {
-          //   return [{id:1, name:'看书', model:"formData.intrest.book"},
-          //           {id:2, name:'跑步', model:"formData.intrest.play"},
-          //           {id:3, name:'打球', model:"formData.intrest.ball"}];
-          // } else {
-          //   $log.error('Not supported key:', key);
-          //   return null;
-          // }
         };
-
-        this.test={};
 
         this.format = "yyyy-MM-dd";
         this.popup = {
@@ -321,3 +350,115 @@ function FormDirectiveFactory() {
     };
   }];
 };
+/**
+ * 作者: xie Y.X.
+ * 创建: 2016/3/18
+ * 修改: 2016/3/18
+ * 版本: 1.0.0
+ * 描述: 服务配置模块
+ * */
+
+'use strict';
+angular.module('iRestApp')
+    .config(['$httpProvider', 'uibDatepickerConfig', function ($httpProvider, uibDatepickerConfig) {
+        uibDatepickerConfig.showWeeks = false;
+
+        //加载进度条
+        // cfpLoadingBarProvider.latencyThreshold = 100;
+        // cfpLoadingBarProvider.includeSpinner = true;
+
+        // Initialize get if not there
+        if (!$httpProvider.defaults.headers.get) {
+            $httpProvider.defaults.headers.get = {};
+        }
+
+        // Enables Request.IsAjaxRequest() in ASP.NET MVC
+        $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
+
+        // Disable IE ajax request caching
+        $httpProvider.defaults.headers.get['Cache-Control'] = 'no-cache';
+        $httpProvider.defaults.headers.get['Pragma'] = 'no-cache';
+
+
+        //跨域设置
+        //form形式post
+        //$httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;';
+
+        //注册拦截器
+        $httpProvider.interceptors.push('errorInterceptor');
+        //$httpProvider.interceptors.push('personlizeTranslateErrorHandler');
+
+
+        
+    }])
+
+/**
+*iRestApp拦截器。
+*author: yunxiaoxie
+*date: 2016-7-28
+*/
+
+'use strict';
+angular.module('iRestApp.mainInterceptors', [])
+/**
+ *
+ * 基础拦截器
+ *
+ * */
+.factory('errorInterceptor', ['$rootScope','$window','$q',function ($rootScope,$window,$q) {
+    //定义拦截器(拦截所有请求，修改“../”为域名)
+    return {
+        'request': function(request){
+            // var aUrl = request.url.split('/');
+            // if(request.method == ('POST') && aUrl[4] !== 'security') {
+            //     $rootScope.$broadcast('formPosting',request.url);
+            // }
+            request.url += 'http://127.0.0.1:3000';
+            return request;
+        },
+        'response': function (response) {
+            if(!response.data) return response;
+            //广播post完成事件
+            if(response.config.method == ('POST')) {
+                $rootScope.$broadcast('formPosted',response.config.url);
+            } 
+            var exception = [12001,12002,12003];
+            if(response.data.msgNo){
+                var erroCode = parseInt(response.data.msgNo);
+                var errMsg=response.data.msg;
+            } else
+                var erroCode = 10000;
+
+            switch (erroCode) {
+                case 10000:
+                    if(response.config.method.toUpperCase() == 'DELETE' && response.status == 200)
+                        $rootScope.$broadcast('msgError', 900001);
+                    //else if(response.config.method.toUpperCase() == 'POST' || response.config.method.toUpperCase() == 'PUT')
+                    //    $rootScope.$broadcast('msgError', 900002);
+                    break;
+                case 10005:
+                    $rootScope.$broadcast('relogin');
+                    $rootScope.$broadcast('msgError', erroCode,errMsg);
+
+                    break;
+                case 10006:
+                    $rootScope.$broadcast('relogin');
+                    $rootScope.$broadcast('msgError', erroCode,errMsg);
+
+                    break;
+                case 10007:
+                    $rootScope.$broadcast('relogin');
+                    $rootScope.$broadcast('msgError', erroCode,errMsg);
+
+                    break;
+                default :
+                    if(_.indexOf(exception,erroCode) < 0) {
+                        $rootScope.$broadcast('msgError', erroCode,errMsg);
+                    }
+            };
+            return response;
+
+        }
+    };
+}])
+;
