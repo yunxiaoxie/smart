@@ -14,6 +14,12 @@ angular.module('iRestApp.basicServer', [])
     return  $scope.submitted || field.$dirty;
   };
 
+  $scope.slt = '请选择';
+  $scope.select = function(item, event) {
+    console.log(item,event);
+    $scope.slt = item;
+  }
+
   /**提交表单*/
   $scope.submit = function() {
     $scope.submitted = true;
@@ -125,6 +131,39 @@ angular.module('iRestApp.basicServer', [])
                 }, 300);
             });
 
+        }
+    };
+}])
+.directive('myMinLength', function() {
+  return {
+    restrict: 'A',
+    require: '?ngModel',
+    link: function(scope, elm, attr, ctrl) {
+      if (!ctrl) return;
+
+      var minlength = 0;
+      attr.$observe('myminlength', function(value) {
+        minlength = parseInt(value) || 0;
+        ctrl.$validate();
+      });
+      ctrl.$validators.myminlength = function(modelValue, viewValue) {
+        return ctrl.$isEmpty(viewValue) || viewValue.length >= minlength;
+      };
+    }
+  };
+})
+//ip验证
+.directive('ipMatch',  ['$timeout', function ($timeout) {
+    return {
+        restrict: 'A',
+        require: "?ngModel",
+        link: function (scope, element, attr, ctrl) {
+            if (!ctrl) return;
+
+            ctrl.$validators.ipmatch = function(modelValue, viewValue) {
+              var patrn = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/;
+              return patrn.test(modelValue);
+            };
         }
     };
 }])

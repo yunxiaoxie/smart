@@ -69,10 +69,15 @@
                 <div class="col-xs-2">
                     <input type="text" 
                            maxlength="30" 
+                           my-min-length
+                           myminlength="5"
                            class="form-control" 
                            placeholder="证件号码" 
                            name="address" 
                            ng-model="formData.address" />
+                    <span class="error-messages" ng-show=isShow(myForm.address) ng-messages="myForm.address.$error">
+                      <span ng-messages-include="html/error-messages.html"></span>
+                    </span>
                 </div>
                 <label class="control-label col-xs-2">出生日期:</label>
                 <div class="col-xs-2">
@@ -102,13 +107,27 @@
                 <div class="col-xs-2">
                     <qk-checkbox model="formData.book" code='1006' required='false' />
                 </div>
-                <label class="control-label col-xs-2">是否完成:</label>
+                <label class="control-label col-xs-2">IP1:</label>
                 <div class="col-xs-2">
-                    <qk-radio name="complete" model="formData.complete2" code='1005' />
+                    <input type="text" 
+                           class="form-control" 
+                           name="ip1" 
+                           ip-match
+                           ng-model="formData.ip1" />
+                    <span class="error-messages" ng-show=isShow(myForm.ip1) ng-messages="myForm.ip1.$error">
+                      <span ng-messages-include="html/error-messages.html"></span>
+                    </span>
                 </div>
-                <label class="control-label col-xs-2">是否显示:</label>
+                <label class="control-label col-xs-2">IP2:</label>
                 <div class="col-xs-2">
-                    <qk-radio name="display" model="formData.display2" code='1003' />
+                    <input type="text" 
+                           class="form-control" 
+                           name="ip2" 
+                           ip-match
+                           ng-model="formData.ip2" />
+                    <span class="error-messages" ng-show=isShow(myForm.ip2) ng-messages="myForm.ip2.$error">
+                      <span ng-messages-include="html/error-messages.html"></span>
+                    </span>
                 </div>
             </div>
 
@@ -153,13 +172,13 @@
             <div class="form-group">
                 <label class="control-label col-xs-2">下拉框:</label>
                 <div class="col-md-2">
-                  <div class="btn-group" uib-dropdown ng-init="dropdownItems=['第一项','第二项','第三项']">
+                  <div class="btn-group" uib-dropdown ng-init="dropdownItems=['第一项','第二项','第三项']" ng-model="slt">
                      <button id="single-button" type="button" class="btn btn-primary" uib-dropdown-toggle >
-                         请选择 <span class="caret"></span>
+                         <span ng-bind="slt"></span> <span class="caret"></span>
                      </button>
                      <ul class="dropdown-menu" uib-dropdown-menu  >
                          <li ng-repeat="item in dropdownItems">
-                             <a href="#">{{item}}</a>
+                             <a href="#" ng-click="select(item, $event)" >{{item}}</a>
                          </li>
                          <li class="divider"></li>
                          <li ><a href="#">其他</a></li>
