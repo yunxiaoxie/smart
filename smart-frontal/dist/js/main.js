@@ -119,30 +119,68 @@ angular.module('iRestApp.basicServer', [])
     };
 }) 
 //非法字符校验
-.directive('chaValid', ['$timeout', function ($timeout) {
+.directive('charValid', [function () {
+    return {
+        restrict: 'A',
+        require: "?ngModel",
+        link: function (scope, element, attr, ngModelCtrl) {
+            if (!ngModelCtrl) return;
+
+            ngModelCtrl.$validators.charValid = function(modelValue, viewValue) {
+              var pattern = /[`~!@#$%^&*()+<>?:"{},.\/;\='[\]]/im;
+              return !pattern.test(modelValue);
+            }
+        }
+    };
+}])
+.directive('noDuplicate', [function () {
+    return {
+        restrict: 'A',
+        require: "?ngModel",
+        link: function (scope, element, attr, ctrl) {
+            if (!ctrl) return;
+
+            ctrl.$validators.noDuplicate = function(modelValue, viewValue) {
+              if (scope['formData']) {
+                var list = scope.formData['list'], tmp = [], curname = attr.name;
+                if (list) {
+                  var keys = _.keys(list);
+                  _.each(keys, function(item,idx){
+                    if (item === curname) {
+                      tmp.push(modelValue);
+                    } else {
+                      tmp.push(list[item])
+                    }
+                  });
+                }
+                if (tmp.length !== _.uniq(tmp).length) {
+                  return false;
+                }
+              }
+              return true;
+            }
+        }
+    };
+}])
+//动态表单不能重复
+.directive('noRepeat',  [function () {
     return {
         require: "ngModel",
         link: function (scope, element, attr, ngModel) {
-            var timer;
+            var items = [];
             scope.$watch(attr.ngModel, function (n) {
-                if (!n){
-                    // fix 1个字符错误，输入空，错误展示不消失
-                    ngModel.$setValidity("chaValid", true);
+                if (scope.formData.domain_addr_pairs && scope.formData.domain_addr_pairs.length <=1) return;
+                //萃取对象数组中某属性值,转为数组
+                items = _.pluck(scope.formData.domain_addr_pairs, 'domain');
+                //当前数组的长度与去重后数组的长度比较
+                if(items.length == _.uniq(items).length) {
+                    ngModel.$setValidity("noRepeat", true);
+                    return;
+                } else {
+                    ngModel.$setValidity("noRepeat", false);
                     return;
                 }
-                $timeout.cancel(timer);
-                timer = $timeout(function () {
-                    var patrn = /[`~!@#$%^&*()+<>?:"{},.\/;\='[\]]/im, validity;
-                    if (patrn.test(n)) {
-                        validity = false;
-                    } else {
-                        validity = true;
-                    }
-                    ngModel.$setValidity("chaValid", validity);
-                    return validity ? n : undefined;
-                }, 300);
             });
-
         }
     };
 }])
@@ -174,7 +212,7 @@ angular.module('iRestApp.basicServer', [])
 
             ctrl.$validators.ipmatch = function(modelValue, viewValue) {
               var patrn = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/;
-              return patrn.test(modelValue);
+              return ctrl.$isEmpty(viewValue) || patrn.test(modelValue);
             };
         }
     };
