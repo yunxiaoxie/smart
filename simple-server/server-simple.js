@@ -19,7 +19,7 @@ var app = connect()
         // Request methods you wish to allow
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
         // Request headers you wish to allow
-        res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+        res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,X-Session-Token');
         // Set to true if you need the website to include cookies in the requests sent
         // to the API (e.g. in case you use sessions)
         //res.setHeader('Access-Control-Allow-Credentials', true);
@@ -29,6 +29,16 @@ var app = connect()
         }
         if (req.originalUrl.indexOf('/formSave') !== -1) {
             res.end(JSON.stringify(req.body));
+        }
+        if (req.originalUrl.indexOf('/verifyUser') !== -1) {
+            if (req.body.uname === 'test' && req.body.pwd === '1234') {
+                var result = {msgNo: 10000};
+                res.end(JSON.stringify(result));
+            } else {
+                var result = {msgNo: 10001};
+                res.end(JSON.stringify(result));
+            }
+            
         }
         if (req.originalUrl.indexOf('/getDataByCode') !== -1) {
           var data = null;

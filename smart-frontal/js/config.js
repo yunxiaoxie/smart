@@ -33,9 +33,9 @@ angular.module('iRestApp')
         //$httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;';
 
         //注册拦截器
-        $httpProvider.interceptors.push('errorInterceptor');
-        //$httpProvider.interceptors.push('personlizeTranslateErrorHandler');
-
-
-        
+        $httpProvider.interceptors.push('UrlInterceptor');
+        $httpProvider.interceptors.push('EncryptInterceptor');
+        $httpProvider.interceptors.push('TimestampMarker');
+        $httpProvider.interceptors.push('SessionInjector');
+        $httpProvider.interceptors.push('HttpInterceptor');
     }])

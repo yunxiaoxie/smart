@@ -7,7 +7,7 @@
 'use strict';
 angular.module('iRestApp.basicServer', [])
 /**表单示例控制器*/
-.controller('FormCtrl', ['$scope','$filter', '$http', 'UtilsService', 'alertService', function($scope, $filter, $http, UtilsService, alertService){
+.controller('FormCtrl', ['$scope','$filter', '$http', 'UtilsService', 'AlertService', function($scope, $filter, $http, UtilsService, AlertService){
   var dateFilter = $filter('date');
   $scope.submitted = false;
   $scope.isShow = function(field) {
@@ -23,8 +23,8 @@ angular.module('iRestApp.basicServer', [])
   /**提交表单*/
   $scope.submit = function() {
     $scope.submitted = true;
-    alertService.add("warning", "This is a warning.");
-    alertService.add("danger", "This is an error!");
+    AlertService.alert("This is a warning.", "warning");
+    AlertService.alert("This is an error!", "danger");
   	console.log(dateFilter($scope.formData.birthday, 'yyyy-MM-dd'));
     $http.post('/formSave', $scope.formData).success(function(data){
         alert(JSON.stringify(data));
@@ -33,6 +33,64 @@ angular.module('iRestApp.basicServer', [])
     });
 
   };
+
+}])
+/**
+ *
+ * 登录与导航块controller
+ *
+ * */
+.controller('LoginCtrl', ['$scope','$rootScope','$window','UtilsService','$location', '$log', 'AlertService', function ($scope, $rootScope, $window, UtilsService, $location, $log, AlertService) {
+    // 验证码
+    $scope.loadLoginCode = function () {
+        $scope.LogincodeData = {};
+        var sUrl= 'test/checkcode.json';  // Test
+        UtilsService.queryService(sUrl, "get", "").success(function (result) {
+            if (result.msgNo === 10000) {
+                //$scope.LogincodeData = result.data[0];
+                //$ocLazyLoad.load(['mainModule','fileUpload','highcharts','wifiModule','accountModule','vdsModule','adModule','cmsModule']);
+            }
+
+        }).error(function () {
+            console.log('LoadLogincode   failed');
+        });
+    };
+
+    $scope.login = function () {
+        UtilsService.query("/verifyUser", $scope.formData).then(function (result) {
+            //  校验数据中的返回数据的 错误码和提示
+            if (result.msgNo === 10000) {
+              $log.info('Login successed.');
+            //     $window.sessionStorage.systemType = result.data[0].link;
+            //     $window.sessionStorage.accessToken = result.data[0].accesstoken;
+            //     $rootScope.configures.accessToken = result.data[0].accesstoken;
+
+            //     //用户信息存值
+            //     $rootScope.configures.account.role_id = $window.sessionStorage.role_id = parseInt(result.data[0].login_role_id);
+            //     $rootScope.configures.account.hash = $window.sessionStorage.hash = result.data[0].login_hash;
+            //     $rootScope.configures.account.user_id = $window.sessionStorage.user_id = parseInt(result.data[0].login_user_id);
+            //     $rootScope.configures.account.username = $window.sessionStorage.username = result.data[0].login_user_name;
+            //     $rootScope.configures.account.tpl_id = parseInt(result.data[0].login_tpl_id);
+
+            //     $rootScope.configures.username = $window.sessionStorage.topName = $scope.formData.username;
+
+            //     //判断是否irest系统(有无导航模块)
+            //     result.data[0].link != '/'?$rootScope.configures.irest = false:$rootScope.configures.irest = true;
+            //     //成功跳转到 登录后的页面
+            //     if($rootScope.configures.toState) {
+            //         $state.go($rootScope.configures.toState);
+            //     } else {
+            //         $location.url(result.data[0].link);
+
+            //     }
+            } else {
+              $log.info('Login failed.');
+              AlertService.alert('用户名或密码错误');
+            }
+        }, function () {
+            $log.error('Request failed.');
+        });
+    };
 
 }])
 /*============================directives================================*/
@@ -247,10 +305,10 @@ angular.module('iRestApp.basicServer', [])
         query : function (sUrl, sData, sMethod) {
             sMethod ? sMethod : sMethod = "post";
             return $http({
-                method: sMethod,
                 url: sUrl,
                 data: sData,
                 cache: false,
+                method: sMethod,
                 ignoreLoadingBar: false
             });
         },
@@ -258,10 +316,10 @@ angular.module('iRestApp.basicServer', [])
           sMethod ? sMethod : sMethod = "post";
           var deferred = $q.defer(); // 声明延后执行，表示要去监控后面的执行
           $http({
-              method: sMethod,
               url: sUrl,
               data: sData,
               cache: false,
+              method: sMethod,
               ignoreLoadingBar: false
           }).
           success(function(data, status, headers, config) {
@@ -277,13 +335,14 @@ angular.module('iRestApp.basicServer', [])
 /**
  * level: success、info、warning、danger
  */
-.factory('alertService', function($rootScope) {
+.factory('AlertService', function($rootScope) {
     var alertService = {};
 
     // create an array of alerts available globally
     $rootScope.alerts = [];
 
-    alertService.add = function(type, msg) {
+    alertService.alert = function(msg, type) {
+      if (!type) type = 'info';
       $rootScope.alerts.push({'type': type, 'msg': msg, 'close': function(){alertService.closeAlert(this);}});
     };
 
@@ -297,63 +356,99 @@ angular.module('iRestApp.basicServer', [])
 
     return alertService;
   })
-/**
- *
- * 基础拦截器
- *
- * */
-.factory('errorInterceptor', ['$rootScope','$window','$q', '$log' ,function ($rootScope,$window,$q,$log) {
+.factory('SessionService', function($rootScope) {
+    var service = {};
+
+    service.token = "afasfdasfd";
+
+    service.isAnonymus = function() {
+      return false;
+    };
+
+    return service;
+  })
+/******************************************************interceptors*************************************************/
+
+/*全局错误处理*/
+.factory('HttpInterceptor', ['$q', 'AlertService', function ($q, AlertService) {
+  return {
+    request: function(config){
+      return config;
+    },
+    requestError: function(err){
+      return $q.reject(err);
+    },
+    response: function(res){
+      return res;
+    },
+    responseError: function(err){
+      if(-1 === err.status) {
+        AlertService.alert('远程服务器无响应', 'warning');
+        // 或$rootScope.$broadcast
+      } else if(500 === err.status) {
+        // 处理各类自定义错误
+        AlertService.alert('500', 'warning');
+      } else if(501 === err.status) {
+        // ...
+        AlertService.alert('501', 'warning');
+      } else {
+        AlertService.alert('未知系统故障！', 'warning');
+      }
+      return $q.reject(err);
+    }
+  };
+}])
+
+.factory('SessionInjector', ['SessionService', function(SessionService) {
+    var sessionInjector = {
+        request: function(config) {
+            if (!SessionService.isAnonymus()) {
+                config.headers['X-Session-Token'] = SessionService.token;
+            }
+            return config;
+        }
+    };
+    return sessionInjector;
+}])
+/*时间戳*/
+.factory('TimestampMarker', [function() {
+    var timestampMarker = {
+        request: function(config) {
+            config.requestTimestamp = new Date().getTime();
+            return config;
+        },
+        response: function(response) {
+            response.config.responseTimestamp = new Date().getTime();
+            return response;
+        }
+    };
+    return timestampMarker;
+}])
+
+/*全局ajax数据加解密encryption and decryption*/
+.factory('EncryptInterceptor', ['$log' ,function ($log) {
+    return {
+        request: function(config){
+          $log.info('encryption...');
+          return config;
+        },
+        response: function(res){
+          $log.info('decryption...');
+          return res;
+        },
+    };
+}])
+
+/*全局url加前缀*/
+.factory('UrlInterceptor', ['$log' ,function ($log) {
     //定义拦截器(拦截所有请求，修改“../”为域名)
     return {
-        'request': function(request){
-            if (request.url && request.url.substr(0,1) === '/') {
-              $log.info(request.url);
-              request.url = 'http://127.0.0.1:3000/' + request.url;
+        request: function(config){
+            if (config.url && config.url.substr(0,1) === '/') {
+              $log.info('request url:' + config.url);
+              config.url = 'http://127.0.0.1:3000/' + config.url;
             }
-            return request;
-        },
-        'response': function (response) {
-            if(!response.data) return response;
-            //广播post完成事件
-            if(response.config.method == ('POST')) {
-                $rootScope.$broadcast('formPosted',response.config.url);
-            } 
-            var exception = [12001,12002,12003];
-            if(response.data.msgNo){
-                var erroCode = parseInt(response.data.msgNo);
-                var errMsg=response.data.msg;
-            } else
-                var erroCode = 10000;
-
-            switch (erroCode) {
-                case 10000:
-                    if(response.config.method.toUpperCase() == 'DELETE' && response.status == 200)
-                        $rootScope.$broadcast('msgError', 900001);
-                    //else if(response.config.method.toUpperCase() == 'POST' || response.config.method.toUpperCase() == 'PUT')
-                    //    $rootScope.$broadcast('msgError', 900002);
-                    break;
-                case 10005:
-                    $rootScope.$broadcast('relogin');
-                    $rootScope.$broadcast('msgError', erroCode,errMsg);
-
-                    break;
-                case 10006:
-                    $rootScope.$broadcast('relogin');
-                    $rootScope.$broadcast('msgError', erroCode,errMsg);
-
-                    break;
-                case 10007:
-                    $rootScope.$broadcast('relogin');
-                    $rootScope.$broadcast('msgError', erroCode,errMsg);
-
-                    break;
-                default :
-                    if(_.indexOf(exception,erroCode) < 0) {
-                        $rootScope.$broadcast('msgError', erroCode,errMsg);
-                    }
-            };
-            return response;
-
+            return config;
         }
     };
 }])
@@ -395,7 +490,7 @@ function FormDirectiveFactory() {
             UtilsService.querySync('/getDataByCode', {code:$attrs.code}).then(function (data) {
                 $scope.data = data;
             }, function () {
-                $log('Not supported code:', $attrs.code);
+                $log.error('Not supported code:', $attrs.code);
             });
           }
           

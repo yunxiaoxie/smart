@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="iRestApp">
 <head>
 <title>Bootstrap+Angular</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,150 +7,51 @@
 <link href="lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet"/>
 <link href="lib/font-awesome/css/font-awesome.css" rel="stylesheet" />
 <link href="dist/css/main.css" rel="stylesheet" />
+
+<script src="lib/jquery/dist/jquery.js"></script>
+<script src="lib/underscore/underscore.js"></script>
+<script src="lib/angular/angular.js"></script>
+<script src="lib/angular-messages/angular-messages.js"></script>
+<script src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+<script src="lib/angular-i18n/angular-locale_zh-cn.js"></script>
+
+<!-- <script src="lib/public/bootstrap-datetimepicker.js"></script>
+<script src="lib/public/bootstrap-datetimepicker.zh-CN.js"></script> -->
+
+
+<script src="dist/js/main.js"></script>
 </head>
 <body>
 <div class="container">
-    <div ng-controller="LoginCtrl" class="login-container">
-        <div class="login-header">
-            <div class="row">
-                <div class="col-xs-7">
-                    <div class="sign-box">
-                        <div class="logo-sign" login-logo1>
-
-                        </div>
-                    </div>
-
-                </div>
-                <div class="col-xs-5">
-                    <div class="lang-selector-container">
-                        <div class="pull-right" lang-selector></div>
-                        <h5 class="chose_txt"></h5>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!--  contain start  -->
-        <div class="body-container container-fluid" login-bg>
-            <div class="row">
-                <div class="col-sm-7 col-xs-0">
-                    <h2 class="per-sign">
-                    </h2>
-
-                </div>
-                <div class="col-sm-5 col-xs-12">
-
-                    <div class="login-con padd20">
-                        <h4 class="welcome-title">{{'Login_imgclass' | translate}}</h4>
-                        <form method="post" ng-submit="login()" name="loginForm" class="form-horizontal" novalidate>
-                            <div class="form-group input-md has-feedback">
-                                <div class="col-xs-12"  ng-class="{'has-success': loginForm.username.$valid && loginForm.username.$dirty,'has-error':!loginForm.username.$valid && loginForm.username.$dirty}">
-                                    <div class="input-group input-wrapper">
-                                        <span class="input-group-addon"><i class="glyphicon iconfont icon-yonghuming"></i></span>
-                                        <input class="form-control input-md" type="text" name="username" ng-model="formData.username"
-                                               placeholder="{{'Login_uname' | translate}}" required autofocus username-check>
-
-                                    </div>
-                                    <span class="glyphicon glyphicon-ok form-control-feedback"
-                                          ng-show="loginForm.username.$valid && loginForm.username.$dirty"></span>
-                                        <span class="glyphicon glyphicon-remove form-control-feedback"
-                                              ng-show="!loginForm.username.$valid && loginForm.username.$dirty"></span>
-                                    <div class="formErrorMsg" ng-messages="loginForm.username.$dirty && loginForm.username.$error">
-                                        <span class="label label-danger"
-                                              ng-message="required">{{'Login_uname' | translate}}</span>
-                                        <span class="label label-danger"
-                                              ng-message="usernameCheck">{{'Login_name_error' | translate}}</span>
-                                    </div>
-
-
-                                </div>
-
-                            </div>
-
-                            <div class="form-group input-md has-feedback">
-                                <div class="col-xs-12"  ng-class="{'has-success': loginForm.password.$valid && loginForm.password.$dirty,'has-error':!loginForm.password.$valid && loginForm.password.$dirty}">
-                                    <div class="input-group input-wrapper">
-                                        <span class="input-group-addon"><i class="glyphicon iconfont icon-mima"></i></span>
-                                        <input class="form-control" type="password" name="password" ng-model="formData.password"
-                                               placeholder="{{'Login_pwd' | translate}}" password-check required>
-
-                                    </div>
-                                    <span class="glyphicon glyphicon-ok form-control-feedback"
-                                          ng-show="loginForm.password.$valid && loginForm.password.$dirty"></span>
-                                        <span class="glyphicon glyphicon-remove form-control-feedback"
-                                              ng-show="!loginForm.password.$valid && loginForm.password.$dirty"></span>
-                                    <div class="formErrorMsg" ng-messages="loginForm.password.$dirty && loginForm.password.$error">
-                                        <span class="label label-danger"
-                                              ng-message="required">{{'Login_pwd' | translate}}</span>
-                                        <span class="label label-danger"
-                                              ng-message="passwordCheck">{{'Login_password_error' | translate}}</span>
-                                    </div>
-
-                                </div>
-
-                            </div>
-                            <div class="form-group input-md has-feedback">
-                                <div class="col-xs-6"  ng-class="{'has-success': loginForm.checkcode.$valid && loginForm.checkcode.$dirty,'has-error':!loginForm.checkcode.$valid && loginForm.checkcode.$dirty}">
-                                    <div class="input-wrapper">
-                                        <input class="form-control"
-                                               maxlength="4"
-                                               type="text"
-                                               name="checkcode"
-                                               ng-model="formData.checkcode"
-                                               checkcode-check
-                                               placeholder="{{'Login_codelabel' | translate}}"
-                                               required>
-                                    <span class="glyphicon glyphicon-ok form-control-feedback"
-                                          ng-show="loginForm.checkcode.$valid && loginForm.checkcode.$dirty"></span>
-                                    <span class="glyphicon glyphicon-remove form-control-feedback"
-                                          ng-show="!loginForm.checkcode.$valid && loginForm.checkcode.$dirty"></span>
-                                    </div>
-
-
-                                </div>
-
-                                <div class="col-xs-6">
-                                    <img title="{{'Login_code_refresh' | translate}}" ng-click="LoadLogincode()" ng-src="{{LogincodeData.checkcode_stream}}" />
-
-                                </div>
-                                <div class="formErrorMsg col-xs-12" ng-messages="loginForm.checkcode.$dirty && loginForm.checkcode.$error">
-                                    <span class="label label-danger"
-                                          ng-message="required">{{'Msg_pleaseEnter' | translate}}{{'Login_codelabel' | translate}}</span>
-                                    <span class="label label-danger"
-                                          ng-message="checkcodeCheck">{{'Login_code_error' | translate}}</span>
-
-                                </div>
-
-
-                            </div>
-
-                            <div class="form-group form-group-sm">
-                                <div class="col-xs-12">
-                                    <button type="submit" ng-disabled="loginForm.$invalid"
-                                            class="btn btn-sty btn-orange btn-block">
-                                        {{'Login_submit' | translate}}
-                                    </button>
-                                </div>
-                            </div>
-
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!--  contain end  -->
-
-        <!--  foot start  
-        <div class="text-center foot">
-            <div class="container">
-                <p>{{'Login_mode' | translate}}</p>
-                <ul class="login-ic">
-                    <li><a class="iconfont icon-weibo"></a><span>{{'Login_ic_wb' | translate}}</span></li><li><a class="iconfont icon-zhifubaozhifu"></a><span>{{'Login_ic_zfb' | translate}}</span></li><li><a class="iconfont icon-facebook"></a><span>{{'Login_ic_fb' | translate}}</span></li>
-                </ul>
-                <p>{{'P_Copyright_1' | translate}}&nbsp;&nbsp;{{'P_Copyright_2' | translate}}</p>
-            </div>
-        </div>
-          foot end  -->
-    </div>
+    <div uib-alert ng-repeat="alert in alerts" type="{{alert.type}}" close="alert.close()">{{ alert.msg }}</div>
+    <div class="col-md-6 col-md-offset-3 panel panel-default" ng-controller="LoginCtrl">
+        <h1 class="margin-base-vertical">系统登录</h1>
+        <form name="myForm" class="margin-base-vertical" ng-submit="login()" novalidate>
+            <p class="input-group">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                <input type="text" 
+                       class="form-control input-lg" 
+                       name="uname" 
+                       maxlength="10" 
+                       placeholder="用户名" 
+                       ng-model="formData.uname" required />
+            </p>
+            <p class="input-group">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                <input type="password" 
+                       class="form-control input-lg" 
+                       name="pwd" 
+                       maxlength="10" 
+                       placeholder="密码" 
+                       ng-model="formData.pwd" required />
+            </p>
+            <p class="text-center">
+                <button type="submit" class="btn btn-success btn-lg" ng-disabled="myForm.$invalid">登&nbsp;&nbsp;录</button>
+            </p>
+            </span>
+        </form>
+    </div><!-- //main content -->
+ 
 </div><!-- //container -->
 </body>
 </html>
