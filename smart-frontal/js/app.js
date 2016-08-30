@@ -7,6 +7,7 @@
 'use strict';
 angular.module('iRestApp', [
 	'ngMessages',
+	'ui.router',
 	'ui.bootstrap',
 	'iRestApp.basicServer'
 ]);

@@ -40,7 +40,7 @@ angular.module('iRestApp.basicServer', [])
  * 登录与导航块controller
  *
  * */
-.controller('LoginCtrl', ['$scope','$rootScope','$window','UtilsService','$location', '$log', 'AlertService', function ($scope, $rootScope, $window, UtilsService, $location, $log, AlertService) {
+.controller('LoginCtrl', ['$scope','$rootScope','$window','UtilsService','$location', '$log', 'AlertService', '$state', function ($scope, $rootScope, $window, UtilsService, $location, $log, AlertService, $state) {
     // 验证码
     $scope.loadLoginCode = function () {
         $scope.LogincodeData = {};
@@ -49,6 +49,7 @@ angular.module('iRestApp.basicServer', [])
             if (result.msgNo === 10000) {
                 //$scope.LogincodeData = result.data[0];
                 //$ocLazyLoad.load(['mainModule','fileUpload','highcharts','wifiModule','accountModule','vdsModule','adModule','cmsModule']);
+
             }
 
         }).error(function () {
@@ -59,8 +60,10 @@ angular.module('iRestApp.basicServer', [])
     $scope.login = function () {
         UtilsService.query("/verifyUser", $scope.formData).then(function (result) {
             //  校验数据中的返回数据的 错误码和提示
-            if (result.msgNo === 10000) {
+            if (result.data.msgNo === 10000) {
               $log.info('Login successed.');
+              AlertService.clean();
+              $state.go('Main');
             //     $window.sessionStorage.systemType = result.data[0].link;
             //     $window.sessionStorage.accessToken = result.data[0].accesstoken;
             //     $rootScope.configures.accessToken = result.data[0].accesstoken;
@@ -81,7 +84,6 @@ angular.module('iRestApp.basicServer', [])
             //         $state.go($rootScope.configures.toState);
             //     } else {
             //         $location.url(result.data[0].link);
-
             //     }
             } else {
               $log.info('Login failed.');
@@ -335,7 +337,7 @@ angular.module('iRestApp.basicServer', [])
 /**
  * level: success、info、warning、danger
  */
-.factory('AlertService', function($rootScope) {
+.factory('AlertService', ['$rootScope', function($rootScope) {
     var alertService = {};
 
     // create an array of alerts available globally
@@ -354,19 +356,25 @@ angular.module('iRestApp.basicServer', [])
       $rootScope.alerts.splice(index, 1);
     };
 
+    alertService.clean = function() {
+      $rootScope.alerts = [];
+    }
+
     return alertService;
-  })
-.factory('SessionService', function($rootScope) {
+  }])
+.factory('SessionService', ['$rootScope', function($rootScope) {
     var service = {};
 
-    service.token = "afasfdasfd";
+    //service.token = "afasfdasfd";
 
     service.isAnonymus = function() {
+      // 检查用户是否有效。
+      $rootScope.configures.accessToken = service.token = 'afasfdasfd';
       return false;
     };
 
     return service;
-  })
+  }])
 /******************************************************interceptors*************************************************/
 
 /*全局错误处理*/
@@ -403,6 +411,7 @@ angular.module('iRestApp.basicServer', [])
     var sessionInjector = {
         request: function(config) {
             if (!SessionService.isAnonymus()) {
+                // need add this attr into Access-Control-Allow-Headers of server first
                 config.headers['X-Session-Token'] = SessionService.token;
             }
             return config;
@@ -466,13 +475,13 @@ function FormDirectiveFactory() {
       templateUrl: function(el, attrs){
         var type = el[0].localName;
         if (type && type.indexOf('select') !== -1) {
-          return 'html/qk-select.html';
+          return 'html/share/qk-select.html';
         } else if (type && type.indexOf('radio') !== -1) {
-          return 'html/qk-radio.html';
+          return 'html/share/qk-radio.html';
         } else if (type && type.indexOf('checkbox') !== -1) {
-          return 'html/qk-checkbox.html';
+          return 'html/share/qk-checkbox.html';
         } else if (type && type.indexOf('date') !== -1) {
-          return 'html/qk-date-picker.html';
+          return 'html/share/qk-date-picker.html';
         } else {
           $log.error('Not supported type:', type);
           return '';
