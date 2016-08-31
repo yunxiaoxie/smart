@@ -215,13 +215,13 @@ function FormDirectiveFactory() {
       templateUrl: function(el, attrs){
         var type = el[0].localName;
         if (type && type.indexOf('select') !== -1) {
-          return 'html/share/qk-select.html';
+          return 'html/share/widgets/qk-select.html';
         } else if (type && type.indexOf('radio') !== -1) {
-          return 'html/share/qk-radio.html';
+          return 'html/share/widgets/qk-radio.html';
         } else if (type && type.indexOf('checkbox') !== -1) {
-          return 'html/share/qk-checkbox.html';
+          return 'html/share/widgets/qk-checkbox.html';
         } else if (type && type.indexOf('date') !== -1) {
-          return 'html/share/qk-date-picker.html';
+          return 'html/share/widgets/qk-date-picker.html';
         } else {
           $log.error('Not supported type:', type);
           return '';

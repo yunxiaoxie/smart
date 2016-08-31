@@ -3,6 +3,7 @@
 var gulp = require('gulp'),
     connect = require('gulp-connect'),
     sass = require('gulp-sass'),
+    babel = require('gulp-babel'),
     //autoprefixer = require('gulp-autoprefixer'),
     minifycss = require('gulp-clean-css'),
     cssimport = require("gulp-cssimport"),
@@ -71,6 +72,9 @@ gulp.task('sass:compile', ['css:clean'], function() {
 //编译每个非js根目录js文件，便于懒加载.
 gulp.task('js:compile', ['js:compile-main'], function() {
     return gulp.src(['js/**/*.js','!js/*.js'])
+        .pipe(babel({
+          presets: ['es2015']
+        }))
         .pipe(jshint('.jshintrc'))
         .pipe(jshint.reporter('default'))
         //.pipe(concat('main.js'))
