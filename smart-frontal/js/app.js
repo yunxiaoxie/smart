@@ -8,6 +8,7 @@
 angular.module('iRestApp', [
 	'ngMessages',
 	'ui.router',
+	'oc.lazyLoad',
 	'ui.bootstrap',
 	'iRestApp.basicServer'
 ]);

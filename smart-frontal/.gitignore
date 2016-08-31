@@ -1,6 +1,7 @@
 # gitignore
 
 lib/
+dist/
 build/
 target/
 .gradle/

@@ -68,17 +68,28 @@ gulp.task('sass:compile', ['css:clean'], function() {
         .pipe(connect.reload());
 });
 
+//编译每个非js根目录js文件，便于懒加载.
+gulp.task('js:compile', ['js:compile-main'], function() {
+    return gulp.src(['js/**/*.js','!js/*.js'])
+        .pipe(jshint('.jshintrc'))
+        .pipe(jshint.reporter('default'))
+        //.pipe(concat('main.js'))
+        //.pipe(gulp.dest('dist/js'))
+        .pipe(rename({ suffix: '.min' }))
+        .pipe(uglify())
+        .pipe(gulp.dest('dist/js'));
+});
 
-gulp.task('js:compile', ['js:clean'], function() {
-    return gulp.src('js/**/*.js')
+//将js根目录下所有js文件合并为main.js.
+gulp.task('js:compile-main', ['js:clean'], function() {
+    return gulp.src('js/*.js')
         .pipe(jshint('.jshintrc'))
         .pipe(jshint.reporter('default'))
         .pipe(concat('main.js'))
         .pipe(gulp.dest('dist/js'))
         .pipe(rename({ suffix: '.min' }))
         .pipe(uglify())
-        .pipe(gulp.dest('dist/js'))
-        //.pipe(notify({ message: 'Scripts task complete' }));
+        .pipe(gulp.dest('dist/js'));
 });
 
 gulp.task('images', function() {
