@@ -201,6 +201,32 @@ angular.module('iRestApp.mainDirectives', [])
         }
     };
 }])
+/*
+you also could build a plugin like this:
+(function(window, angular, undefined) {
+    'use strict';
+    var module = angular.module('ngHolder', []);
+    module.directive('holder', [ 
+        function() {
+            return {
+              link: function(scope, element, attrs) {
+                if(attrs.holder)
+                  attrs.$set('data-src', attrs.holder);
+                Holder.run({images:element[0]});
+              }
+            };
+        }]);
+})(window, window.angular);
+*/
+.directive('ngHolder', function() {
+    return {
+        restrict: 'A',
+        link: function(scope, element, attrs) {
+            attrs.$set('data-src', attrs.ngHolder);
+            Holder.run({images:element.get(0), nocss:true});
+        }
+    };
+})
 
 /**
  * 表单创建工厂。

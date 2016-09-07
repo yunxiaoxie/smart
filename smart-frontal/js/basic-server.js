@@ -34,7 +34,7 @@ angular.module('iRestApp.basicServer', [])
             if (result.data.msgNo === 10000) {
               $log.info('Login successed.');
               AlertService.clean();
-              $state.go('Main');
+              $state.go('Main.Overview');
             //     $window.sessionStorage.systemType = result.data[0].link;
             //     $window.sessionStorage.accessToken = result.data[0].accesstoken;
             //     $rootScope.configures.accessToken = result.data[0].accesstoken;
@@ -134,14 +134,14 @@ angular.module('iRestApp.basicServer', [])
 
     return alertService;
   }])
-.factory('SessionService', ['$rootScope', function($rootScope) {
+.factory('SessionService', ['$rootScope', '$window', function($rootScope, $window) {
     var service = {};
 
     //service.token = "afasfdasfd";
 
     service.isAnonymus = function() {
       // 检查用户是否有效。
-      $rootScope.configures.accessToken = service.token = 'afasfdasfd';
+      $rootScope.configures.accessToken = service.token = $window.sessionStorage.accessToken= 'afasfdasfd';
       return false;
     };
 

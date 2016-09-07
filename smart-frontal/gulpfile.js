@@ -65,7 +65,7 @@ gulp.task('sass:compile', ['css:clean'], function() {
             processImport: true
         }))
         .pipe(gulp.dest('dist/css'))
-        .pipe(notify({ message: 'Styles task complete' }))
+        //.pipe(notify({ message: 'Styles task complete' }))
         .pipe(connect.reload());
 });
 
@@ -78,7 +78,7 @@ gulp.task('js:compile', ['js:compile-main'], function() {
         .pipe(jshint('.jshintrc'))
         .pipe(jshint.reporter('default'))
         //.pipe(concat('main.js'))
-        //.pipe(gulp.dest('dist/js'))
+        .pipe(gulp.dest('dist/js'))
         .pipe(rename({ suffix: '.min' }))
         .pipe(uglify())
         .pipe(gulp.dest('dist/js'));

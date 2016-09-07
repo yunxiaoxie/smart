@@ -12,7 +12,6 @@ angular.module('iRestApp')
         $stateProvider
             .state('Login', {
                 url: '/Login',
-                templateUrl: 'html/login.html',
                 views: {
                     'rootView': {
                         templateUrl: 'html/login.html'
@@ -21,12 +20,12 @@ angular.module('iRestApp')
             })
             .state('Main', {
                 url: '/Main',
-                templateUrl: 'html/account/main.html',
                 views: {
                     'rootView': {
                         templateUrl: 'html/account/main.html'
                     }
                 },
+                abstract: true,
                 resolve: {
                     loadMyCtrl: ['$ocLazyLoad', function($ocLazyLoad) {
                         return $ocLazyLoad.load(['mainModule']);
@@ -42,6 +41,23 @@ angular.module('iRestApp')
                 }
             })
             
+            /*************************业务模块********************************/
+            .state('Main.Overview', {
+                url: '/Overview',
+                views: {
+                    'contentView': {
+                        templateUrl: 'html/share/module/overview.html'
+                    }
+                }
+            })
+            .state('Main.Reports', {
+                url: '/Reports',
+                views: {
+                    'contentView': {
+                        templateUrl: 'html/share/module/reports.html'
+                    }
+                }
+            })
 
         $urlRouterProvider.otherwise('/Login');   //其他的都转到登录页
     }])

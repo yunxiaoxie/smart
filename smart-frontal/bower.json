@@ -35,7 +35,8 @@
     "font-awesome": "^4.6.3",
     "angular-ui-bootstrap": "^2.0.0",
     "angular-i18n": "^1.5.8",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "holderjs": "^2.9.4"
   },
   "devDependencies": {}
 }
