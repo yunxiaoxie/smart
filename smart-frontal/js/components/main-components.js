@@ -51,14 +51,37 @@
     templateUrl: 'html/share/components/sidebar.html',
     controller: function () {
       this.menu = [{
-        name: "Home",
-        component: "home"
+        id: "001",
+        name: "Overview",
+        state: ".Overview"
       }, {
-        name: "About",
-        component: "about"
+        id: "002",
+        name: "Reports",
+        state: ".Reports"
       }, {
-        name: "Contact",
-        component: "contact"
+        id: "003",
+        name: "Tables",
+        state: ".Tables"
+      }, {
+        id: "004",
+        name: "Trees",
+        state: ".Trees"
+      }, {
+        id: "005",
+        name: "TablePagination",
+        state: ".TablePagination"
+      }, {
+        id: "006",
+        name: "Accordion",
+        state: ".Accordion"
+      }, {
+        id: "007",
+        name: "Dropdowns",
+        state: ".Dropdowns"
+      }, {
+        id: "008",
+        name: "Breadcrumbs",
+        state: ".Breadcrumbs"
       }];
     }
   })

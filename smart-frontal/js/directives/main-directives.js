@@ -71,6 +71,63 @@ angular.module('iRestApp.mainDirectives', [])
         }
     };
 })
+/*============================ztree for angular&ui-router==========================*/
+.directive('qkTree', ['UtilsService', '$log', function(UtilsService, $log) {
+    return {
+        require: '?ngModel',
+        restrict: 'EA',
+        link: function($scope, element, attrs, ngModel) {
+            // for detail info, please open /lib/ztree/api/API_cn.html.
+            var setting = {
+                view: {  
+                    selectedMulti: false,
+                    dblClickExpand: false
+                },
+                data: {
+                    key: {
+                        title: "title",
+                        uiSref:"ui-sref" // for ui-sref
+                    },
+                    simpleData: {
+                        enable: true,
+                        idKey: "id",
+                        pIdKey: "pId",
+                        rootPId: null
+                    }
+                },
+                callback: {
+                    beforeClick:function(treeId, treeNode) {
+                        var zTree = $.fn.zTree.getZTreeObj("tree");// dom id
+                        if (treeNode.isParent) {  
+                            zTree.expandNode(treeNode);  
+                            return false;  
+                        } else {  
+                            //window.location.href=treeNode.url;
+                            alert(treeNode);
+                            return true;  
+                        }  
+                    },
+                    onClick: function(event, treeId, treeNode, clickFlag) {
+                        $scope.$apply(function() {
+                            ngModel.$setViewValue(treeNode);
+                        });
+                    }
+                }
+            };
+            UtilsService.querySync('/getTree').then(function (data) {
+                if (data) {
+                    $.fn.zTree.init(element, setting, data);
+                } else {
+                    $log.info('tree data is empty:', data);
+                }
+            }, function () {
+                $log.error('get tree data error.');
+            });
+        }
+    };
+}])
+
+
 /*============================validation ui directives==========================*/
 //非法字符校验
 .directive('charValid', [function () {
@@ -238,6 +295,7 @@ function FormDirectiveFactory() {
       restrict: 'EA',
       scope: true,
       replace: true,
+      require: "?ngModel",
       templateUrl: function(el, attrs){
         var type = el[0].localName;
         if (type && type.indexOf('select') !== -1) {
@@ -258,6 +316,18 @@ function FormDirectiveFactory() {
         required : '=',
         model: '='                           //for dynamic model.
       },
+      link: function (scope, element, attr, ngModel) {
+        /*
+         *The listener is passed as an array with the new and old values for the watched variables.
+         *$scope.$watchGroup([$attrs.model, $attrs.model2], function(newValue, oldValue){
+         *   $scope.$emit('dateChange3', newValue[0], newValue[1]);
+         *})
+        */
+        // watch form by attr named model
+        scope.$watch(attr.model, function (n) {
+            console.log("form watch:", scope.formData);
+        });
+      },
       controller: ['$scope', '$element', '$attrs', '$log', 'UtilsService', function ($scope, $element, $attrs, $log, UtilsService) {
         // you could get data by $http too.
         this.getData = function() {
@@ -271,6 +341,10 @@ function FormDirectiveFactory() {
           
         };
 
+        this.setDate = function() {
+            this.model = new Date();
+        };
+
         this.format = "yyyy-MM-dd";
         this.popup = {
           opened: false
@@ -278,8 +352,8 @@ function FormDirectiveFactory() {
         this.open = function () {
           this.popup.opened = true;
         };
-        this.disabled = function(date , mode){ 
-          return (mode === 'day' && (date.getDay() === 0 || date.getDay() === 6));
+        this.disabled = function(date , mode) {
+          //return (mode === 'day' && (date.getDay() === 0 || date.getDay() === 6));
         };
       }]
     };

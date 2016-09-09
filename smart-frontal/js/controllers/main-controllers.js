@@ -14,6 +14,8 @@ angular.module('iRestApp.mainControllers', [])
     $scope.slt = item;
   }
 
+  
+
   /**提交表单*/
   $scope.submit = function() {
     $scope.submitted = true;

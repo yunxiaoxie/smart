@@ -58,6 +58,22 @@ angular.module('iRestApp')
                     }
                 }
             })
+            .state('Main.Tables', {
+                url: '/Tables',
+                views: {
+                    'contentView': {
+                        templateUrl: 'html/share/module/table.html'
+                    }
+                }
+            })
+            .state('Main.Trees', {
+                url: '/Trees',
+                views: {
+                    'contentView': {
+                        templateUrl: 'html/share/module/tree.html'
+                    }
+                }
+            })
 
-        $urlRouterProvider.otherwise('/Login');   //其他的都转到登录页
+        $urlRouterProvider.otherwise('/Login');
     }])
