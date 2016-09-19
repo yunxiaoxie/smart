@@ -8,7 +8,7 @@
 
 'use strict';
 angular.module('iRestApp')
-    .run(['$rootScope', '$location', '$state', '$window', function ($rootScope, $location, $state, $window) {
+    .run(['$rootScope', '$location', '$state', '$window', '$injector', function ($rootScope, $location, $state, $window, $injector) {
         //参数配置
         $rootScope.configures = {
             baseUrl: '/',
@@ -79,8 +79,11 @@ angular.module('iRestApp')
                 return;
             }
 
-            ////查看状态配置,有无mac地址要求,如有则检查mac地址是否存在,再做相应操作
-            
+            //当页面切换时，清空alert.
+            var alertService = $injector.get('AlertService');
+            if (alertService) {
+                alertService.clean();
+            }
 
             // 清空mac跳转标记
             

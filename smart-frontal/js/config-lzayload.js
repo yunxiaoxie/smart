@@ -17,7 +17,7 @@ angular.module('iRestApp')
                     name: 'mainModule',
                     files: [
                         'dist/js/components/main-components.min.js',
-                        'dist/js/controllers/main-controllers.min.js',
+                        'dist/js/controllers/main-controllers.js',
                         //'dist/js/services/main-services.min.js',
                         'dist/js/directives/main-directives.js',
                         //'dist/js/filters/main-filters.min.js',

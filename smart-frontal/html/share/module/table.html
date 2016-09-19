@@ -1,10 +1,113 @@
 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-      <h1 class="page-header">Table</h1>
+  <h1 class="page-header">Table&Form</h1>
 
-      <div class="row placeholders">
-        <div class="col-xs-6 col-sm-3 placeholder">
-          <ul id="tree" qk-tree class="ztree" ng-model="formData.selectNode"></ul>
-        </div>
-    </div>
+  <div class="row placeholders">
+    <div class="container" ng-controller="Form2Ctrl">
+		<div qk-alert></div>
+		    <div class="row">
+		        <form class="form-horizontal" name="myForm" method="post" ng-submit="submit()" novalidate>
+		            <div class="form-group">
+		                <label class="control-label col-xs-2">姓名:</label>
+		                <div class="col-xs-2">
+		                    <input type="text" 
+		                       class="form-control" 
+		                       placeholder='姓名'
+		                       name='name'
+		                       char-valid
+		                       minlength="6"
+		                       maxlength="10" 
+		                       ng-model="formData.name" required/>
+		                    <span class="error-messages" ng-show="isShow(myForm.name)" ng-messages="myForm.name.$error">
+		                       <span ng-messages-include="html/share/error-messages.html"></span>
+		                    </span>
+		                </div>
+		                <label class="control-label col-xs-2">性别:</label>
+		                <div class="col-xs-2">
+		                    <qk-select model="formData.sex" code='1002' required='true' />
+		                </div>
+		                <label class="control-label col-xs-2">年龄:</label>
+		                <div class="col-xs-2">
+		                    <input type="number" 
+		                           class="form-control" 
+		                           placeholder="年龄" 
+		                           name="age" 
+		                           ng-pattern="/^([0-9]\d?(\.\d{1,2})?|100)$/"
+		                           ng-model="formData.age" 
+		                           ng-required='false' />
+		                    <span class="error-messages" ng-show=isShow(myForm.age) ng-messages="myForm.age.$error">
+		                      <span ng-messages-include="html/share/error-messages.html"></span>
+		                    </span>
+		                </div>
+		                
+		            </div>
+		            <div class="form-group">
+		                <label class="control-label col-xs-2">地址:</label>
+		                <div class="col-xs-2">
+		                    <input type="text" 
+		                           maxlength="30" 
+		                           my-min-length
+		                           myminlength="5"
+		                           class="form-control" 
+		                           placeholder="证件号码" 
+		                           name="address" 
+		                           ng-model="formData.address" />
+		                    <span class="error-messages" ng-show=isShow(myForm.address) ng-messages="myForm.address.$error">
+		                      <span ng-messages-include="html/share/error-messages.html"></span>
+		                    </span>
+		                </div>
+		                <label class="control-label col-xs-2">出生日期:</label>
+		                <div class="col-xs-2">
+		                    <qk-date-picker model="formData.birthday"  />
+		                </div>
+		                <label class="control-label col-xs-2">是否显示:</label>
+		                <div class="col-xs-2">
+		                    <qk-radio name="display" model="formData.display" code='1003' />
+		                </div>
+		            </div>
+		            <div class="form-group">
+		                <label class="control-label col-xs-2">个人性趣:</label>
+		                <div class="col-xs-2">
+		                    <qk-checkbox model="formData.intrest" code='1004' required='false' />
+		                </div>
+		            </div>
 
-    </div>
+		            <div class="form-group">
+		                <div class="col-xs-offset-2">
+		                    <button type="submit" class="btn btn-primary" ng-disabled="myForm.$invalid" >提交</button>
+		                    <button type="button" class="btn btn-primary" ng-disabled="myForm.$invalid" >重置</button>
+		                </div>
+		            </div>
+		        </form>
+		    </div>
+		    
+		</div><!-- //container -->
+  </div>
+
+  <div class="row placeholders">
+    <div class="table-responsive" ng-controller='TableCtrl'>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>姓名</th>
+              <th>性别</th>
+              <th>年龄</th>
+              <th>地址</th>
+              <th>出生日期</th>
+              <th>个人性趣</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="row in data track by $index">
+              <td>{{row.name}}</td>
+              <td>{{row.sex}}</td>
+              <td>{{row.age}}</td>
+              <td>{{row.address}}</td>
+              <td>{{row.birthday}}</td>
+              <td>{{row.intrest}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+  </div>
+
+</div>

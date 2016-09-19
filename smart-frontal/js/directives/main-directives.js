@@ -6,6 +6,23 @@ angular.module('iRestApp.mainDirectives', [])
 .directive('qkCheckbox', FormDirectiveFactory())
 .directive('qkDatePicker', FormDirectiveFactory())
 
+// test form&table
+.factory('testService', [function() {
+    var service = {};
+    service.data=[];
+    service.add = function(json) {
+      this.data.push(json);
+    };
+    service.clean = function(json) {
+      this.data = [];
+    };
+    service.get = function () {
+        return this.data;
+    }
+
+    return service;
+  }])
+
 /*============================custom ui directives==========================*/
 .directive('timeDuration', function () {  
     var tpl = "<div class='input-inline'> \

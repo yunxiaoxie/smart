@@ -60,7 +60,7 @@
         state: ".Reports"
       }, {
         id: "003",
-        name: "Tables",
+        name: "Table&Form",
         state: ".Tables"
       }, {
         id: "004",

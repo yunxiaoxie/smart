@@ -66,7 +66,15 @@ angular.module('iRestApp.basicServer', [])
     };
 
 }])
-
+/******************************************************directives*************************************************/
+.directive('qkAlert', ['AlertService', function (AlertService) {
+    var tpl = '<div uib-alert ng-repeat="alert in alerts" type="{{alert.type}}" close="alert.close()">{{ alert.msg }}</div>';
+    return {
+        restrict: 'EA',
+        replace: true,
+        template: tpl
+    };
+}])
 
 /******************************************************services*************************************************/
 /**

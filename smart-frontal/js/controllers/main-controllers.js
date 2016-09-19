@@ -8,14 +8,6 @@ angular.module('iRestApp.mainControllers', [])
     return  $scope.submitted || field.$dirty;
   };
 
-  $scope.slt = '请选择';
-  $scope.select = function(item, event) {
-    console.log(item,event);
-    $scope.slt = item;
-  }
-
-  
-
   /**提交表单*/
   $scope.submit = function() {
     $scope.submitted = true;
@@ -29,6 +21,27 @@ angular.module('iRestApp.mainControllers', [])
     });
 
   };
+
+}])
+.controller('Form2Ctrl', ['$scope','testService', 'AlertService', function($scope, testService, AlertService){
+  
+  $scope.isShow = function(field) {
+    return  field.$dirty;
+  };
+
+  $scope.submit = function() {
+    var data = _.clone($scope.formData);
+    testService.add(data);
+    // 通知表格刷新
+    $scope.$emit('submitted', testService.get());
+  };
+
+}])
+.controller('TableCtrl', ['$scope','$rootScope','testService', 'AlertService', function($scope, $rootScope, testService, AlertService){
+  
+  $rootScope.$on('submitted', function(event, data) {
+    $scope.data = data;
+  })
 
 }])
 ;
