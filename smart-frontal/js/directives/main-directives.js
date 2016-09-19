@@ -71,6 +71,47 @@ angular.module('iRestApp.mainDirectives', [])
         }
     };
 })
+.directive('qkSelectUi', function () {  
+    var tpl = "<div class='btn-group' uib-dropdown ng-init='dropdownItems=vm.getData()' ng-model='vm.model'> \
+                     <button id='single-button' type='button' class='btn btn-primary' uib-dropdown-toggle> \
+                         <span ng-bind='vm.view'></span><span class='caret'></span>\
+                     </button>\
+                     <ul class='dropdown-menu' uib-dropdown-menu>\
+                         <li ng-repeat='item in dropdownItems'>\
+                             <a href='' ng-click='vm.select(item, $event)' >{{item.value}}</a>\
+                         </li>\
+                         <li class='divider'></li>\
+                         <li><a href='other'>其他</a></li>\
+                     </ul>\
+                  </div>";
+
+    return {
+        restrict: 'E',
+        template: tpl,
+        //require: 'ngModel',
+        scope: true,
+        controllerAs: 'vm',
+        bindToController: {
+            view : '=',
+            model: '='
+        },
+        link: function(scope, iElement, iAttrs, ngModelCtrl) {
+            
+        },
+        controller: ['$scope', '$element', '$attrs', '$log', 'UtilsService', function ($scope, $element, $attrs, $log, UtilsService) {
+            // you could get data by $http too.
+            this.getData = function() {
+              return [{key:1, value:"第一项"},{key:2,value:"第二项"},{key:3,value:"第三项"}];
+            };
+            this.view = '请选择';
+            this.select = function(item, event) {
+                console.log(item,event);
+                this.model = item.key;
+                this.view = item.value;
+            }
+        }]
+    };
+})
 /*============================ztree for angular&ui-router==========================*/
 .directive('qkTree', ['UtilsService', '$log', function(UtilsService, $log) {
     return {
