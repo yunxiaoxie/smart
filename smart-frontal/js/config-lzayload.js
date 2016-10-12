@@ -20,7 +20,7 @@ angular.module('iRestApp')
                         'dist/js/controllers/main-controllers.js',
                         //'dist/js/services/main-services.min.js',
                         'dist/js/directives/main-directives.js',
-                        //'dist/js/filters/main-filters.min.js',
+                        'dist/js/filters/main-filters.js',
                         'dist/js/interceptors/main-interceptors.min.js'
                     ]
                 },

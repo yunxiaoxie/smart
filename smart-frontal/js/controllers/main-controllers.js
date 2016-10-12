@@ -1,12 +1,12 @@
 /**主业务模块*/
 angular.module('iRestApp.mainControllers', [])
 /**表单示例控制器*/
-.controller('FormCtrl', ['$scope','$filter', '$http', 'UtilsService', 'AlertService', function($scope, $filter, $http, UtilsService, AlertService){
+.controller('FormCtrl', ['$scope','$filter', '$http', 'UtilsService', 'AlertService', '$timeout', function($scope, $filter, $http, UtilsService, AlertService, $timeout){
   var dateFilter = $filter('date');
   $scope.submitted = false;
   $scope.isShow = function(field) {
     return  $scope.submitted || field.$dirty;
-  };
+  }; 
 
   /**提交表单*/
   $scope.submit = function() {

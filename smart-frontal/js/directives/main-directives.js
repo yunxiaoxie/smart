@@ -129,6 +129,50 @@ angular.module('iRestApp.mainDirectives', [])
         }]
     };
 })
+// 必须填一项
+.directive('qkMustOne', function () {  
+    var tpl = '<div class="col-xs-2"> \
+                    <input type="text"  \
+                           class="form-control"  \
+                           ng-required="vm.required" \
+                           name="vm.name1"  \
+                           ng-model="vm.model1" /> \
+                </div> \
+                <div class="col-xs-2"> \
+                    <input type="text"  \
+                           class="form-control"  \
+                           ng-required="vm.required" \
+                           name="vm.name2" \
+                           ng-model="vm.model2" /> \
+                </div>';
+
+    return {
+        restrict: 'E',
+        template: tpl,
+        //require: '^ngModel',
+        scope: true,
+        controllerAs: 'vm',
+        bindToController: {
+            name1 : '=',
+            name2 : '=',
+            model1: '=',
+            model2: '=',
+            required: '='
+        },
+        link: function($scope, $element, $attrs, ctrl) {
+            $scope.$watchGroup([$attrs.model1, $attrs.model2], function(newValue, oldValue){
+                if (ctrl.model1 || ctrl.model2) {
+                    ctrl.required = false;
+                } else {
+                    ctrl.required = true;
+                }
+            })
+        },
+        controller: ['$scope', '$element', '$attrs', function ($scope, $element, $attrs) {
+            // get data from server.
+        }]
+    };
+})
 /*============================ztree for angular&ui-router==========================*/
 .directive('qkTree', ['UtilsService', '$log', function(UtilsService, $log) {
     return {
@@ -211,19 +255,27 @@ angular.module('iRestApp.mainDirectives', [])
 
             ctrl.$validators.noDuplicate = function(modelValue, viewValue) {
               if (scope['formData']) {
-                var list = scope.formData['list'], tmp = [], curname = attr.name;
-                if (list) {
-                  var keys = _.keys(list);
-                  _.each(keys, function(item,idx){
-                    if (item === curname) {
-                      tmp.push(modelValue);
-                    } else {
-                      tmp.push(list[item])
-                    }
-                  });
-                }
+                var list = scope.formData['list'], tmp=[], names=[], curname=attr.name, formName=attr.formName;
+                // Do not get model value to compare, because when validation is false, then model value is undefined.
+                // Otherwise, to get viewValue to compare by element.
+                var inputs = element.parent().parent().find('input');
+                _.each(inputs, function(item,idx){
+                    if ($(item).val()) tmp.push($(item).val());
+                });
+                // get names of input
+                var keys = _.keys(list);
+                _.each(keys, function(item,idx){
+                    names.push(item);
+                });
                 if (tmp.length !== _.uniq(tmp).length) {
+                  // if return false, angular will remove current form value from model, then the model value is undefined.
                   return false;
+                } else {
+                    // if has no duplication, need to clear other errors, rather then current form.
+                    // trigger ng-message directive when clean error.
+                    _.each(_.uniq(names), function(item, idx){
+                        scope[formName][item]['$error'] = {};
+                    });
                 }
               }
               return true;
@@ -231,6 +283,7 @@ angular.module('iRestApp.mainDirectives', [])
         }
     };
 }])
+
 //动态表单不能重复
 .directive('noRepeat',  [function () {
     return {

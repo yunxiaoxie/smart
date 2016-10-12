@@ -142,6 +142,7 @@
                 <div class="col-xs-2">
                     <input type="text" 
                            class="form-control" 
+                           form-name="myForm"
                            name="a" 
                            no-duplicate
                            ng-model="formData.list.a" />
@@ -152,6 +153,7 @@
                 <div class="col-xs-2">
                     <input type="text" 
                            class="form-control" 
+                           form-name="myForm"
                            name="b" 
                            no-duplicate
                            ng-model="formData.list.b" />
@@ -162,6 +164,7 @@
                 <div class="col-xs-2">
                     <input type="text" 
                            class="form-control" 
+                           form-name="myForm"
                            name="c" 
                            no-duplicate
                            ng-model="formData.list.c" />
@@ -169,6 +172,11 @@
                       <span ng-messages-include="html/share/error-messages.html"></span>
                     </span>
                 </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-xs-2">必须填一个:</label>
+                <qk-must-one name1="aa" model1="formData.one.aa" name2="bb" model2="formData.one.bb" required='true'/>
             </div>
 
             <div col-xs-6>
