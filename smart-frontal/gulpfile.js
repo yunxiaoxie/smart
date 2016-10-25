@@ -1,12 +1,28 @@
 'use strict';
+
+/**
+ * 
+ * build html,js,css,font,image to dist and dev dir, they all have md5 suffix.
+ * dist dir: for release.
+ * dev dir: for developer.
+ * 处理后两个目录中文件名相同(not .min)，便于html替换。
+ */
+
 // 载入外挂
 var gulp = require('gulp'),
+    del = require('del'),
     connect = require('gulp-connect'),
+    runSequence = require('run-sequence'),
+    gulpif = require('gulp-if'),
     sass = require('gulp-sass'),
     babel = require('gulp-babel'),
-    //autoprefixer = require('gulp-autoprefixer'),
+    changed = require('gulp-changed'),
+    stylish = require('jshint-stylish'),                             //高亮
+    autoprefixer = require('gulp-autoprefixer'),
+    minifyHtml = require('gulp-minify-html'),                        //html压缩
     minifycss = require('gulp-clean-css'),
     cssimport = require("gulp-cssimport"),
+    csslint = require('gulp-csslint'),
     jshint = require('gulp-jshint'),
     uglify = require('gulp-uglify'),
     imagemin = require('gulp-imagemin'),
@@ -15,9 +31,147 @@ var gulp = require('gulp'),
     concat = require('gulp-concat'),
     notify = require('gulp-notify'),
     cache = require('gulp-cache'),
+    rev = require('gulp-rev'),                                        //加MD5后缀
+    revCollector = require('gulp-rev-collector'),                     //路径替换
     livereload = require('gulp-livereload'),
     group = require('gulp-group-files'),
-    less = require('gulp-less');
+    ;
+
+var cssSrc = ['main.scss'],
+    cssDest = 'dist/css',
+    jsSrc = 'dev/js/*.js',
+    jsDest = 'dist/js',
+    fontSrc = 'dev/fonts/*',
+    fontDest = 'dist/font',
+    imgSrc = 'dev/img/*',
+    imgDest = 'dist/img',
+    cssRevSrc = 'dev/css/revCss',
+    condition = true;
+
+function changePath(basePath){
+    var nowCssSrc = [];
+    for (var i = 0; i < cssSrc.length; i++) {
+        nowCssSrc.push(basePath + '/' + cssSrc[i]);
+    }
+    return nowCssSrc;
+}
+
+//Fonts & Images 根据MD5获取版本号
+gulp.task('revFont', function(){
+    return gulp.src(fontSrc)
+        .pipe(rev())
+        .pipe(gulp.dest(fontDest))
+        .pipe(rev.manifest())
+        .pipe(gulp.dest('src/rev/font'));
+});
+gulp.task('revImg', function(){
+    return gulp.src(imgSrc)
+        .pipe(rev())
+        .pipe(gulp.dest(imgDest))
+        .pipe(rev.manifest())
+        .pipe(gulp.dest('src/rev/img'));
+});
+
+//检测JS
+gulp.task('lintJs', function(){
+    return gulp.src(jsSrc)
+        //.pipe(jscs())   //检测JS风格
+        .pipe(jshint({
+            "undef": false,
+            "unused": false
+        }))
+        //.pipe(jshint.reporter('default'))  //错误默认提示
+        .pipe(jshint.reporter(stylish))   //高亮提示
+        .pipe(jshint.reporter('fail'));
+});
+
+//压缩JS/生成版本号
+gulp.task('miniJs', function(){
+    return gulp.src(jsSrc)
+        .pipe(gulpif(
+            condition, uglify()
+        ))
+        .pipe(rev())
+        .pipe(gulp.dest(jsDest))
+        .pipe(rev.manifest())
+        .pipe(gulp.dest('src/rev/js'));
+});
+
+//CSS里更新引入文件版本号
+gulp.task('revCollectorCss', function () {
+    return gulp.src(['src/rev/**/*.json', 'src/css/*.scss'])
+        .pipe(revCollector())
+        .pipe(gulp.dest(cssRevSrc));
+});
+
+//检测CSS
+gulp.task('lintCss', function(){
+    return gulp.src(cssSrc)
+        .pipe(csslint())
+        .pipe(csslint.reporter())
+        .pipe(csslint.failReporter());
+});
+//压缩/合并CSS/生成版本号
+gulp.task('miniCss', function(){
+    return gulp.src(changePath(cssRevSrc))
+        .pipe(less())
+        .pipe(gulpif(
+            condition, minifyCss({
+                compatibility: 'ie7'
+            })
+        ))
+        .pipe(rev())
+        .pipe(gulpif(
+            condition, changed(cssDest)
+        ))
+        .pipe(autoprefixer({
+            browsers: ['last 2 versions'],
+            cascade: false,
+            remove: false
+        }))
+        .pipe(gulp.dest(cssDest))
+        .pipe(rev.manifest())
+        .pipe(gulp.dest('src/rev/css'));
+});
+//压缩Html/更新引入文件版本
+gulp.task('miniHtml', function () {
+    return gulp.src(['src/rev/**/*.json', 'src/*.html'])
+        .pipe(revCollector())
+        .pipe(gulpif(
+            condition, minifyHtml({
+                empty: true,
+                spare: true,
+                quotes: true
+            })
+        ))
+        .pipe(gulp.dest('dist'));
+});
+gulp.task('delRevCss', function(){
+    del([cssRevSrc, cssRevSrc.replace('src/', 'dist/')]);    
+})
+
+
+//开发构建
+gulp.task('dev', function (done) {
+    condition = false;
+    runSequence(
+         ['revFont', 'revImg'],
+         ['lintJs'],
+         ['revCollectorCss'],
+         ['miniCss', 'miniJs'],
+         ['miniHtml', 'delRevCss'],
+    done);
+});
+//正式构建
+gulp.task('build', function (done) {
+    runSequence(
+         ['revFont', 'revImg'],
+         ['lintJs'],
+         ['revCollectorCss'],
+         ['miniCss', 'miniJs'],
+         ['miniHtml', 'delRevCss'],
+    done);
+});
 
 var sassFiles = {
     "xxx" : {
@@ -42,17 +196,6 @@ gulp.task('sass:watch',function (){
     gulp.watch('**/*.scss',['sass:compile'])
 });
 
-gulp.task('bootstrap', function() {
-    return gulp.src('public/javascripts/lib/bootstrap/less/bootstrap.less')
-        .pipe(less())
-        .pipe(gulp.dest('public/javascripts/lib/bootstrap/dist/css'))
-        .pipe(rename({ suffix: '.min' }))
-        .pipe(minifycss({
-            processImport: true
-        }))
-        .pipe(gulp.dest('public/javascripts/lib/bootstrap/dist/css'))
-        .pipe(notify({ message: 'bootstrap task complete' }));
-});
 
 gulp.task('sass:compile', ['css:clean'], function() {
     return gulp.src('./sass/**/*.scss')
@@ -122,10 +265,6 @@ gulp.task('connect', function () {
     });
 });
 
-gulp.task('js', function () {
-    gulp.src('./**/*.js')
-        .pipe(connect.reload());
-});
 gulp.task('html', function () {
   gulp.src('./**/*.html')
     .pipe(connect.reload());
