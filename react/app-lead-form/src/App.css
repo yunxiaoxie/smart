@@ -1,0 +1,152 @@
+.App {
+  text-align: center; }
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px; }
+
+.App-header {
+  background-color: #222;
+  height: 150px;
+  padding: 20px;
+  color: white; }
+
+.App-intro {
+  font-size: large; }
+
+#leadform-wrapper {
+  font-family: Arial,sans-serif; }
+  #leadform-wrapper.open .leadform-opennote {
+    bottom: -76px; }
+  #leadform-wrapper.open .leadform-note {
+    bottom: 0; }
+  #leadform-wrapper.left .leadform-opennote {
+    left: 10px;
+    right: auto; }
+  #leadform-wrapper.left .leadform-note {
+    left: 0px;
+    right: auto; }
+    #leadform-wrapper.left .leadform-note-inner {
+      left: 10px; }
+    #leadform-wrapper.left .leadform-note-close {
+      right: -17px;
+      left: auto; }
+  #leadform-wrapper .leadform-opennote {
+    padding: 0px 40px 0px 20px;
+    border-radius: 2px;
+    border: none;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 2px;
+    position: fixed;
+    z-index: 99999;
+    cursor: pointer;
+    box-sizing: content-box;
+    right: 10px;
+    bottom: 10px;
+    display: block !important;
+    background-color: #2e9a2c;
+    color: white;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    -ms-transition: all 0.5s ease;
+    transition: all 0.5s ease; }
+    #leadform-wrapper .leadform-opennote-title {
+      line-height: 40px;
+      font-size: 13px; }
+    #leadform-wrapper .leadform-opennote-arrow {
+      z-index: 1;
+      position: absolute;
+      bottom: 18px;
+      right: 17px; }
+      #leadform-wrapper .leadform-opennote-arrow img {
+        display: block; }
+  #leadform-wrapper .leadform-note {
+    position: fixed;
+    display: block;
+    bottom: -405px;
+    right: 0px;
+    left: auto;
+    max-width: 100%;
+    border: none;
+    z-index: 99999;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    -ms-transition: all 0.5s ease;
+    transition: all 0.5s ease; }
+    #leadform-wrapper .leadform-note-inner {
+      width: 350px;
+      border-radius: 2px;
+      border: medium none;
+      line-height: 20px;
+      box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 2px;
+      position: absolute;
+      z-index: 10;
+      padding: 30px;
+      left: auto;
+      top: auto;
+      right: 10px;
+      bottom: 10px;
+      visibility: visible;
+      display: block !important;
+      opacity: 1;
+      background-color: white;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box; }
+    #leadform-wrapper .leadform-note-close {
+      right: auto;
+      top: -17px;
+      left: -17px;
+      bottom: auto;
+      position: absolute;
+      z-index: 999;
+      cursor: pointer;
+      width: 33px;
+      height: 33px; }
+    #leadform-wrapper .leadform-note-title {
+      position: relative;
+      z-index: 10;
+      margin-bottom: 15px;
+      font-family: Arial,sans-serif;
+      font-size: 26px;
+      line-height: normal;
+      text-align: center; }
+    #leadform-wrapper .leadform-note p {
+      margin-bottom: 15px;
+      text-align: center;
+      font-size: 13px;
+      line-height: 20px; }
+      #leadform-wrapper .leadform-note p:last-child {
+        margin-bottom: 0px; }
+    #leadform-wrapper .leadform-note form input {
+      padding: 10px;
+      border-radius: 2px;
+      background-color: white;
+      border: 1px solid #aeaeae;
+      color: #a2a2a2;
+      font-size: 13px;
+      font-family: Arial,sans-serif;
+      font-weight: normal;
+      line-height: 15px;
+      height: 40px;
+      max-width: 100%;
+      width: 100%;
+      outline: none;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box; }
+      #leadform-wrapper .leadform-note form input[type=submit] {
+        height: 40px;
+        border-radius: 2px;
+        background-color: #2e9a2c;
+        border-color: transparent;
+        text-align: center;
+        font-size: 13px;
+        color: #fff;
+        width: 100%;
+        cursor: pointer; }
+    #leadform-wrapper .leadform-note form .leadform-note-form-group {
+      margin-bottom: 10px; }
+      #leadform-wrapper .leadform-note form .leadform-note-form-group:last-child {
+        margin-bottom: 0px; }

@@ -1,0 +1,10 @@
+# dependencies
+lib/
+dist/
+build/
+target/
+.gradle/
+.settings/
+node_modules/
+.project
+.classpath

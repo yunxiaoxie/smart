@@ -7,3 +7,7 @@
 ## 安装工程依赖
 - bower install --install js dependents to local lib dir.
 - npm install --install dependents to local node_modules dir.
+
+## How to run
+- gulp --start web server for dev.
+- gulp xxx --run the tasks of project.
