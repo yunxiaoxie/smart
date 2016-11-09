@@ -48,7 +48,7 @@ angular.module('iRestApp.basicServer', [])
             if (result.data.msgNo === 10000) {
               $log.info('Login successed.');
               AlertService.clean();
-              $state.go('Main');
+              $state.go('Main.Overview');
             //     $window.sessionStorage.systemType = result.data[0].link;
             //     $window.sessionStorage.accessToken = result.data[0].accesstoken;
             //     $rootScope.configures.accessToken = result.data[0].accesstoken;
@@ -80,7 +80,15 @@ angular.module('iRestApp.basicServer', [])
     };
 
 }])
-
+/******************************************************directives*************************************************/
+.directive('qkAlert', ['AlertService', function (AlertService) {
+    var tpl = '<div uib-alert ng-repeat="alert in alerts" type="{{alert.type}}" close="alert.close()">{{ alert.msg }}</div>';
+    return {
+        restrict: 'EA',
+        replace: true,
+        template: tpl
+    };
+}])
 
 /******************************************************services*************************************************/
 /**
@@ -148,14 +156,14 @@ angular.module('iRestApp.basicServer', [])
 
     return alertService;
   }])
-.factory('SessionService', ['$rootScope', function($rootScope) {
+.factory('SessionService', ['$rootScope', '$window', function($rootScope, $window) {
     var service = {};
 
     //service.token = "afasfdasfd";
 
     service.isAnonymus = function() {
       // 检查用户是否有效。
-      $rootScope.configures.accessToken = service.token = 'afasfdasfd';
+      $rootScope.configures.accessToken = service.token = $window.sessionStorage.accessToken= 'afasfdasfd';
       return false;
     };
 
@@ -267,11 +275,12 @@ angular.module('iRestApp')
                 {
                     name: 'mainModule',
                     files: [
-                        'dist/js/controllers/main-controllers.min.js',
-                        //'dist/js/services/main-services.min.js',
-                        'dist/js/directives/main-directives.min.js',
-                        //'dist/js/filters/main-filters.min.js',
-                        'dist/js/interceptors/main-interceptors.min.js'
+                        'js/components/main-components.js',
+                        'js/controllers/main-controllers.js',
+                        //'js/services/main-services.min.js',
+                        'js/directives/main-directives.js',
+                        'js/filters/main-filters.js',
+                        'js/interceptors/main-interceptors.js'
                     ]
                 },
             ]
@@ -292,7 +301,6 @@ angular.module('iRestApp')
         $stateProvider
             .state('Login', {
                 url: '/Login',
-                templateUrl: 'html/login.html',
                 views: {
                     'rootView': {
                         templateUrl: 'html/login.html'
@@ -301,12 +309,12 @@ angular.module('iRestApp')
             })
             .state('Main', {
                 url: '/Main',
-                templateUrl: 'html/account/main.html',
                 views: {
                     'rootView': {
                         templateUrl: 'html/account/main.html'
                     }
                 },
+                abstract: true,
                 resolve: {
                     loadMyCtrl: ['$ocLazyLoad', function($ocLazyLoad) {
                         return $ocLazyLoad.load(['mainModule']);
@@ -322,8 +330,41 @@ angular.module('iRestApp')
                 }
             })
             
+            /*************************业务模块********************************/
+            .state('Main.Overview', {
+                url: '/Overview',
+                views: {
+                    'contentView': {
+                        templateUrl: 'html/share/module/overview.html'
+                    }
+                }
+            })
+            .state('Main.Reports', {
+                url: '/Reports',
+                views: {
+                    'contentView': {
+                        templateUrl: 'html/share/module/reports.html'
+                    }
+                }
+            })
+            .state('Main.Tables', {
+                url: '/Tables',
+                views: {
+                    'contentView': {
+                        templateUrl: 'html/share/module/table.html'
+                    }
+                }
+            })
+            .state('Main.Trees', {
+                url: '/Trees',
+                views: {
+                    'contentView': {
+                        templateUrl: 'html/share/module/tree.html'
+                    }
+                }
+            })
 
-        $urlRouterProvider.otherwise('/Login');   //其他的都转到登录页
+        $urlRouterProvider.otherwise('/Login');
     }])
 
 /**
@@ -378,7 +419,7 @@ angular.module('iRestApp')
 
 'use strict';
 angular.module('iRestApp')
-    .run(['$rootScope', '$location', '$state', '$window', function ($rootScope, $location, $state, $window) {
+    .run(['$rootScope', '$location', '$state', '$window', '$injector', function ($rootScope, $location, $state, $window, $injector) {
         //参数配置
         $rootScope.configures = {
             baseUrl: '/',
@@ -449,8 +490,11 @@ angular.module('iRestApp')
                 return;
             }
 
-            ////查看状态配置,有无mac地址要求,如有则检查mac地址是否存在,再做相应操作
-            
+            //当页面切换时，清空alert.
+            var alertService = $injector.get('AlertService');
+            if (alertService) {
+                alertService.clean();
+            }
 
             // 清空mac跳转标记
             

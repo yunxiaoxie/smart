@@ -16,12 +16,12 @@ angular.module('iRestApp')
                 {
                     name: 'mainModule',
                     files: [
-                        'dist/js/components/main-components.min.js',
-                        'dist/js/controllers/main-controllers.js',
-                        //'dist/js/services/main-services.min.js',
-                        'dist/js/directives/main-directives.js',
-                        'dist/js/filters/main-filters.js',
-                        'dist/js/interceptors/main-interceptors.min.js'
+                        'js/components/main-components.js',
+                        'js/controllers/main-controllers.js',
+                        //'js/services/main-services.min.js',
+                        'js/directives/main-directives.js',
+                        'js/filters/main-filters.js',
+                        'js/interceptors/main-interceptors.js'
                     ]
                 },
             ]

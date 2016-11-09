@@ -1,5 +1,5 @@
 {
-  "directory": "lib",
+  "directory": "dist/lib",
   "analytics": false,
   "timeout": 120000
 

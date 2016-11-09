@@ -34,7 +34,7 @@ var gulp = require('gulp'),
     rev = require('gulp-rev'),                                        //加MD5后缀
     revCollector = require('gulp-rev-collector'),                     //路径替换
     livereload = require('gulp-livereload'),
-    group = require('gulp-group-files'),
+    group = require('gulp-group-files')
     ;
 
 var cssSrc = ['main.scss'],
@@ -134,109 +134,99 @@ gulp.task('miniCss', function(){
         .pipe(gulp.dest('src/rev/css'));
 });
 //压缩Html/更新引入文件版本
-gulp.task('miniHtml', function () {
-    return gulp.src(['src/rev/**/*.json', 'src/*.html'])
-        .pipe(revCollector())
-        .pipe(gulpif(
-            condition, minifyHtml({
-                empty: true,
-                spare: true,
-                quotes: true
-            })
-        ))
-        .pipe(gulp.dest('dist'));
-});
+// gulp.task('miniHtml', function () {
+//     return gulp.src(['src/rev/**/*.json', 'src/*.html'])
+//         .pipe(revCollector())
+//         .pipe(gulpif(
+//             condition, minifyHtml({
+//                 empty: true,
+//                 spare: true,
+//                 quotes: true
+//             })
+//         ))
+//         .pipe(gulp.dest('dist'));
+// });
 gulp.task('delRevCss', function(){
     del([cssRevSrc, cssRevSrc.replace('src/', 'dist/')]);    
 })
 
-
 //开发构建
+//1.任务从左到右执行. 2.若要并行执行，则用[]包括
 gulp.task('dev', function (done) {
     condition = false;
     runSequence(
-         ['revFont', 'revImg'],
-         ['lintJs'],
-         ['revCollectorCss'],
-         ['miniCss', 'miniJs'],
-         ['miniHtml', 'delRevCss'],
+        'html:clean','css:clean','sass:compile',
+        'js:clean','js:compile-sub','js:compile-main',
+        'html:mini',
+        'rev:html','rev:js',
+         //['revFont', 'revImg'],
+         //['lintJs'],
+         //['revCollectorCss'],
+         //['miniCss', 'miniJs'],
+         //['miniHtml', 'delRevCss'],
     done);
 });
 //正式构建
 gulp.task('build', function (done) {
     runSequence(
-         ['revFont', 'revImg'],
-         ['lintJs'],
-         ['revCollectorCss'],
-         ['miniCss', 'miniJs'],
-         ['miniHtml', 'delRevCss'],
+        'html:clean','css:clean','sass:compile',
+        'js:clean','js:compile-sub','js:compile-main',
+        'html:mini',
+        'rev:html','rev:js',
+         //['revFont', 'revImg'],
+         //['lintJs'],
+         //['revCollectorCss'],
+         //['miniCss', 'miniJs'],
+         //['miniHtml', 'delRevCss'],
     done);
 });
 
-var sassFiles = {
-    "xxx" : {
-        src: "./xxx/styles/sass/index.scss",
-        dest: "./xxx/styles/"
-    },
-    "yyy" : {
-        src: "./yyy/styles/sass/index.scss",
-        dest: "./yyy/styles/"
-    }
-};
-
-gulp.task('sass:compile2',function (){
-    return group(sassFiles,function (key,fileset){
-        return gulp.src(fileset.src)
-            .pipe(sass().on('error', sass.logError))
-            .pipe(gulp.dest(fileset.dest));
-    })();
-});
-
-gulp.task('sass:watch',function (){
-    gulp.watch('**/*.scss',['sass:compile'])
-});
-
-
-gulp.task('sass:compile', ['css:clean'], function() {
-    return gulp.src('./sass/**/*.scss')
+// 压缩文件与未压缩文件名一样，便于替换
+gulp.task('sass:compile', function() {
+    return gulp.src('./src/sass/**/*.scss')
         .pipe(sass().on('error', sass.logError))
         .pipe(cssimport())
         .pipe(concat('main.css'))
+        .pipe(gulpif(
+            condition, minifycss({
+                processImport: true,
+                compatibility: 'ie7'
+            })
+        ))
+        .pipe(gulpif(condition, rev()))                                                  //文件名加MD5后缀
         .pipe(gulp.dest('dist/css'))
-        .pipe(rename({suffix: '.min'}))
-        .pipe(minifycss({
-            processImport: true
-        }))
-        .pipe(gulp.dest('dist/css'))
-        //.pipe(notify({ message: 'Styles task complete' }))
+        .pipe(gulpif(condition, rev.manifest({path:'rev-css.json'})))                           //生成一个rev-manifest.json
+        .pipe(gulpif(condition, gulp.dest('./rev')))                //将 rev-manifest.json 保存到 rev 目录内
         .pipe(connect.reload());
 });
 
 //编译每个非js根目录js文件，便于懒加载.
-gulp.task('js:compile', ['js:compile-main'], function() {
-    return gulp.src(['js/**/*.js','!js/*.js'])
+gulp.task('js:compile-sub', function() {
+    return gulp.src(['src/js/**/*.js','!src/js/*.js'])
         .pipe(babel({
           presets: ['es2015']
         }))
         .pipe(jshint('.jshintrc'))
         .pipe(jshint.reporter('default'))
         //.pipe(concat('main.js'))
+        .pipe(gulpif(condition, uglify()))
+        .pipe(gulpif(condition, rev()))
         .pipe(gulp.dest('dist/js'))
-        .pipe(rename({ suffix: '.min' }))
-        .pipe(uglify())
-        .pipe(gulp.dest('dist/js'));
+        .pipe(gulpif(condition, rev.manifest({path:'rev-js-sub.json'})))                            //生成一个rev-manifest.json
+        .pipe(gulpif(condition, gulp.dest('./rev')));
 });
 
 //将js根目录下所有js文件合并为main.js.
-gulp.task('js:compile-main', ['js:clean'], function() {
-    return gulp.src('js/*.js')
+gulp.task('js:compile-main', function() {
+    return gulp.src('src/js/*.js')
         .pipe(jshint('.jshintrc'))
         .pipe(jshint.reporter('default'))
         .pipe(concat('main.js'))
+        .pipe(gulpif(condition, uglify()))
+        .pipe(gulpif(condition, rev()))
         .pipe(gulp.dest('dist/js'))
-        .pipe(rename({ suffix: '.min' }))
-        .pipe(uglify())
-        .pipe(gulp.dest('dist/js'));
+        .pipe(gulpif(condition, rev.manifest({path:'rev-js-main.json'})))
+        .pipe(gulpif(condition, gulp.dest('./rev')));
 });
 
 gulp.task('images', function() {
@@ -254,26 +244,48 @@ gulp.task('js:clean', function() {
     return gulp.src(['dist/js'], {read: false})
         .pipe(clean());
 });
-
+gulp.task('html:clean', function() {
+    return gulp.src(['dist/**/*.html','./rev/*.json'])
+        .pipe(clean());
+});
 
 gulp.task('connect', function () {
     connect.server({
-        root: './',
+        root: './dist/',
         port: 8888,
         host: '127.0.0.1',
         livereload: true
     });
 });
 
-gulp.task('html', function () {
-  gulp.src('./**/*.html')
-    .pipe(connect.reload());
+gulp.task('html:mini', function () {
+  gulp.src('./src/html/**/*.html')
+    .pipe(gulpif(
+            condition, minifyHtml({
+                empty: true,
+                spare: true,
+                quotes: true
+            })
+        ))
+    .pipe(gulp.dest('./dist/html'));
+});
+
+gulp.task('rev:html', function() {
+    gulp.src(['./rev/*.json', './src/index.html'])                  //- 读取 rev-manifest.json并更新引用文件名
+        .pipe(gulpif(condition, revCollector()))                    //- 执行文件内css名的替换
+        .pipe(gulp.dest('./dist/'));                                //- 替换后的文件输出的目录
+});
+
+gulp.task('rev:js', function() {
+    gulp.src(['./rev/*.json', './dist/js/main-*.js'])
+        .pipe(gulpif(condition, revCollector()))
+        .pipe(gulp.dest('./dist/js/'));
 });
  
 gulp.task('watch', function () {
   //gulp.watch('public/javascripts/**/*.js', ['sass:compile']);
-  gulp.watch(['sass/**/*.scss','sass/**/*.css'], ['sass:compile']);
-  gulp.watch(['./*.html'], ['html']);
+  gulp.watch(['src/sass/**/*.scss','src/sass/**/*.css'], ['sass:compile']);
+  gulp.watch(['./src/*.html'], ['html']);
 });
-gulp.task('default',['connect', 'watch']);
+gulp.task('default',['connect']);
 
