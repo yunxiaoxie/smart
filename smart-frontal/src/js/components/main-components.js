@@ -82,6 +82,10 @@
         id: "008",
         name: "Breadcrumbs",
         state: ".Breadcrumbs"
+      },{
+        id: "009",
+        name: "XEditable",
+        state: ".XEditable"
       }];
     }
   })

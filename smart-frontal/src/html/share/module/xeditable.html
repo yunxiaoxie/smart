@@ -1,0 +1,88 @@
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+  <h1 class="page-header">XEditable-Table</h1>
+
+  <div class="row placeholders">
+    <div class="container" ng-controller="XEditTableCtrl">
+		<div qk-alert></div>
+		    <div>
+			  <table class="table table-bordered table-hover table-condensed">
+			    <tr style="font-weight: bold">
+			      <td style="width:35%">Name</td>
+			      <td style="width:20%">Status</td>
+			      <td style="width:20%">Group</td>
+			      <td style="width:25%">Edit</td>
+			    </tr>
+			    <tr ng-repeat="user in users">
+			      <td>
+			        <!-- editable username (text with validation) -->
+			        <span editable-text="user.name" e-name="name" e-form="rowform" e-required onbeforesave="checkName($data, user.id)">
+			          {{ user.name || 'empty' }}
+			        </span>
+			      </td>
+			      <td>
+			      	<a editable-number="some.object" e-step="any">{{some.object || 'Enter Number'}}</a>
+			      </td>
+			      <td>
+			        <!-- editable status (select-local) -->
+			        <span editable-select="user.status" e-name="status" e-form="rowform" e-ng-options="s.value as s.text for s in statuses">
+			          {{ showStatus(user) }}
+			        </span>
+			      </td>
+			      <td>
+			        <!-- editable group (select-remote) -->
+			        <span editable-select="user.group" e-name="group" onshow="loadGroups()" e-form="rowform" e-ng-options="g.id as g.text for g in groups">
+			          {{ showGroup(user) }}
+			        </span>
+			      </td>
+			      <td style="white-space: nowrap">
+			        <!-- form -->
+			        <form editable-form name="rowform" onbeforesave="saveUser($data, user.id)" ng-show="rowform.$visible" class="form-buttons form-inline" shown="inserted == user">
+			          <button type="submit" ng-disabled="rowform.$waiting" class="btn btn-primary">
+			            save
+			          </button>
+			          <button type="button" ng-disabled="rowform.$waiting" ng-click="rowform.$cancel()" class="btn btn-default">
+			            cancel
+			          </button>
+			        </form>
+			        <div class="buttons" ng-show="!rowform.$visible">
+			          <button type="button" class="btn btn-primary" ng-click="rowform.$show()">edit</button>
+			          <button type="button" class="btn btn-danger" ng-click="removeUser($index)">del</button>
+			        </div>  
+			      </td>
+			    </tr>
+			  </table>
+
+			  <button type="button" class="btn btn-default" ng-click="addUser()">Add row</button>
+			</div>
+		    
+		</div><!-- //container -->
+  </div>
+
+  <div class="row placeholders">
+    <div class="table-responsive" ng-controller='TableCtrl'>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>姓名</th>
+              <th>性别</th>
+              <th>年龄</th>
+              <th>地址</th>
+              <th>出生日期</th>
+              <th>是否成人</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="row in data track by $index">
+              <td>{{row.name}}</td>
+              <td>{{row.sex | sexFilter}}</td>
+              <td>{{row.age}}</td>
+              <td>{{row.address}}</td>
+              <td>{{row.birthday}}</td>
+              <td>{{row.display}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+  </div>
+
+</div>

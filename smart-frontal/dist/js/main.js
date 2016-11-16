@@ -363,6 +363,14 @@ angular.module('iRestApp')
                     }
                 }
             })
+            .state('Main.XEditable', {
+                url: '/XEditable',
+                views: {
+                    'contentView': {
+                        templateUrl: 'html/share/module/xeditable.html'
+                    }
+                }
+            })
 
         $urlRouterProvider.otherwise('/Login');
     }])

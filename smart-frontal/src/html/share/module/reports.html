@@ -179,6 +179,14 @@
                 <qk-must-one name1="aa" model1="formData.one.aa" name2="bb" model2="formData.one.bb" required='true'/>
             </div>
 
+            <div class="form-group">
+                <label class="control-label col-xs-2">N级联下拉:</label>
+                <div>
+                  <select multi-level-select source="getProvinces" name="province" ng-model="formData.province" empty="请选择省份"></select>
+                  <select multi-level-select source="getCities" name="city" ng-model="formData.city" empty="请选择城市" dependents="province"></select>
+                </div>
+            </div>
+
             <div col-xs-6>
                 <label class="control-label">自定义控件</label>
             </div>
@@ -199,7 +207,6 @@
                 </div>
             </div>
             <div class="form-group">
-               
               
             </div>
 

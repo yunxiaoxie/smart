@@ -1,6 +1,7 @@
 # gitignore
 
 lib/
+rev/
 dist/
 build/
 target/
