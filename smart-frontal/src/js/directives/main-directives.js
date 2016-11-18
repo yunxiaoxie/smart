@@ -299,7 +299,7 @@ angular.module('iRestApp.mainDirectives', [])
                 data: {
                     key: {
                         title: "title",
-                        uiSref:"ui-sref" // for ui-sref
+                        uiSref:"ui-sref" // for ui-router (ui-sref)
                     },
                     simpleData: {
                         enable: true,
@@ -327,7 +327,7 @@ angular.module('iRestApp.mainDirectives', [])
                     }
                 }
             };
-            UtilsService.querySync('/getTree').then(function (data) {
+            UtilsService.querySync('/dataDic/1006').then(function (data) {
                 if (data) {
                     $.fn.zTree.init(element, setting, data);
                 } else {
@@ -554,7 +554,8 @@ function FormDirectiveFactory() {
         // you could get data by $http too.
         this.getData = function() {
           if ($attrs.code) {
-            UtilsService.querySync('/getDataByCode', {code:$attrs.code}).then(function (data) {
+            var url = '/dataDic/' + $attrs.code;
+            UtilsService.querySync(url, {}).then(function (data) {
                 $scope.data = data;
             }, function () {
                 $log.error('Not supported code:', $attrs.code);

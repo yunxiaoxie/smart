@@ -71,7 +71,7 @@
                 </div>
                 <label class="control-label col-xs-2">是否完成:</label>
                 <div class="col-xs-2">
-                    <qk-radio name="complete" model="formData.complete" code='1005' />
+                    <qk-radio name="complete" model="formData.complete" code='1001' />
                 </div>
                 <label class="control-label col-xs-2">是否显示:</label>
                 <div class="col-xs-2">
@@ -81,7 +81,7 @@
             <div class="form-group">
                 <label class="control-label col-xs-2">科目:</label>
                 <div class="col-xs-2">
-                    <qk-checkbox model="formData.book" code='1006' required='false' />
+                    <qk-checkbox model="formData.book" code='1005' required='false' />
                 </div>
                 <label class="control-label col-xs-2">IP1:</label>
                 <div class="col-xs-2">
@@ -181,9 +181,11 @@
 
             <div class="form-group">
                 <label class="control-label col-xs-2">N级联下拉:</label>
-                <div>
-                  <select multi-level-select source="getProvinces" name="province" ng-model="formData.province" empty="请选择省份"></select>
-                  <select multi-level-select source="getCities" name="city" ng-model="formData.city" empty="请选择城市" dependents="province"></select>
+                <div class="col-md-2">
+                  <select class="form-control" multi-level-select source="getProvinces" name="province" ng-model="formData.province" empty="请选择省份"></select>
+                </div>
+                <div class="col-md-2">
+                  <select class="form-control" multi-level-select source="getCities" name="city" ng-model="formData.city" empty="请选择城市" dependents="province"></select>
                 </div>
             </div>
 

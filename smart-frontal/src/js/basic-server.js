@@ -17,7 +17,7 @@ angular.module('iRestApp.basicServer', [])
         $scope.LogincodeData = {};
         var sUrl= 'test/checkcode.json';  // Test
         UtilsService.queryService(sUrl, "get", "").success(function (result) {
-            if (result.msgNo === 10000) {
+            if (result.code === 10000) {
                 //$scope.LogincodeData = result.data[0];
                 //$ocLazyLoad.load(['mainModule','fileUpload','highcharts','wifiModule','accountModule','vdsModule','adModule','cmsModule']);
 
@@ -29,9 +29,10 @@ angular.module('iRestApp.basicServer', [])
     };
 
     $scope.login = function () {
-        UtilsService.query("/verifyUser", $scope.formData).then(function (result) {
+        var url = "/Login" + "/" + $scope.formData.uname + "/" + $scope.formData.pwd
+        UtilsService.query(url, {}).then(function (result) {
             //  校验数据中的返回数据的 错误码和提示
-            if (result.data.msgNo === 10000) {
+            if (result.data.code === 10000) {
               $log.info('Login successed.');
               AlertService.clean();
               $state.go('Main.Overview');
@@ -80,6 +81,7 @@ angular.module('iRestApp.basicServer', [])
 /**
  *
  * 基础服务
+ * $http.get,$http.head,$http.post,$http.put,$http.delete,$http.jsonp,$http.patch
  *
  * */
 .factory('UtilsService', ['$http', '$q', function($http, $q) {
@@ -111,7 +113,11 @@ angular.module('iRestApp.basicServer', [])
             deferred.reject(data);
           });
           return deferred.promise;
-        }
+        },
+        get: function(url){return $http.get(url); },
+        post: function(url){ return $http.post(url); },
+        put: function(url){ return $http.put(url); },
+        delete: function(url){ return $http.delete(url); },
     }
 }])
 /**
@@ -191,7 +197,7 @@ angular.module('iRestApp.basicServer', [])
     var sessionInjector = {
         request: function(config) {
             if (!SessionService.isAnonymus()) {
-                // need add this attr into Access-Control-Allow-Headers of server first
+                // need to add this attr into Access-Control-Allow-Headers of server first
                 config.headers['X-Session-Token'] = SessionService.token;
             }
             return config;
@@ -235,7 +241,7 @@ angular.module('iRestApp.basicServer', [])
         request: function(config){
             if (config.url && config.url.substr(0,1) === '/') {
               $log.info('request url:' + config.url);
-              config.url = 'http://127.0.0.1:3000/' + config.url;
+              config.url = 'http://127.0.0.1/' + config.url;
             }
             return config;
         }
