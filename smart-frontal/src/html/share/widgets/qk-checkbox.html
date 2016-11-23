@@ -1,12 +1,11 @@
 <div ng-init="vm.getData()">
 <div ng-repeat="tag in data" >
   <label class="checkbox-inline">
-     <input type="checkbox" 
-            id="{{tag.id}}"
-            ng-true-value="{{tag.id}}"
+     <input type="checkbox"
+            ng-true-value="'{{tag.dic_value}}'"
             name="intrest"
-            ng-model="vm.model[tag.model]" />
-     {{ tag.name }}
+            ng-model="vm.model[tag.dic_value]" />
+     {{ tag.comet }}
   </label>
 </div>
 </div>

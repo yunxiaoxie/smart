@@ -129,10 +129,18 @@ angular.module('iRestApp.basicServer', [])
           });
           return deferred.promise;
         },
-        get: function(url){return $http.get(url); },
-        post: function(url){ return $http.post(url); },
-        put: function(url){ return $http.put(url); },
-        delete: function(url){ return $http.delete(url); },
+        get: function(url){
+          return $http.get(url);
+        },
+        post: function(url, data){ 
+          return $http.post(url, data);
+        },
+        put: function(url){
+          return $http.put(url);
+        },
+        delete: function(url){
+          return $http.delete(url);
+        },
     }
 }])
 /**
@@ -176,6 +184,64 @@ angular.module('iRestApp.basicServer', [])
 
     return service;
   }])
+.factory('MapService', [function () {
+    var hashMap = function () {
+        var size = 0,
+            entry = new Object();
+
+        this.put = function (key, value) {
+            if (!this.containsKey(key)) {
+                size++;
+            }
+            entry[key] = value;
+        };
+        this.get = function (key) {
+            if (this.containsKey(key)) {
+                return entry[key];
+            } else {
+                return null;
+            }
+        };
+        this.remove = function (key) {
+            if (delete entry[key]) {
+                size--;
+            }
+        };
+        this.clear = function () {
+            size = 0;
+            entry = new Object();
+        };
+        this.containsKey = function (key) {
+            return (key in entry);
+        };
+        this.containsValue = function (value) {
+            for (var prop in entry) {
+                if (entry[prop] == value) {
+                    return true;
+                }
+            }
+            return false;
+        };
+        this.values = function () {
+            var values = new Array(size);
+            for (var prop in entry) {
+                values.push(entry[prop]);
+            }
+            return values;
+        };
+        this.keys = function () {
+            var keys = new Array(size);
+            for (var prop in entry) {
+                keys.push(prop);
+            }
+            return keys;
+        };
+        this.size = function () {
+            return size;
+        };
+    };
+    return new hashMap();
+}])
 /******************************************************interceptors*************************************************/
 
 /*全局错误处理*/
@@ -284,7 +350,7 @@ angular.module('iRestApp')
                     files: [
                         'js/components/main-components.js',
                         'js/controllers/main-controllers.js',
-                        //'js/services/main-services.min.js',
+                        'js/services/main-services.js',
                         'js/directives/main-directives.js',
                         'js/filters/main-filters.js',
                         'js/interceptors/main-interceptors.js'
@@ -409,7 +475,7 @@ angular.module('iRestApp')
 
         // Disable IE ajax request caching
         $httpProvider.defaults.headers.get['Cache-Control'] = 'no-cache';
-        $httpProvider.defaults.headers.get['Pragma'] = 'no-cache';
+        //$httpProvider.defaults.headers.get['Pragma'] = 'no-cache';
 
 
         //跨域设置
@@ -422,6 +488,9 @@ angular.module('iRestApp')
         $httpProvider.interceptors.push('TimestampMarker');
         $httpProvider.interceptors.push('SessionInjector');
         $httpProvider.interceptors.push('HttpInterceptor');
+
+        //set default content-type
+        $httpProvider.defaults.headers.post = {'Content-Type': 'application/json'};
     }])
 
 /**

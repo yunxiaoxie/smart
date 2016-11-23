@@ -20,6 +20,40 @@ angular.module('iRestApp.mainFilters', [])
             }
         }
     }])
+    .filter("trueFilter", [function(){
+        return function(input){
+            switch (input) {
+                case 'Y':
+                    return "是";
+                    break;
+                case 'N':
+                    return "否";
+                    break;
+            }
+        }
+    }])
+    .filter("selectFilter", ['MapService', function(MapService){
+        return function(input, key){
+            if (input) {
+                var data = MapService.get(key);
+                if (data) {
+                    var result = [];
+                    for (var i=0; i<input.length; i++) {
+                        var obj = _.findWhere(data, {'dic_value':input[i]});
+                        if (obj) {
+                            result.push(obj.comet);
+                        }
+                    }
+                    return result.join(',');
+                } else {
+                    if (input) {
+                        return input.join(',');
+                    }
+                    return input;
+                }
+            }
+        }
+    }])
     .filter("toString", [function(){
         return function(input){
             return input.toString();

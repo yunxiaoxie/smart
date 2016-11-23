@@ -506,6 +506,20 @@ you also could build a plugin like this:
         }
     };
 })
+.directive('editableMultiselect', ['editableDirectiveFactory', function (editableDirectiveFactory) {
+      return editableDirectiveFactory({
+          directiveName: 'editableMultiselect',
+          inputTpl: '<select size="6" multiple></select>',
+          autosubmit: function () {
+              var self = this;
+              self.inputEl.bind('change', function () {
+                  self.scope.$apply(function () {
+                      self.scope.$form.$submit();
+                  });
+              });
+          }             
+      });
+  }])
 
 /**
  * 表单创建工厂。
@@ -581,4 +595,5 @@ function FormDirectiveFactory() {
       }]
     };
   }];
-};
+}
+;

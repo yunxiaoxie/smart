@@ -93,11 +93,74 @@ angular.module('iRestApp.mainControllers', ['xeditable'])
   };
 
 }])
-.controller('TableCtrl', ['$scope','$rootScope','testService', 'AlertService', function($scope, $rootScope, testService, AlertService){
+.controller('TableCtrl', ['$scope','$rootScope','testService', 'UtilsService', 'MyUser', 'MapService', function($scope, $rootScope, testService, UtilsService, MyUser, MapService){
   
-  $rootScope.$on('submitted', function(event, data) {
-    $scope.data = data;
-  })
+  $scope.checkName = function(data, id) {
+    if (id === 2 && data !== 'awesome') {
+      return "Username 2 should be `awesome`";
+    }
+  };
+
+  $scope.showIntrest = function(intrest) {
+    if (intrest && intrest.length>0) {
+      var selected = [], data = intrest.join(',');
+      angular.forEach($scope.intrests, function(s) { 
+        if (data.indexOf(s.dic_value) >= 0) {
+          selected.push(s.comet);
+        }
+      });
+      return selected.length ? selected.join(', ') : 'Not set';
+    }
+  };
+
+  $scope.loadData = function(key, code) {
+    //return $scope.groups.length ? null : $http.get('/groups').success(function(data) {
+      //$scope.groups = data;
+    //});
+    var url = '/dataDic/' + code;
+    UtilsService.querySync(url, {}).then(function (data) {
+        MapService.put(key, data);
+        $scope[key] = data;
+    }, function () {
+        $log.error('Not supported code:', code);
+    });
+  };
+
+  $scope.addUser = function() {
+    var _row = {
+      id: '',
+      name: '',
+      age: '',
+      addr: '' 
+    };
+    $scope.data.push(_row);
+  };
+
+  $scope.saveUser = function(data, id) {
+    //$scope.user not updated yet
+    if (id) {
+      angular.extend(data, {id: id});
+      MyUser.myPut(data);
+    } else {
+      MyUser.myPost(data);
+    }
+    //UtilsService.post('/saveUser',data);
+  };
+
+  // remove user
+  $scope.removeUser = function(index, id) {
+    $scope.data.splice(index, 1);
+    if (id) {
+      MyUser.myDelete({"id":id});
+    }
+  };
+
+  $scope.load = function() {
+    var users = MyUser.myQuery({}, function(result){
+      $scope.data = result;
+    });
+  }
+  $scope.load();
 
 }])
 .controller('XEditTableCtrl', ['$scope','$filter','$http', 'AlertService', function($scope, $filter, $http, AlertService){

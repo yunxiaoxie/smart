@@ -114,10 +114,18 @@ angular.module('iRestApp.basicServer', [])
           });
           return deferred.promise;
         },
-        get: function(url){return $http.get(url); },
-        post: function(url){ return $http.post(url); },
-        put: function(url){ return $http.put(url); },
-        delete: function(url){ return $http.delete(url); },
+        get: function(url){
+          return $http.get(url);
+        },
+        post: function(url, data){ 
+          return $http.post(url, data);
+        },
+        put: function(url){
+          return $http.put(url);
+        },
+        delete: function(url){
+          return $http.delete(url);
+        },
     }
 }])
 /**
@@ -161,6 +169,64 @@ angular.module('iRestApp.basicServer', [])
 
     return service;
   }])
+.factory('MapService', [function () {
+    var hashMap = function () {
+        var size = 0,
+            entry = new Object();
+
+        this.put = function (key, value) {
+            if (!this.containsKey(key)) {
+                size++;
+            }
+            entry[key] = value;
+        };
+        this.get = function (key) {
+            if (this.containsKey(key)) {
+                return entry[key];
+            } else {
+                return null;
+            }
+        };
+        this.remove = function (key) {
+            if (delete entry[key]) {
+                size--;
+            }
+        };
+        this.clear = function () {
+            size = 0;
+            entry = new Object();
+        };
+        this.containsKey = function (key) {
+            return (key in entry);
+        };
+        this.containsValue = function (value) {
+            for (var prop in entry) {
+                if (entry[prop] == value) {
+                    return true;
+                }
+            }
+            return false;
+        };
+        this.values = function () {
+            var values = new Array(size);
+            for (var prop in entry) {
+                values.push(entry[prop]);
+            }
+            return values;
+        };
+        this.keys = function () {
+            var keys = new Array(size);
+            for (var prop in entry) {
+                keys.push(prop);
+            }
+            return keys;
+        };
+        this.size = function () {
+            return size;
+        };
+    };
+    return new hashMap();
+}])
 /******************************************************interceptors*************************************************/
 
 /*全局错误处理*/

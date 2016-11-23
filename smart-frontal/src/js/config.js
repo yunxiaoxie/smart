@@ -25,7 +25,7 @@ angular.module('iRestApp')
 
         // Disable IE ajax request caching
         $httpProvider.defaults.headers.get['Cache-Control'] = 'no-cache';
-        $httpProvider.defaults.headers.get['Pragma'] = 'no-cache';
+        //$httpProvider.defaults.headers.get['Pragma'] = 'no-cache';
 
 
         //跨域设置
@@ -38,4 +38,7 @@ angular.module('iRestApp')
         $httpProvider.interceptors.push('TimestampMarker');
         $httpProvider.interceptors.push('SessionInjector');
         $httpProvider.interceptors.push('HttpInterceptor');
+
+        //set default content-type
+        $httpProvider.defaults.headers.post = {'Content-Type': 'application/json'};
     }])
