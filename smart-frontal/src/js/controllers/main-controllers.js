@@ -101,12 +101,22 @@ angular.module('iRestApp.mainControllers', ['xeditable'])
     }
   };
 
+  $scope.checkAndSubmit = function(obj) {
+    if (!obj.id) {
+      return "Not empty";
+    }
+    if (obj.tel && obj.tel.length != 11) {
+      return "error telephone";
+    }
+    $scope.saveUser2(obj);
+  };
+
   $scope.showIntrest = function(intrest) {
     if (intrest && intrest.length>0) {
       var selected = [], data = intrest.join(',');
       angular.forEach($scope.intrests, function(s) { 
-        if (data.indexOf(s.dic_value) >= 0) {
-          selected.push(s.comet);
+        if (data.indexOf(s.value) >= 0) {
+          selected.push(s.text);
         }
       });
       return selected.length ? selected.join(', ') : 'Not set';
@@ -134,6 +144,16 @@ angular.module('iRestApp.mainControllers', ['xeditable'])
       addr: '' 
     };
     $scope.data.push(_row);
+  };
+
+  $scope.saveUser2 = function(obj) {
+    //$scope.user not updated yet
+    if (obj.id) {
+      MyUser.myPutSelective(obj);
+    } else {
+      MyUser.myPostSelective(obj);
+    }
+    //UtilsService.post('/saveUser',data);
   };
 
   $scope.saveUser = function(data, id) {

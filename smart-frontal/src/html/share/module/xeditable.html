@@ -83,7 +83,7 @@
 		          </span>
               </td>
               <td>
-              	<span editable-select="row.sex" e-name="sex" onshow="loadData('sex','1002')" e-form="rowform" e-ng-options="s.dic_value as s.comet for s in sex">
+              	<span editable-select="row.sex" e-name="sex" onshow="loadData('sex','1002')" e-form="rowform" e-ng-options="s.value as s.text for s in sex">
 		          {{row.sex | sexFilter}}
 		        </span>
               </td>
@@ -99,19 +99,19 @@
               	<span editable-tel="row.tel" e-name="tel" e-form="rowform">{{row.tel}}</span>
               </td>
               <td>
-              	<span editable-select="row.is_adult" e-name="is_adult" onshow="loadData('isadult','1001')" e-form="rowform" e-ng-options="s.dic_value as s.comet for s in isadult">
+              	<span editable-select="row.is_adult" e-name="is_adult" onshow="loadData('isadult','1001')" e-form="rowform" e-ng-options="s.value as s.text for s in isadult">
 		          {{row.is_adult | trueFilter}}
 		        </span>
               </td>
               <td>
-              	<!-- <span editable-checklist="row.intrest" onshow="loadData('intrests','1004')" e-form="rowform" e-ng-options="s.dic_value as s.comet for s in intrests">
+              	<!-- <span editable-checklist="row.intrest" onshow="loadData('intrests','1004')" e-form="rowform" e-ng-options="s.value as s.text for s in intrests">
 	          		{{row.intrest}}
 	            </span> -->
 	            <span ng-init="loadData('intrests','1004')"></span>
-	            <span editable-select="row.intrest" e-name="intrest" e-multiple e-form="rowform" e-ng-options="s.dic_value as s.comet for s in intrests">
+	            <span editable-select="row.intrest" e-name="intrest" e-multiple e-form="rowform" e-ng-options="s.value as s.text for s in intrests">
 	          		{{row.intrest | selectFilter:'intrests'}}
 	            </span>
-	            <!-- <span editable-multiselect="row.intrest" onshow="loadData('intrests','1004')" e-form="rowform" e-ng-options="s.dic_value as s.comet for s in intrests">
+	            <!-- <span editable-multiselect="row.intrest" onshow="loadData('intrests','1004')" e-form="rowform" e-ng-options="s.value as s.text for s in intrests">
                     {{row.intrest}}
                 </span> -->
               </td>
@@ -146,4 +146,95 @@
       </div>
   </div>
 
+  <hr />
+	<div class="table-responsive" ng-controller='TableCtrl'>
+        <table class="table table-striped table-hover table-bordered">
+          <thead>
+            <tr>
+              <th style="width:10%">姓名</th>
+              <th style="width:8%">性别</th>
+              <th style="width:7%">年龄</th>
+              <th style="width:15%">地址</th>
+              <th style="width:10%">电话</th>
+              <th style="width:8%">是否成人</th>
+              <th style="width:10%">兴趣</th>
+              <th style="width:10%">出生日期</th>
+              <th style="width:9%">体重</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="row in data track by $index">
+              <td>
+              	<div class="popover-wrapper">
+	              <a editable-text="row.name" e-name="name" e-required onbeforesave="checkAndSubmit({name:$data, id:row.id})">
+		          	{{ row.name || 'empty' }}
+		          </a>
+		        </div>
+              </td>
+              <td>
+              	<div class="popover-wrapper">
+              	<a editable-select="row.sex" e-name="sex" onshow="loadData('sex','1002')" onbeforesave="checkAndSubmit({sex:$data, id:row.id})" e-ng-options="s.value as s.text for s in sex">
+		          {{(row.sex | sexFilter) || 'empty'}}
+		        </a>
+		        </div>
+              </td>
+              <td>
+              	<div class="popover-wrapper">
+              	<a editable-number="row.age" e-name="age" onbeforesave="checkAndSubmit({age:$data, id:row.id})" >{{row.age || 'empty'}}</a>
+              	</div>
+              </td>
+              <td>
+              	<div class="popover-wrapper">
+              	  <a editable-text="row.addr" e-name="addr" e-required onbeforesave="checkAndSubmit({addr:$data, id:row.id})">
+		          	{{ row.addr || 'empty' }}
+		          </a>
+		        </div>
+              </td>
+              <td>
+              	<div class="popover-wrapper">
+              	<a editable-tel="row.tel" e-name="tel" onbeforesave="checkAndSubmit({tel:$data, id:row.id})">{{row.tel || 'empty'}}</a>
+              	</div>
+              </td>
+              <td>
+              	<div class="popover-wrapper">
+              	<span editable-select="row.is_adult" e-name="is_adult" onshow="loadData('isadult','1001')" onbeforesave="checkAndSubmit({is_adult:$data, id:row.id})" e-ng-options="s.value as s.text for s in isadult">
+		          {{(row.is_adult | trueFilter) || 'empty'}}
+		        </span>
+		        </div>
+              </td>
+              <td>
+              	<!-- <span editable-checklist="row.intrest" onshow="loadData('intrests','1004')" e-form="rowform" e-ng-options="s.value as s.text for s in intrests">
+	          		{{row.intrest}}
+	            </span> -->
+	            <span ng-init="loadData('intrests','1004')"></span>
+	            <div class="popover-wrapper">
+	            <a editable-select="row.intrest" e-name="intrest" e-multiple onbeforesave="checkAndSubmit({intrest:$data, id:row.id})" e-ng-options="s.value as s.text for s in intrests">
+	          		{{(row.intrest | selectFilter:'intrests') || 'empty'}}
+	            </a>
+	            </div>
+	            <!-- <span editable-multiselect="row.intrest" onshow="loadData('intrests','1004')" e-form="rowform" e-ng-options="s.value as s.text for s in intrests">
+                    {{row.intrest}}
+                </span> -->
+              </td>
+              <td>
+              	<div class="popover-wrapper">
+              	<a editable-date="row.birthday" e-name="birthday" onbeforesave="checkAndSubmit({birthday:$data, id:row.id})">{{(row.birthday | date:"yyyy-MM-dd") || 'empty'}}</a>
+              	</div>
+              	<!-- for hidden form item -->
+              	<div ng-hide="true">
+              		<span editable-date="row.create_time" e-name="create_time" ></span>
+              	</div>
+              </td>
+              <td>
+              	<div class="popover-wrapper">
+              	<a editable-number="row.weight" e-name="weight" onbeforesave="checkAndSubmit({weight:$data, id:row.id})">{{row.weight || 'empty'}}</a>
+              	</div>
+              </td>
+              
+            </tr>
+          </tbody>
+        </table>
+        <button type="button" class="btn btn-default" ng-click="addUser()">Add row</button>
+      </div>
+    </div>
 </div>

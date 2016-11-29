@@ -71,10 +71,68 @@ angular.module('iRestApp.mainServices', [])
 				return data;
 			}
 		},
+		myPostSelective: {
+			method: 'POST',
+			isArray: false,
+			url:'/saveUserSelective',
+			headers:{'Content-Type': 'application/json;charset=UTF-8'},
+			transformRequest: function(data){
+				// transform data before request.
+				console.log('transformRequest...');
+				var _data = angular.copy(data);
+				if (_data.intrest && angular.isArray(_data.intrest)) {
+					_data.intrest = _data.intrest.join(',');
+				}
+				// transform date to timestamp
+				if (_data.birthday) {
+					_data.birthday = parseInt(_data.birthday.getTime());
+				}
+				if (_data.create_time) {
+					_data.create_time = parseInt(_data.create_time.getTime());
+				}
+				return angular.toJson(_data);
+			},
+			transformResponse: function(data, header) {
+				// transform data after response.
+				/*angular.forEach(wrapped.items, function(item, idx) {
+					wrapped.items[idx] = new Job(item);
+				});*/
+				return data;
+			}
+		},
 		myPut: {
 			method: 'PUT',
 			isArray: false,
 			url:'/updateUser',
+			headers:{'Content-Type': 'application/json;charset=UTF-8'},
+			transformRequest: function(data){
+				// transform data before request.
+				console.log('transformRequest...');
+				var _data = angular.copy(data);
+				if (_data.intrest && angular.isArray(_data.intrest)) {
+					_data.intrest = _data.intrest.join(',');
+				}
+				// transform date to timestamp
+				if (_data.birthday) {
+					_data.birthday = parseInt(_data.birthday.getTime());
+				}
+				if (_data.create_time) {
+					_data.create_time = parseInt(_data.create_time.getTime());
+				}
+				return angular.toJson(_data);
+			},
+			transformResponse: function(data, header) {
+				// transform data after response.
+				/*angular.forEach(wrapped.items, function(item, idx) {
+					wrapped.items[idx] = new Job(item);
+				});*/
+				return data;
+			}
+		},
+		myPutSelective: {
+			method: 'PUT',
+			isArray: false,
+			url:'/updateUserSelective',
 			headers:{'Content-Type': 'application/json;charset=UTF-8'},
 			transformRequest: function(data){
 				// transform data before request.

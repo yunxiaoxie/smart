@@ -39,9 +39,9 @@ angular.module('iRestApp.mainFilters', [])
                 if (data) {
                     var result = [];
                     for (var i=0; i<input.length; i++) {
-                        var obj = _.findWhere(data, {'dic_value':input[i]});
+                        var obj = _.findWhere(data, {'value':input[i]});
                         if (obj) {
-                            result.push(obj.comet);
+                            result.push(obj.text);
                         }
                     }
                     return result.join(',');
