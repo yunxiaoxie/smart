@@ -82,6 +82,14 @@ angular.module('iRestApp')
                     }
                 }
             })
+            .state('Main.Upload', {
+                url: '/Upload',
+                views: {
+                    'contentView': {
+                        templateUrl: 'html/share/module/upload.html'
+                    }
+                }
+            })
 
         $urlRouterProvider.otherwise('/Login');
     }])

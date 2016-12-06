@@ -86,6 +86,10 @@
         id: "009",
         name: "XEditable",
         state: ".XEditable"
+      },{
+        id: "010",
+        name: "Upload",
+        state: ".Upload"
       }];
     }
   })

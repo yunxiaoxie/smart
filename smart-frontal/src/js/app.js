@@ -9,6 +9,7 @@ angular.module('iRestApp', [
 	'ngMessages',
 	'ngResource',
 	'ui.router',
+	'ngFileUpload',
 	'oc.lazyLoad',
 	'ui.bootstrap',
 	'iRestApp.basicServer'

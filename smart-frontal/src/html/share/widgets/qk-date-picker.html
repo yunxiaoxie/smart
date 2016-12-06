@@ -5,13 +5,13 @@
        class="form-control" 
        ng-click="vm.open()" 
        uib-datepicker-popup
-       format="{{vm.format}}" 
-       ng-model="vm.model" 
+       format="{{::vm.format}}" 
+       ng-model="::vm.model" 
        is-open="vm.popup.opened" 
        ng-disabled="vm.disabled(vm.model)"
        close-text="关闭" 
        clear-text="清空" 
        current-text="今天" 
-       alt-input-formats="altInputFormats" readonly />
+       alt-input-formats="::altInputFormats" readonly />
        <!-- <span ng-click="vm.setDate()" ><a>setDate</a></span> -->
 </div>

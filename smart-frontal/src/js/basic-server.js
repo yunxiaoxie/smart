@@ -105,11 +105,11 @@ angular.module('iRestApp.basicServer', [])
               cache: false,
               method: sMethod,
               ignoreLoadingBar: false
-          }).
-          success(function(data, status, headers, config) {
+          })
+          .success(function(data, status, headers, config) {
             deferred.resolve(data);
-          }).
-          error(function(data, status, headers, config) {
+          })
+          .error(function(data, status, headers, config) {
             deferred.reject(data);
           });
           return deferred.promise;

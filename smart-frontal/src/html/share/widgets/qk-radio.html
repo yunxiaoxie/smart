@@ -1,11 +1,11 @@
-<div ng-init="vm.getData()">
-<span ng-repeat="tag in data">
+<div ng-init="::vm.getData()">
+<span ng-repeat="tag in ::data">
   <label class="radio-inline">
-  <input name="{{vm.name}}" 
+  <input name="{{::vm.name}}" 
          type="radio" 
-         ng-true-value="{{tag.value}}"
-         value="{{tag.value}}" 
-         ng-model="vm.model" 
+         ng-true-value="{{::tag.value}}"
+         value="{{::tag.value}}" 
+         ng-model="::vm.model" 
          />
   {{tag.text}}
 </label>

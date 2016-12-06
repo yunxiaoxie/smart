@@ -9,6 +9,7 @@ angular.module('iRestApp', [
 	'ngMessages',
 	'ngResource',
 	'ui.router',
+	'ngFileUpload',
 	'oc.lazyLoad',
 	'ui.bootstrap',
 	'iRestApp.basicServer'
@@ -120,11 +121,11 @@ angular.module('iRestApp.basicServer', [])
               cache: false,
               method: sMethod,
               ignoreLoadingBar: false
-          }).
-          success(function(data, status, headers, config) {
+          })
+          .success(function(data, status, headers, config) {
             deferred.resolve(data);
-          }).
-          error(function(data, status, headers, config) {
+          })
+          .error(function(data, status, headers, config) {
             deferred.reject(data);
           });
           return deferred.promise;
@@ -444,6 +445,14 @@ angular.module('iRestApp')
                     }
                 }
             })
+            .state('Main.Upload', {
+                url: '/Upload',
+                views: {
+                    'contentView': {
+                        templateUrl: 'html/share/module/upload.html'
+                    }
+                }
+            })
 
         $urlRouterProvider.otherwise('/Login');
     }])
@@ -458,7 +467,7 @@ angular.module('iRestApp')
 
 'use strict';
 angular.module('iRestApp')
-    .config(['$httpProvider', 'uibDatepickerConfig', function ($httpProvider, uibDatepickerConfig) {
+    .config(['$httpProvider', 'uibDatepickerConfig', '$provide', function ($httpProvider, uibDatepickerConfig, $provide) {
         uibDatepickerConfig.showWeeks = false;
 
         //加载进度条
@@ -490,7 +499,20 @@ angular.module('iRestApp')
         $httpProvider.interceptors.push('HttpInterceptor');
 
         //set default content-type
-        $httpProvider.defaults.headers.post = {'Content-Type': 'application/json'};
+        //$httpProvider.defaults.headers.post = {'Content-Type': 'application/json'};
+
+
+        /*
+         * Add $onRootScope method for $rootScope.
+         * $scope销毁时，在它注册的事件均销毁；但$rootScope则不会，使用$onRootScope则会自动清除。
+         */
+        $provide.decorator('$rootScope', ['$delegate', function($delegate){
+            $delegate.constructor.prototype.$onRootScope = function(name, listener){
+                var unsubscribe = $delegate.$on(name, listener);
+                this.$on('$destroy', unsubscribe);
+            };
+            return $delegate;
+        }]);
     }])
 
 /**

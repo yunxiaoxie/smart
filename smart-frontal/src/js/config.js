@@ -8,7 +8,7 @@
 
 'use strict';
 angular.module('iRestApp')
-    .config(['$httpProvider', 'uibDatepickerConfig', function ($httpProvider, uibDatepickerConfig) {
+    .config(['$httpProvider', 'uibDatepickerConfig', '$provide', function ($httpProvider, uibDatepickerConfig, $provide) {
         uibDatepickerConfig.showWeeks = false;
 
         //加载进度条
@@ -40,5 +40,18 @@ angular.module('iRestApp')
         $httpProvider.interceptors.push('HttpInterceptor');
 
         //set default content-type
-        $httpProvider.defaults.headers.post = {'Content-Type': 'application/json'};
+        //$httpProvider.defaults.headers.post = {'Content-Type': 'application/json'};
+
+
+        /*
+         * Add $onRootScope method for $rootScope.
+         * $scope销毁时，在它注册的事件均销毁；但$rootScope则不会，使用$onRootScope则会自动清除。
+         */
+        $provide.decorator('$rootScope', ['$delegate', function($delegate){
+            $delegate.constructor.prototype.$onRootScope = function(name, listener){
+                var unsubscribe = $delegate.$on(name, listener);
+                this.$on('$destroy', unsubscribe);
+            };
+            return $delegate;
+        }]);
     }])

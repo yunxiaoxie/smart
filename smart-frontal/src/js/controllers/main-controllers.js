@@ -4,7 +4,7 @@ angular.module('iRestApp.mainControllers', ['xeditable'])
   editableOptions.theme = 'bs3'; // bootstrap3 theme.
 })
 /**表单示例控制器*/
-.controller('FormCtrl', ['$scope','$filter', '$http', 'UtilsService', 'AlertService', '$timeout', function($scope, $filter, $http, UtilsService, AlertService, $timeout){
+.controller('FormCtrl', ['$scope','$filter', '$http', 'UtilsService', 'AlertService', '$timeout', 'Upload', function($scope, $filter, $http, UtilsService, AlertService, $timeout, Upload){
   var dateFilter = $filter('date');
   $scope.submitted = false;
   $scope.isShow = function(field) {
@@ -78,6 +78,130 @@ angular.module('iRestApp.mainControllers', ['xeditable'])
     });
     return citiesLookup[values.province] || [];
   };
+
+}])
+
+.controller('UploadCtrl', ['$scope','$filter', '$http', 'UtilsService', 'AlertService', '$timeout', 'Upload', function($scope, $filter, $http, UtilsService, AlertService, $timeout, Upload){
+
+  $scope.uploadPic = function(file) {
+    file.upload = Upload.upload({
+      url: '/upload',
+      data: {name: $scope.username, file: file},
+    });
+
+    file.upload.then(function (response) {
+      $timeout(function () {
+        file.result = response.data;
+      });
+    }, function (response) {
+      if (response.status > 0)
+        $scope.errorMsg = response.status + ': ' + response.data;
+    }, function (evt) {
+      // Math.min is to fix IE which reports 200% sometimes
+      file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+    });
+  }
+
+  //使用formData可以减少手动拼接string
+  $scope.uploadPic2 = function(file) {
+    var formData = new FormData();
+    formData.append('name', 'file');
+    formData.append('file', file);    //将文件转成二进制形式
+    $.ajax({
+        type:"post",
+        url:"http://127.0.0.1/upload2",
+        async:false,
+        contentType: false,    //这个一定要写
+        processData: false, //这个也一定要写，不然会报错
+        data:formData,
+        dataType:'text',    //返回类型，有json，text，HTML。这里并没有jsonp格式，所以别妄想能用jsonp做跨域了。
+        success:function(data){
+            console.log(data);
+        },
+        error:function(XMLHttpRequest, textStatus, errorThrown, data){
+            console.log(errorThrown);
+        }
+    });
+  }
+
+  $scope.upload = function () {
+      if (!$scope.data && !$scope.files) {
+          return;
+      }
+      if ($scope.data) {
+        Upload.upload({
+            url: '/upload',
+            data: {name: 'test', file: $scope.data.file},
+        }).success(function (data) {
+            //$scope.hide(data);
+        }).error(function () {
+            //logger.log('error');
+        });
+      }
+      if ($scope.files) {
+        Upload.upload({
+            url: '/upload',
+            data: {name: 'test', file: $scope.files},
+        }).success(function (data) {
+            //logger.log('success');
+        }).error(function () {
+            //logger.log('error');
+        });
+      }
+  };
+
+  $scope.mulImages = [];
+
+  $scope.$watch('files', function () {
+      $scope.selectImage($scope.files);
+  });
+
+  //根据选择的图片来判断 是否为一下子选择了多张
+  //一下子选择多张的数据格式为一个数组中有多个对象，而一次只选择一张的数据格式为一个数组中有一个对象
+  $scope.selectImage = function (files) {
+      if (!files || !files.length) {
+          return;
+      }
+      if (files.length > 1) {
+          angular.forEach(files, function (item) {
+              var image = [];
+              image.push(item);
+              $scope.mulImages.push(image);
+          })
+      } else {
+          $scope.mulImages.push(files);
+      }
+  };
+
+
+  /*
+  无刷新文件下载。
+  Media Types
+  http://www.iana.org/assignments/media-types/media-types.xhtml
+  "type":"text/html","application/octet-binary", image/png
+  */
+  $scope.download = function () {
+        $http.post("/download", {
+            filepath: "d:/images/",
+            filename: "工号.xlsx"
+        }, {responseType: "blob"})
+        .success(function (data, status, headers, config) {
+            var blob = new Blob([data], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+            if (config.data.filename) {
+              var fileName = config.data.filename;
+            } else {
+              var fileName = 'unknow';  
+            }
+            
+            var a = document.createElement("a");
+            document.body.appendChild(a);
+            a.download = fileName;
+            a.href = URL.createObjectURL(blob);
+            a.click();
+        })
+    }
+  
+
 }])
 .controller('Form2Ctrl', ['$scope','testService', 'AlertService', function($scope, testService, AlertService){
   

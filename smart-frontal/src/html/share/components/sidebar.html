@@ -1,7 +1,7 @@
 <div class="col-sm-3 col-md-2 sidebar">
   <ul class="nav nav-sidebar">
-    <li ui-sref-active="active" ng-repeat="menu in $ctrl.menu track by menu.id">
-        <a ui-sref="{{menu.state}}">{{menu.name}}</a>
+    <li ui-sref-active="active" ng-repeat="menu in ::$ctrl.menu track by menu.id">
+        <a ui-sref="{{::menu.state}}">{{::menu.name}}</a>
     </li>
     <!-- <li ui-sref-active="active"><a ui-sref=".Overview">Overview</a></li> -->
   </ul>
