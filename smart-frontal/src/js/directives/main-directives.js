@@ -519,7 +519,22 @@ you also could build a plugin like this:
               });
           }             
       });
-  }])
+}])
+.directive('toroidalProgress', ['$rootScope', function($rootScope) {
+  return {
+    restrict: 'EA',
+    scope: {
+      datainfo: '='
+    },
+    templateUrl: 'html/share/module/toroidalProgress.html',
+    link: function(scope, element, atttr) {
+      scope.$watch('datainfo', function() {
+        scope.percent=parseFloat(scope.datainfo) || 0;
+        scope.deg = 360*scope.percent/100;
+      })
+    }
+  }
+}]);
 
 /**
  * 表单创建工厂。

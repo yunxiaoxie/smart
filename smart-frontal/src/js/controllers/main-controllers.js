@@ -217,6 +217,12 @@ angular.module('iRestApp.mainControllers', ['xeditable'])
   };
 
 }])
+.controller('ToroidalCtrl', ['$scope','testService', 'AlertService', function($scope, testService, AlertService){
+  
+  $scope.percent=33.33;
+
+
+}])
 .controller('TableCtrl', ['$scope','$rootScope','testService', 'UtilsService', 'MyUser', 'MapService', function($scope, $rootScope, testService, UtilsService, MyUser, MapService){
   
   $scope.checkName = function(data, id) {
