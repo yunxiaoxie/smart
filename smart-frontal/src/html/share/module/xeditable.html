@@ -99,8 +99,8 @@
               	<span editable-tel="row.tel" e-name="tel" e-form="rowform">{{row.tel}}</span>
               </td>
               <td>
-              	<span editable-select="row.is_adult" e-name="is_adult" onshow="loadData('isadult','1001')" e-form="rowform" e-ng-options="s.value as s.text for s in isadult">
-		          {{row.is_adult | trueFilter}}
+              	<span editable-select="row.isAdult" e-name="isAdult" onshow="loadData('isAdult','1001')" e-form="rowform" e-ng-options="s.value as s.text for s in isAdult">
+		          {{row.isAdult | trueFilter}}
 		        </span>
               </td>
               <td>
@@ -197,8 +197,8 @@
               </td>
               <td>
               	<div class="popover-wrapper">
-              	<span editable-select="row.is_adult" e-name="is_adult" onshow="loadData('isadult','1001')" onbeforesave="checkAndSubmit({is_adult:$data, id:row.id})" e-ng-options="s.value as s.text for s in isadult">
-		          {{(row.is_adult | trueFilter) || 'empty'}}
+              	<span editable-select="row.isAdult" e-name="isAdult" onshow="loadData('isAdult','1001')" onbeforesave="checkAndSubmit({isAdult:$data, id:row.id})" e-ng-options="s.value as s.text for s in isAdult">
+		          {{(row.isAdult | trueFilter) || 'empty'}}
 		        </span>
 		        </div>
               </td>
