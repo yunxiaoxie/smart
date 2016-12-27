@@ -90,6 +90,10 @@
         id: "010",
         name: "Upload",
         state: ".Upload"
+      },{
+        id: "011",
+        name: "Canvas",
+        state: ".Canvas"
       }];
     }
   })

@@ -453,6 +453,14 @@ angular.module('iRestApp')
                     }
                 }
             })
+            .state('Main.Canvas', {
+                url: '/Canvas',
+                views: {
+                    'contentView': {
+                        templateUrl: 'html/share/module/canvas.html'
+                    }
+                }
+            })
 
         $urlRouterProvider.otherwise('/Login');
     }])

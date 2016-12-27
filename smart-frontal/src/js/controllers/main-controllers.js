@@ -312,6 +312,13 @@ angular.module('iRestApp.mainControllers', ['xeditable'])
   }
   $scope.load();
 
+  $scope.loadForPager = function() {
+    var users = MyUser.myQueryForPager({offset:0, limit: 3}, function(result){
+      $scope.dataPage = result;
+    });
+  }
+  $scope.loadForPager();
+
 }])
 .controller('XEditTableCtrl', ['$scope','$filter','$http', 'AlertService', function($scope, $filter, $http, AlertService){
   
@@ -379,6 +386,11 @@ angular.module('iRestApp.mainControllers', ['xeditable'])
     };
     $scope.users.push($scope.inserted);
   };
+
+}])
+.controller('CanvasCtrl', ['$scope','$http', function($scope, $http){
+  
+  
 
 }])
 ;

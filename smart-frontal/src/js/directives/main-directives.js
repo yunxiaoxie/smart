@@ -534,7 +534,159 @@ you also could build a plugin like this:
       })
     }
   }
-}]);
+}])
+/** 新分页指令*/
+.directive('pageControl', [function() {
+    return {
+        restrict: 'EA',
+        scope: {
+            record: '='
+        },
+        templateUrl: 'html/share/module/page-control.html',
+        controller: ['$window','$rootScope','$scope', function($window, $rootScope, $scope){
+            var setPages = function () {
+                // 提交后更新操作的当前的页面和分页大小
+                if ($scope.record.total && $scope.record.data) {
+                    $scope.pgs = {};
+                    if ($scope.record.total > 0) {
+                        $scope.pgs.currentPg = $scope.record.page.page;
+                        $scope.pgs.currentSize = $rootScope.configures.pageDefaultSize;
+                        $scope.record.page.page > 1 ? $scope.previousPg = $scope.record.page.page - 1 : $scope.previousPg = 1;
+                        $scope.lastPg = Math.ceil($scope.total / $rootScope.configures.pageDefaultSize);
+                        $scope.record.page.page < $scope.lastPg ? $scope.nextPg = $scope.record.page.page + 1 : $scope.nextPg = $scope.lastPg;
+                        // 页面上从开始到那页结尾
+                        $scope.pgFrom = $rootScope.configures.pageDefaultSize * ($scope.record.page.page - 1) + 1;
+                        $scope.pgTo = $rootScope.configures.pageDefaultSize * $scope.record.page.page;
+                        $scope.pgTo > $scope.total ? $scope.pgTo = $scope.total : $scope.pgTo;
+
+                        $scope.jumpList = [];
+                        for (var i = 1; i <= $scope.lastPg; i++) {
+                            $scope.jumpList.push({num: i});
+                        }
+                        //每页可选择的条数
+                        $scope.selectList = [{"num": 3}, {"num": 10}, {"num": 25}, {"num": 50}, {"num": 75}, {"num": 100}];
+
+                    }
+
+                }
+            };
+            $scope.prev = function() {
+                if($scope.pgs.currentPg <= 1) return;
+                $scope.record.page.page -=1;
+            };
+            $scope.next = function() {
+                if($scope.pgs.currentPg >= $scope.lastPg) return;
+                $scope.record.page.page +=1;
+            };
+            $scope.first = function() {
+                if($scope.record.page.page === 1) return;
+                $scope.record.page.page = 1;
+            };
+            $scope.last = function() {
+                if($scope.pgs.currentPg === $scope.lastPg) return;
+                $scope.record.page.page = $scope.lastPg;
+            };
+            $scope.$watch('record.page.page', function(page,last){
+                if(!page) return;
+                if(last === undefined) return;
+                $scope.record.get()
+                    .then(function(data){
+                        setPages()
+                    })
+            });
+
+            $scope.$watch('pgs.currentSize', function(pageSize,lastSize) {
+                if(!pageSize || pageSize === lastSize || !lastSize) return;
+                $window.localStorage.page_size = $rootScope.configures.pageDefaultSize = pageSize;
+                if ($scope.record.page.page === 1){
+                    $scope.record.get()
+                        .then(function(data){
+                                setPages()
+                            })
+                } else {
+                    $scope.record.page.page = 1;
+                }
+            });
+            //监听模型初始化,完成后计算页面
+            $scope.$on('modelInitialized', function(event,param){
+                setPages()
+            })
+
+        }]
+    };
+}])
+
+.directive('myCanvas', ['$compile',  function($compile) {
+    return {
+        restrict: 'EA',
+        controller: ['$scope', '$element', '$attrs', '$parse', function ($scope, $element, $attrs, $parse) {
+          //获得cvs元素相对于浏览器圆点的坐标
+          this.winPos2CvsPos = function(cvs,_x,_y){
+            var _box = cvs.getBoundingClientRect();
+            return {
+              x:_x-_box.left*(cvs.width/_box.width),
+              y:_y-_box.top*(cvs.height/_box.height)
+            }
+          },
+          //画导航线
+          this.drawGuideLines = function(ctx, x, y, w, h){
+            ctx.strokeStyle='lightblue';
+            ctx.lineWidth=1;
+            this.drawVerticalLine(ctx, x, h);
+            this.drawHorizontalLine(ctx, y, w);
+          },
+          //画水平线
+          this.drawHorizontalLine = function(ctx, y, w){
+            ctx.beginPath();
+            ctx.moveTo(0,y+.5);
+            ctx.lineTo(w,y+.5);
+            ctx.stroke();
+          },
+          //画垂直线
+          this.drawVerticalLine = function (ctx, x, h) {
+            ctx.beginPath();
+            ctx.moveTo(x +.5, 0)
+            ctx.lineTo(x +.5, h);
+            ctx.stroke();
+          },
+          //画表
+          this.drawImgSheet = function (ctx, imgsheet) {
+            ctx.drawImage(imgsheet,0,0);
+          },
+          //更新显示结果
+          this.updateReadout = function (x,y, el) {
+            el.innerText = '('+ x.toFixed(0)+','+ y.toFixed(0)+')';
+          },
+          this.saveCoordinate = function(x,y) {
+            alert("("+x+","+y+")");
+          }
+        }],
+        link: function (scope, elem, attrs, ctrl) {
+            var cvs = elem[0],
+                ctx = cvs.getContext("2d"),
+                width = attrs.width,
+                height = attrs.height,
+                imgsheet = new Image(),
+                readoutel = elem.context.nextElementSibling;
+
+            imgsheet.src = "img/canvasbg.jpg";
+            imgsheet.onload = function(){
+              ctrl.drawImgSheet.call(ctrl, ctx, imgsheet);
+            }
+            cvs.onmousemove = function(e){
+              var _loc = ctrl.winPos2CvsPos.call(ctrl, cvs, e.clientX, e.clientY);
+              ctrl.drawImgSheet.call(ctrl, ctx, imgsheet);
+              ctrl.drawGuideLines.call(ctrl, ctx, _loc.x, _loc.y, width, height);
+              ctrl.updateReadout.call(ctrl,_loc.x,_loc.y, readoutel);
+            }
+            cvs.onclick = function(e){
+              var _loc = ctrl.winPos2CvsPos.call(ctrl, cvs, e.clientX, e.clientY);
+              ctrl.saveCoordinate(_loc.x, _loc.y);
+            }
+        }
+    };
+}])
+;
 
 /**
  * 表单创建工厂。

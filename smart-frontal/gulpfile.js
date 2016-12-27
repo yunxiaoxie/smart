@@ -157,7 +157,7 @@ gulp.task('dev', function (done) {
     runSequence(
         'html:clean','css:clean','sass:compile',
         'js:clean','js:compile-sub','js:compile-main',
-        'html:mini',
+        'html:mini','img',
         'rev:html','rev:js',
          //['revFont', 'revImg'],
          //['lintJs'],
@@ -171,7 +171,7 @@ gulp.task('build', function (done) {
     runSequence(
         'html:clean','css:clean','sass:compile',
         'js:clean','js:compile-sub','js:compile-main',
-        'html:mini',
+        'html:mini','img',
         'rev:html','rev:js',
          //['revFont', 'revImg'],
          //['lintJs'],
@@ -229,13 +229,16 @@ gulp.task('js:compile-main', function() {
         .pipe(gulpif(condition, gulp.dest('./rev')));
 });
 
-gulp.task('images', function() {
-    return gulp.src('public/images/**/*')
+gulp.task('img', function() {
+    return gulp.src('src/img/**/*')
         .pipe(cache(imagemin({ optimizationLevel: 3, progressive: true, interlaced: true })))
-        .pipe(gulp.dest('public/dist/images'))
-        .pipe(notify({ message: 'Images task complete' }));
+        .pipe(gulp.dest('dist/img'));
 });
 
+gulp.task('img:clean', function() {
+    return gulp.src(['dist/img'], {read: false})
+        .pipe(clean());
+});
 gulp.task('css:clean', function() {
     return gulp.src(['dist/css'], {read: false})
         .pipe(clean());

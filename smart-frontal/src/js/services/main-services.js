@@ -42,6 +42,37 @@ angular.module('iRestApp.mainServices', [])
 				return wrapped;
 			}
 		},
+		myQueryForPager: {
+			method: 'GET',
+			isArray: false,
+			url:'/getUserForPager',
+			transformRequest: function(data){
+				// transform data before request.
+				console.log('transformRequest...');
+
+			},
+			transformResponse: function(data, header) {
+				// transform data after response.
+				var result = {};
+				var wrapped = angular.fromJson(data);
+				// transform date for angular
+		        _.each(wrapped.data, function(v){
+		          if (v.birthday) {
+		            v.birthday = new Date(v.birthday);
+		          }
+		          if (v.create_time) {
+		            v.create_time = new Date(v.create_time);
+		          }
+		          if (v.intrest) {
+		          	v.intrest = v.intrest.split(',');
+		          }
+		        });
+				/*angular.forEach(wrapped.items, function(item, idx) {
+					wrapped.items[idx] = new Job(item);
+				});*/
+				return wrapped;
+			}
+		},
 		myPost: {
 			method: 'POST',
 			isArray: false,

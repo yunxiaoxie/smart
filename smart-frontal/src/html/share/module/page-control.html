@@ -1,0 +1,14 @@
+<h6 class="page-nav" ng-if="record.total">
+    <span>
+    	每页显示
+        <select ng-options="select.num as select.num for select in selectList" ng-model="pgs.currentSize"></select>
+        &nbsp;条
+    </span>
+    <button class="btn btn-xs btn-strik" ng-disabled="pgs.currentPg==1" ng-click="first()">首页</button>
+    <button class="btn btn-xs btn-strik" ng-disabled="pgs.currentPg==1" ng-click="prev()">上一页</button>
+    <button class="btn btn-xs btn-strik" ng-disabled="pgs.currentPg==lastPg" ng-click="next()">下一页</button>
+    <button class="btn btn-xs btn-strik" ng-disabled="pgs.currentPg==lastPg" ng-click="last()">末页</button>
+    &nbsp;&nbsp;跳转到&nbsp;
+    <select ng-options="spg.num as spg.num for spg in jumpList" ng-model="record.page.page"></select>
+    &nbsp;页，共x页 x条记录。
+</h6>
