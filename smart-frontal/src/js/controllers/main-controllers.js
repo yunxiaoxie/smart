@@ -223,7 +223,7 @@ angular.module('iRestApp.mainControllers', ['xeditable'])
 
 
 }])
-.controller('TableCtrl', ['$scope','$rootScope','testService', 'UtilsService', 'MyUser', 'MapService', function($scope, $rootScope, testService, UtilsService, MyUser, MapService){
+.controller('TableCtrl', ['$scope','$rootScope','$timeout', 'UtilsService', 'MyUser', 'MapService', function($scope, $rootScope, $timeout, UtilsService, MyUser, MapService){
   
   $scope.checkName = function(data, id) {
     if (id === 2 && data !== 'awesome') {
@@ -313,9 +313,12 @@ angular.module('iRestApp.mainControllers', ['xeditable'])
   $scope.load();
 
   $scope.loadForPager = function() {
-    var users = MyUser.myQueryForPager({offset:0, limit: 3}, function(result){
+    var users = MyUser.myQueryForPager({pageNo:1, pageSize: 3}, function(result){
       $scope.dataPage = result;
-    });
+      $timeout(function(){
+        $rootScope.$broadcast('modelInitialized', this);
+      },500);
+  });
   }
   $scope.loadForPager();
 
@@ -390,7 +393,7 @@ angular.module('iRestApp.mainControllers', ['xeditable'])
 }])
 .controller('CanvasCtrl', ['$scope','$http', function($scope, $http){
   
-  
+
 
 }])
 ;

@@ -536,87 +536,95 @@ you also could build a plugin like this:
   }
 }])
 /** 新分页指令*/
-.directive('pageControl', [function() {
+.directive('pageControl', ['MyUser', function(MyUser) {
     return {
         restrict: 'EA',
         scope: {
             record: '='
         },
         templateUrl: 'html/share/module/page-control.html',
-        controller: ['$window','$rootScope','$scope', function($window, $rootScope, $scope){
-            var setPages = function () {
+        controller: ['$window','$rootScope','$scope', '$timeout', function($window, $rootScope, $scope, $timeout){
+            var setPages = function (changedPageSize) {
                 // 提交后更新操作的当前的页面和分页大小
-                if ($scope.record.total && $scope.record.data) {
+                var dataPage = $scope.$parent.dataPage;
+                if (dataPage && dataPage.totalRecord && dataPage.data) {
                     $scope.pgs = {};
-                    if ($scope.record.total > 0) {
-                        $scope.pgs.currentPg = $scope.record.page.page;
-                        $scope.pgs.currentSize = $rootScope.configures.pageDefaultSize;
-                        $scope.record.page.page > 1 ? $scope.previousPg = $scope.record.page.page - 1 : $scope.previousPg = 1;
-                        $scope.lastPg = Math.ceil($scope.total / $rootScope.configures.pageDefaultSize);
-                        $scope.record.page.page < $scope.lastPg ? $scope.nextPg = $scope.record.page.page + 1 : $scope.nextPg = $scope.lastPg;
-                        // 页面上从开始到那页结尾
-                        $scope.pgFrom = $rootScope.configures.pageDefaultSize * ($scope.record.page.page - 1) + 1;
-                        $scope.pgTo = $rootScope.configures.pageDefaultSize * $scope.record.page.page;
-                        $scope.pgTo > $scope.total ? $scope.pgTo = $scope.total : $scope.pgTo;
+                    $scope.pgs.currentPg = dataPage.pageNo;
+                    // only for watch
+                    $scope.pgs.pageNo = dataPage.pageNo;
+                    $scope.pgs.currentSize = changedPageSize || 3;
+                    $scope.pgs.pageSize = $scope.$parent.dataPage.pageSize;
+                    //$scope.record.page.page > 1 ? $scope.previousPg = $scope.record.page.page - 1 : $scope.previousPg = 1;
+                    $scope.lastPg = dataPage.totalPage;
+                    //$scope.record.page.page < $scope.lastPg ? $scope.nextPg = $scope.record.page.page + 1 : $scope.nextPg = $scope.lastPg;
+                    // 页面上从开始到那页结尾
+                    //$scope.pgFrom = $rootScope.configures.pageDefaultSize * ($scope.record.page.page - 1) + 1;
+                    //$scope.pgTo = $rootScope.configures.pageDefaultSize * $scope.record.page.page;
+                    //$scope.pgTo > $scope.total ? $scope.pgTo = $scope.total : $scope.pgTo;
 
-                        $scope.jumpList = [];
-                        for (var i = 1; i <= $scope.lastPg; i++) {
-                            $scope.jumpList.push({num: i});
-                        }
-                        //每页可选择的条数
-                        $scope.selectList = [{"num": 3}, {"num": 10}, {"num": 25}, {"num": 50}, {"num": 75}, {"num": 100}];
-
+                    $scope.jumpList = [];
+                    for (var i = 1; i <= $scope.lastPg; i++) {
+                        $scope.jumpList.push({num: i});
                     }
+                    //每页可选择的条数
+                    $scope.selectList = [{"num": 3}, {"num": 10}, {"num": 25}, {"num": 50}, {"num": 75}, {"num": 100}];
 
                 }
             };
+            $scope.first = function() {
+                if($scope.pgs.currentPg === 1) return;
+                $scope.pgs.currentPg = 1;
+            };
             $scope.prev = function() {
-                if($scope.pgs.currentPg <= 1) return;
-                $scope.record.page.page -=1;
+                if($scope.pgs.currentPg === 1) return;
+                $scope.pgs.currentPg -=1;
             };
             $scope.next = function() {
                 if($scope.pgs.currentPg >= $scope.lastPg) return;
-                $scope.record.page.page +=1;
-            };
-            $scope.first = function() {
-                if($scope.record.page.page === 1) return;
-                $scope.record.page.page = 1;
+                $scope.pgs.currentPg +=1;
             };
             $scope.last = function() {
                 if($scope.pgs.currentPg === $scope.lastPg) return;
-                $scope.record.page.page = $scope.lastPg;
+                $scope.pgs.currentPg = $scope.lastPg;
             };
-            $scope.$watch('record.page.page', function(page,last){
-                if(!page) return;
-                if(last === undefined) return;
-                $scope.record.get()
-                    .then(function(data){
-                        setPages()
-                    })
+            $scope.$watch('pgs.currentPg', function(newValue, oldValue){
+              if (newValue) {
+                MyUser.myQueryForPager({pageNo:newValue, pageSize:$scope.pgs.pageSize}, function(result){
+                    $scope.$parent.dataPage = result;
+                });
+              }
+            });
+            $scope.$watch('pgs.pageNo', function(newValue, oldValue){
+              if (newValue) {
+                $scope.pgs.currentPg = newValue;
+              }
             });
 
-            $scope.$watch('pgs.currentSize', function(pageSize,lastSize) {
-                if(!pageSize || pageSize === lastSize || !lastSize) return;
-                $window.localStorage.page_size = $rootScope.configures.pageDefaultSize = pageSize;
-                if ($scope.record.page.page === 1){
-                    $scope.record.get()
-                        .then(function(data){
-                                setPages()
-                            })
+            $scope.$watch('pgs.currentSize', function(newValue, oldValue) {
+              if (newValue) {
+                if ($scope.pgs.currentPg === 1){
+                  MyUser.myQueryForPager({pageNo:1, pageSize:newValue}, function(result){
+                    $scope.$parent.dataPage = result;
+                    $timeout(function(){
+                      setPages(newValue);
+                    },500);
+                  });
                 } else {
-                    $scope.record.page.page = 1;
+                  $scope.pgs.pageSize = newValue;
+                  $scope.pgs.currentPg = 1;
                 }
+              }
             });
             //监听模型初始化,完成后计算页面
             $scope.$on('modelInitialized', function(event,param){
-                setPages()
+                setPages();
             })
 
         }]
     };
 }])
 
-.directive('myCanvas', ['$compile',  function($compile) {
+.directive('myCanvas', [function() {
     return {
         restrict: 'EA',
         controller: ['$scope', '$element', '$attrs', '$parse', function ($scope, $element, $attrs, $parse) {
@@ -657,8 +665,48 @@ you also could build a plugin like this:
           this.updateReadout = function (x,y, el) {
             el.innerText = '('+ x.toFixed(0)+','+ y.toFixed(0)+')';
           },
-          this.saveCoordinate = function(x,y) {
-            alert("("+x+","+y+")");
+          this.lines=[];
+          this.drawLine = function(ctx) {
+            ctx.beginPath();
+            var self = this;
+            _.each(this.lines, function(line) {
+              _.each(line.points, function(p, i) {
+                if (i == 0) {
+                  ctx.moveTo(p.x, p.y);
+                }
+                ctx.lineTo(p.x, p.y);
+              })
+            })
+            ctx.stroke();
+          },
+          this.createLine = function(ctx,point) {
+            if (this.hasNotActiveTrue()) {
+              var line = {active: true, points: []}
+              line.points.push(point);
+              this.lines.push(line);
+            } else {
+              _.each(this.lines, function(line) {
+                if (line.active) {
+                  if (Math.abs(point.x - line.points[0].x) <= 5 && Math.abs(point.y - line.points[0].y) <= 5) {
+                    line.points.push(point);
+                    ctx.closePath();
+                    ctx.stroke();
+                    line.active = false;
+                  } else {
+                    line.points.push(point);
+                  }
+                }
+              })
+            }
+          },
+          this.hasNotActiveTrue = function(){
+            var result = true;
+            _.each(this.lines, function(line){
+              if (line.active) {
+                result = false;
+              }
+            });
+            return result;
           }
         }],
         link: function (scope, elem, attrs, ctrl) {
@@ -678,14 +726,18 @@ you also could build a plugin like this:
               ctrl.drawImgSheet.call(ctrl, ctx, imgsheet);
               ctrl.drawGuideLines.call(ctrl, ctx, _loc.x, _loc.y, width, height);
               ctrl.updateReadout.call(ctrl,_loc.x,_loc.y, readoutel);
+              ctrl.drawLine(ctx);
             }
             cvs.onclick = function(e){
               var _loc = ctrl.winPos2CvsPos.call(ctrl, cvs, e.clientX, e.clientY);
-              ctrl.saveCoordinate(_loc.x, _loc.y);
+              ctrl.createLine(ctx, {x:_loc.x.toFixed(0), y:_loc.y.toFixed(0)});
+              ctrl.drawLine(ctx);
+
             }
         }
     };
 }])
+
 ;
 
 /**

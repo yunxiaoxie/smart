@@ -1,4 +1,4 @@
-<h6 class="page-nav" ng-if="record.total">
+<h6 class="page-nav" ng-if="record.totalRecord">
     <span>
     	每页显示
         <select ng-options="select.num as select.num for select in selectList" ng-model="pgs.currentSize"></select>
@@ -9,6 +9,6 @@
     <button class="btn btn-xs btn-strik" ng-disabled="pgs.currentPg==lastPg" ng-click="next()">下一页</button>
     <button class="btn btn-xs btn-strik" ng-disabled="pgs.currentPg==lastPg" ng-click="last()">末页</button>
     &nbsp;&nbsp;跳转到&nbsp;
-    <select ng-options="spg.num as spg.num for spg in jumpList" ng-model="record.page.page"></select>
-    &nbsp;页，共x页 x条记录。
+    <select ng-options="spg.num as spg.num for spg in jumpList" ng-model="pgs.pageNo"></select>
+    &nbsp;页，共{{record.totalPage}}页 {{record.totalRecord}}条记录。
 </h6>
