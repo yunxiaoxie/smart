@@ -68,8 +68,8 @@
         state: ".Trees"
       }, {
         id: "005",
-        name: "TablePagination",
-        state: ".TablePagination"
+        name: "GlobalException",
+        state: ".GlobalException"
       }, {
         id: "006",
         name: "Accordion",

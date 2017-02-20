@@ -212,3 +212,13 @@ body {
   vertical-align: middle;
 }
 /*环形进度条 end*/
+
+/*for canvas*/
+#myCanvas {
+  position:absolute;z-index:1
+}
+#bgCanvas {
+  position:absolute;z-index:0
+}
+
+/*canvas end*/

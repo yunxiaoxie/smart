@@ -453,6 +453,14 @@ angular.module('iRestApp')
                     }
                 }
             })
+            .state('Main.GlobalException', {
+                url: '/Exception',
+                views: {
+                    'contentView': {
+                        templateUrl: 'html/share/module/exception.html'
+                    }
+                }
+            })
             .state('Main.Canvas', {
                 url: '/Canvas',
                 views: {

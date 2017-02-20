@@ -64,4 +64,11 @@ angular.module('iRestApp.mainFilters', [])
             return parseInt(input);
         }
     }])
+    .filter(
+        'to_trusted', ['$sce', function ($sce) {
+            return function (text) {
+                return $sce.trustAsHtml(text);
+            }
+        }]
+    )
     

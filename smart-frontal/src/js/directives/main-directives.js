@@ -640,6 +640,7 @@ you also could build a plugin like this:
           this.drawGuideLines = function(ctx, x, y, w, h){
             ctx.strokeStyle='lightblue';
             ctx.lineWidth=1;
+            ctx.clearRect(0, 0, w, h);
             this.drawVerticalLine(ctx, x, h);
             this.drawHorizontalLine(ctx, y, w);
           },
@@ -657,10 +658,7 @@ you also could build a plugin like this:
             ctx.lineTo(x +.5, h);
             ctx.stroke();
           },
-          //画表
-          this.drawImgSheet = function (ctx, imgsheet) {
-            ctx.drawImage(imgsheet,0,0);
-          },
+
           //更新显示结果
           this.updateReadout = function (x,y, el) {
             el.innerText = '('+ x.toFixed(0)+','+ y.toFixed(0)+')';
@@ -712,18 +710,12 @@ you also could build a plugin like this:
         link: function (scope, elem, attrs, ctrl) {
             var cvs = elem[0],
                 ctx = cvs.getContext("2d"),
-                width = attrs.width,
+                width = attrs.width, // or cvs.width
                 height = attrs.height,
                 imgsheet = new Image(),
-                readoutel = elem.context.nextElementSibling;
-
-            imgsheet.src = "img/canvasbg.jpg";
-            imgsheet.onload = function(){
-              ctrl.drawImgSheet.call(ctrl, ctx, imgsheet);
-            }
+                readoutel = elem.context.parentNode.parentNode.children[1];
             cvs.onmousemove = function(e){
               var _loc = ctrl.winPos2CvsPos.call(ctrl, cvs, e.clientX, e.clientY);
-              ctrl.drawImgSheet.call(ctrl, ctx, imgsheet);
               ctrl.drawGuideLines.call(ctrl, ctx, _loc.x, _loc.y, width, height);
               ctrl.updateReadout.call(ctrl,_loc.x,_loc.y, readoutel);
               ctrl.drawLine(ctx);
@@ -737,7 +729,31 @@ you also could build a plugin like this:
         }
     };
 }])
+.directive('bgCanvas', [function() {
+    return {
+        restrict: 'EA',
+        controller: ['$scope', '$element', '$attrs', '$parse', function ($scope, $element, $attrs, $parse) {
+          //画表
+          this.drawImgSheet = function (ctx, imgsheet) {
+            ctx.globalAlpha=0.3;
+            ctx.drawImage(imgsheet,0,0);
+          }
+        }],
+        link: function (scope, elem, attrs, ctrl) {
+            var cvs = elem[0],
+                ctx = cvs.getContext("2d"),
+                width = attrs.width,
+                height = attrs.height,
+                imgsheet = new Image();
 
+            imgsheet.src = "img/canvasbg.jpg";
+            imgsheet.onload = function(){
+              ctrl.drawImgSheet.call(ctrl, ctx, imgsheet);
+            }
+            
+        }
+    };
+}])
 ;
 
 /**

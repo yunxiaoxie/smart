@@ -5,15 +5,16 @@
     <div class="container" ng-controller="CanvasCtrl">
 		<div qk-alert></div>
 	    <div class="row">
-	        <canvas width="600" height="400" my-canvas style="border:1px solid #f60;">
+	        <canvas id="myCanvas" width="600" height="400" my-canvas style="border:1px solid #f60;">
 			    您的浏览器不支持canvas。
 		    </canvas>
-		    <div id="coordinate"></div>
-	    </div>
+		    <canvas id="bgCanvas" width="600" height="400" bg-canvas style="border:1px solid #f60;">
+			    您的浏览器不支持canvas。
+		    </canvas>
 		    
+	    </div>
+		<div id="coordinate"></div>
 	</div><!-- //container -->
   </div>
-
-  
 
 </div>
