@@ -214,11 +214,20 @@ body {
 /*环形进度条 end*/
 
 /*for canvas*/
-#myCanvas {
-  position:absolute;z-index:1
+.myCanvas {
+  position:absolute;z-index:1;
+
 }
-#bgCanvas {
-  position:absolute;z-index:0
+.bgCanvas {
+  position:absolute;z-index:0;
+  
+}
+.canvas {
+  background: #ffffff;
+  cursor: crosshair;
+  -webkit-box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
+  -moz-box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
+  box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
 }
 
 /*canvas end*/
