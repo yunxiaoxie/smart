@@ -85,8 +85,8 @@
 
   <div class="row placeholders">
     <div class="table-responsive" ng-controller='TableCtrl'>
-        <table class="table table-striped">
-          <thead>
+        <table ng-table="tableParams" class="table table-striped">
+          <!-- <thead>
             <tr>
               <th>姓名</th>
               <th>性别</th>
@@ -95,18 +95,19 @@
               <th>出生日期</th>
               <th>是否成人</th>
             </tr>
-          </thead>
-          <tbody>
-            <tr ng-repeat="row in ::data track by $index">
-              <td>{{::row.name}}</td>
-              <td>{{::row.sex | sexFilter}}</td>
-              <td>{{::row.age}}</td>
-              <td>{{::row.address}}</td>
-              <td>{{::row.birthday}}</td>
-              <td>{{::row.display}}</td>
+          </thead> -->
+          <tbody><!-- 使用'::'单引用 -->
+            <tr ng-repeat="row in $data track by $index">
+              <td data-title="'姓名'" sortable="'name'">{{row.name}}</td>
+              <td data-title="'性别'">{{row.sex | sexFilter}}</td>
+              <td data-title="'年龄'" sortable="'age'">{{row.age}}</td>
+              <td data-title="'地址'">{{row.addr}}</td>
+              <td data-title="'出生日期'">{{row.birthday | date:"yyyy-MM-dd"}}</td>
+              <td data-title="'是否成人'">{{row.isAdult | trueFilter}}</td>
             </tr>
           </tbody>
         </table>
+
       </div>
   </div>
 

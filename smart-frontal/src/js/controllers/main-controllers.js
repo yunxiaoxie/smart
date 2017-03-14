@@ -223,7 +223,7 @@ angular.module('iRestApp.mainControllers', ['xeditable'])
 
 
 }])
-.controller('TableCtrl', ['$scope','$rootScope','$timeout', 'UtilsService', 'MyUser', 'MapService', function($scope, $rootScope, $timeout, UtilsService, MyUser, MapService){
+.controller('TableCtrl', ['$scope','$rootScope','$timeout', 'UtilsService', 'MyUser', 'MapService', '$filter', 'NgTableParams', function($scope, $rootScope, $timeout, UtilsService, MyUser, MapService, $filter, NgTableParams){
   
   $scope.checkName = function(data, id) {
     if (id === 2 && data !== 'awesome') {
@@ -308,6 +308,10 @@ angular.module('iRestApp.mainControllers', ['xeditable'])
   $scope.load = function() {
     var users = MyUser.myQuery({}, function(result){
       $scope.data = result;
+      $scope.tableParams = new NgTableParams({
+      }, {
+          dataset: result
+      });
     });
   }
   $scope.load();

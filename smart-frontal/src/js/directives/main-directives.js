@@ -1056,6 +1056,9 @@ you also could build a plugin like this:
           var cvs = elem[0],
               dragging = false,
               self = this,
+              plusBtn = document.querySelector('plusBtn'),
+              minusBtn = document.querySelector('minusBtn'),
+              
               offsetX = 0,
               offsetY = 0,
               ctx = cvs.getContext("2d");
@@ -1095,6 +1098,20 @@ you also could build a plugin like this:
           cvs.onmouseout = function(){
             cvs.style.cursor='normal';
           }
+          plusBtn.onclick = function(e){
+            $scope.bgImg.imgScale += 0.2;
+            if ($scope.bgImg.imgScale>=2) {
+              $scope.bgImg.imgScale = 2;
+            }
+            $scope.drawBgImg();
+          }
+          minusBtn.onclick = function(e){
+            $scope.bgImg.imgScale -= 0.2;
+            if ($scope.bgImg.imgScale<=0) {
+              $scope.bgImg.imgScale = 0.1;
+            }
+            $scope.drawBgImg();
+          }
         }
     };
 }])
@@ -1111,19 +1128,30 @@ you also could build a plugin like this:
           $scope.drawBgImg = function () {
             $scope.bgctx.clearRect(0, 0, $scope.bgctx.canvas.width, $scope.bgctx.canvas.height);
             $scope.bgctx.globalAlpha=0.5;
-            $scope.bgctx.drawImage($scope._img, $scope.bgImg.x, $scope.bgImg.y);
+            $scope.bgctx.drawImage($scope._img, 
+              $scope.bgImg.x, $scope.bgImg.y, 
+              $scope.bgImg.imgWidth*$scope.bgImg.imgScale, 
+              $scope.bgImg.imgHeight*$scope.bgImg.imgScale);
           }
         }],
         link: function ($scope, elem, attrs, ctrl) {
             $scope.bgImg = {
               x: 0,
               y: 0,
+              imgScale: 1, //图片缩放比例
+              winScale: 1, //窗口缩放比例
               cvsWidth: attrs.width ? parseInt(attrs.width) : 800,
               cvsHeight: attrs.height ? parseInt(attrs.height) : 600
             }
             var cvs = elem[0];
             $scope.bgctx = cvs.getContext("2d");
             $scope._img = new Image();
+
+            function calcImgScale() {
+              if ($scope._img.width <= $scope.bgImg.cvsWidth && $scope._img.height <= $scope.bgImg.cvsHeight) {
+                $scope.bgImg.imgScale = 1;
+              }
+            }
 
             $scope._img.src = "img/canvasbg.jpg";
             $scope._img.onload = function(){
@@ -1135,6 +1163,7 @@ you also could build a plugin like this:
         }
     };
 }])
+
 ;
 
 /**

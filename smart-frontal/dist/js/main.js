@@ -11,6 +11,7 @@ angular.module('iRestApp', [
 	'ui.router',
 	'ngFileUpload',
 	'oc.lazyLoad',
+	'ngTable',
 	'ui.bootstrap',
 	'iRestApp.basicServer'
 ]);
