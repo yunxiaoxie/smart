@@ -4,7 +4,7 @@ angular.module('iRestApp.mainControllers', ['xeditable'])
   editableOptions.theme = 'bs3'; // bootstrap3 theme.
 })
 /**表单示例控制器*/
-.controller('FormCtrl', ['$scope','$filter', '$http', 'UtilsService', 'AlertService', '$timeout', 'Upload', function($scope, $filter, $http, UtilsService, AlertService, $timeout, Upload){
+.controller('FormCtrl', ['$scope','$filter', '$http', 'UtilsService', 'AlertService', '$timeout', 'Upload', 'toastr', '$uibModal', function($scope, $filter, $http, UtilsService, AlertService, $timeout, Upload, toastr, $uibModal){
   var dateFilter = $filter('date');
   $scope.submitted = false;
   $scope.isShow = function(field) {
@@ -78,6 +78,25 @@ angular.module('iRestApp.mainControllers', ['xeditable'])
     });
     return citiesLookup[values.province] || [];
   };
+
+  // 下拉菜单
+  $scope.dropMenu = [{
+    name:"myAction1"
+  },{
+    name:"myAction2"
+  },{
+    name:"herAction3"
+  },{
+    name:"herAction4"
+  }];
+  $scope.clickMenuItem = function(row){
+    $scope.searchContent = row.name;
+    toastr.success('点击成功');
+  }
+  $scope.clickMenuItem2 = function(row){
+    $scope.searchContent2 = row.name;
+    toastr.success('点击成功');
+  }
 
 }])
 
@@ -312,6 +331,7 @@ angular.module('iRestApp.mainControllers', ['xeditable'])
       }, {
           dataset: result
       });
+      $scope.tableParams.settings().counts=[];
     });
   }
   $scope.load();

@@ -83,6 +83,23 @@
                 <div class="col-xs-2">
                     <qk-checkbox model="formData.book" code='1004' required='false' />
                 </div>
+                <label class="control-label col-xs-2">日期时分秒:</label>
+                <div class="col-xs-4">
+                    <!-- <datetimepicker ng-model="formData.datehms"></datetimepicker> -->
+                    Selected Date: {{formData.datehms | date:'yyyy-MM-dd HH:mm:ss' }} 
+                      <div class="dropdown">
+                        <a class="dropdown-toggle" id="dropdown2" role="button" data-toggle="dropdown" >
+                          <div class="input-group">
+                            <input type="text" class="form-control" ng-model="formData.datehms">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                          </div>
+                        </a>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                          <datetimepicker ng-model="formData.datehms" 
+                          datetimepicker-config="{ dropdownSelector: '#dropdown2', modelType: 'YYYY-MM-DD HH:mm:ss'}"/>
+                        </ul>
+                      </div>
+                </div>
                 <label class="control-label col-xs-2">IP1:</label>
                 <div class="col-xs-2">
                     <input type="text" 
@@ -212,9 +229,55 @@
                 <div class="col-md-2">
                   <qk-select-ui model="formData.slt" view="formData.sltv"></qk-select-ui>
                 </div>
+
+                <div class="btn-group" uib-dropdown>
+                  <div>
+                      <button type="button" class="btn btn-default" uib-dropdown-toggle>
+                          <span class="glyphicon glyphicon-search"></span>
+                      </button>
+                      <input type="text" ng-model="searchContent" class="form-control" />
+                      
+                  </div>
+                  <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="btn-append-to-single-button">
+                    <!-- <li role="menuitem"><a href="#">Action</a></li>
+                    <li role="menuitem"><a href="#">Another action</a></li>
+                    <li role="menuitem"><a href="#">Something else here</a></li>
+                    <li class="divider"></li>
+                    <li role="menuitem"><a href="#">Separated link</a></li> -->
+                    <li role="menuitem" 
+                        ng-repeat="row in dropMenu | filter:{name: searchContent}" 
+                        style="padding: 5px 12px; list-style: none;"
+                        ng-click="clickMenuItem(row)"
+                        >{{row.name}}</li>
+                  </ul>
+                </div>
+
+                <div class="btn-group" uib-dropdown>
+                  <div>
+                      <input type="text" 
+                          ng-model="searchContent2" 
+                          class="form-control" uib-dropdown-toggle 
+                          ng-focus="$event.stopPropagation()"
+                          ng-click="$event.stopPropagation()"/>
+                      
+                  </div>
+                  <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="btn-append-to-single-button">
+                    <li role="menuitem" 
+                        ng-repeat="row in dropMenu | filter:{name: searchContent2}" 
+                        style="padding: 5px 12px; list-style: none;"
+                        ng-click="clickMenuItem2(row)"
+                        >{{row.name}}</li>
+                  </ul>
+                </div>
             </div>
             <div class="form-group">
-              
+              <label class="control-label col-xs-2">弹层:</label>
+              <button type="button" class="btn btn-default">
+                  <span class="glyphicon glyphicon-search"></span>
+              </button>
+              <button type="button" class="btn btn-link">
+                  <span class="glyphicon glyphicon-search"></span>
+              </button>
             </div>
 
             <div class="form-group">

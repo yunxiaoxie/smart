@@ -12,7 +12,9 @@ angular.module('iRestApp', [
 	'ngFileUpload',
 	'oc.lazyLoad',
 	'ngTable',
+	'toastr',
 	'ui.bootstrap',
+	'ui.bootstrap.datetimepicker',
 	'iRestApp.basicServer'
 ]);
 /**
@@ -110,6 +112,7 @@ angular.module('iRestApp.basicServer', [])
                 data: sData,
                 cache: false,
                 method: sMethod,
+                //headers: {'apiKey': "opc"},
                 ignoreLoadingBar: false
             });
         },
@@ -132,15 +135,19 @@ angular.module('iRestApp.basicServer', [])
           return deferred.promise;
         },
         get: function(url){
+          //return $http.get(url,{headers: {'apiKey': "opc"}});
           return $http.get(url);
         },
-        post: function(url, data){ 
+        post: function(url, data){
+          //return $http.post(url, data,{headers: {'apiKey': "opc"}});
           return $http.post(url, data);
         },
         put: function(url){
+          //return $http.put(url,{headers: {'apiKey': "opc"}});
           return $http.put(url);
         },
         delete: function(url){
+          //return $http.delete(url,{headers: {'apiKey': "opc"}});
           return $http.delete(url);
         },
     }

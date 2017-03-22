@@ -19,7 +19,7 @@ var app = connect()
         // Request methods you wish to allow
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
         // Request headers you wish to allow
-        res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,X-Session-Token');
+        res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,X-Session-Token');  //
         // Set to true if you need the website to include cookies in the requests sent
         // to the API (e.g. in case you use sessions)
         //res.setHeader('Access-Control-Allow-Credentials', true);
@@ -111,6 +111,159 @@ var app = connect()
           }
           res.end(JSON.stringify(data));
         }
+        if (req.originalUrl.indexOf('/m1') !== -1) {
+            var data={
+             "code": "200",
+             "msg": "SUCCESS",
+             "result":
+              [{
+               "id": "5629811",
+               "campaignName": "投放名称",
+               "campaignStart": "2017.5.30",
+               "campaignEnd": "2017.5.30",
+               "refferalList": "投放渠道"
+              },
+              {
+               "id": "5629810",
+               "campaignName": "每个经典团投资返100元油卡",
+               "campaignStart": "2017.5.30",
+               "campaignEnd": "2017.1.2",
+               "refferalList": "车主无忧/券妈妈/兑吧/生菜网/e袋洗…"
+              }]
+            
+            }
+            res.end(JSON.stringify(data));
+        }
+        if (req.originalUrl.indexOf('/m2') !== -1) {
+            var data={
+                "code": "200",
+                "msg": "success",
+                "result": [{
+                    "dataCode": "1111",
+                    "dataName": "广告投放"
+                }]
+            }
+            res.end(JSON.stringify(data));
+        }
+        if (req.originalUrl.indexOf('/m3') !== -1) {
+            var data={
+                 "code": "200",
+                 "msg": "SUCCESS",
+                 "result": 
+                  [{
+                    "id": "111",
+                    "refferalName": "渠道名称",
+                    "refferalStatus": "状态",
+                    "landingPage":"",
+                    "bannerName": "",
+                    "refferalStart": "",
+                    "refferalEnd": ""
+                   },
+                   {
+                    "id": "51",
+                    "publishId": "283211",
+                    "channelId": "510",
+                    "refferalName": "有妈妈",
+                    "refferalStatus": "即将开始",
+                    "landingPage":"https://www-demo.dianrong.com/events/page/4",
+                    "bannerName": "信息流小图落地页广告",
+                    "refferalStart": "2017/3/2 14:00",
+                    "refferalEnd": "2017/3/2 14:00"
+                   },
+                   {
+                    "id": "52",
+                    "publishId": "283211",
+                    "channelId": "510",
+                    "refferalName": "在妈妈",
+                    "refferalStatus": "即将开始",
+                    "landingPage":"https://www-demo.dianrong.com/events/page/4",
+                    "bannerName": "信息流小图落地页广告",
+                    "refferalStart": "2017/3/2 14:00",
+                    "refferalEnd": "2017/3/2 14:00"
+                   },
+                   {
+                    "id": "53",
+                    "publishId": "283211",
+                    "channelId": "510",
+                    "refferalName": "发妈妈",
+                    "refferalStatus": "即将开始",
+                    "landingPage":"https://www-demo.dianrong.com/events/page/4",
+                    "bannerName": "信息流小图落地页广告",
+                    "refferalStart": "2017/3/2 14:00",
+                    "refferalEnd": "2017/3/2 14:00"
+                   },
+                   {
+                    "id": "54",
+                    "publishId": "283211",
+                    "channelId": "510",
+                    "refferalName": "工妈妈",
+                    "refferalStatus": "即将开始",
+                    "landingPage":"https://www-demo.dianrong.com/events/page/4",
+                    "bannerName": "信息流小图落地页广告",
+                    "refferalStart": "2017/3/2 14:00",
+                    "refferalEnd": "2017/3/2 14:00"
+                   },
+                   {
+                    "id": "55",
+                    "publishId": "283211",
+                    "channelId": "510",
+                    "refferalName": "我妈妈",
+                    "refferalStatus": "即将开始",
+                    "landingPage":"https://www-demo.dianrong.com/events/page/4",
+                    "bannerName": "信息流小图落地页广告",
+                    "refferalStart": "2017/3/2 14:00",
+                    "refferalEnd": "2017/3/2 14:00"
+                   },
+                   {
+                    "id": "56",
+                    "publishId": "283211",
+                    "channelId": "510",
+                    "refferalName": "券妈妈",
+                    "refferalStatus": "即将开始",
+                    "landingPage":"https://www-demo.dianrong.com/events/page/4",
+                    "bannerName": "信息流小图落地页广告",
+                    "refferalStart": "2017/3/2 14:00",
+                    "refferalEnd": "2017/3/2 14:00"
+                   }]
+            }
+            res.end(JSON.stringify(data));
+        }
+        if (req.originalUrl.indexOf('/m4') !== -1) {
+            var data={
+                "code": "200",
+                "msg": "success",
+                "result": 
+                 [{
+                  "bannerId":"111",
+                  "bannerName":"开屏广告"
+                 },{
+                  "bannerId":"222",
+                  "bannerName":"信息流组图落地页广告"
+                 },
+                 {
+                  "bannerId":"555",
+                  "bannerName":"详情页 横幅 落地页 广告"
+                 },{
+                  "bannerId":"555",
+                  "bannerName":"详情页 横幅 落地页 广告"
+                 },{
+                  "bannerId":"555",
+                  "bannerName":"详情页 横幅 落地页 广告"
+                 },{
+                  "bannerId":"555",
+                  "bannerName":"详情页 横幅 落地页 广告"
+                 },{
+                  "bannerId":"555",
+                  "bannerName":"详情页 横幅 落地页 广告"
+                 },{
+                  "bannerId":"555",
+                  "bannerName":"详情页 横幅 落地页 广告"
+                 }]
+            }
+            res.end(JSON.stringify(data));
+        }
+        
+        
     })
     .listen(3000);
 console.log('Server started on port 3000.');

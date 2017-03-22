@@ -1056,8 +1056,8 @@ you also could build a plugin like this:
           var cvs = elem[0],
               dragging = false,
               self = this,
-              plusBtn = document.querySelector('plusBtn'),
-              minusBtn = document.querySelector('minusBtn'),
+              plusBtn = document.querySelector('#plusBtn'),
+              minusBtn = document.querySelector('#minusBtn'),
               
               offsetX = 0,
               offsetY = 0,
