@@ -98,6 +98,56 @@ angular.module('iRestApp.mainControllers', ['xeditable'])
     toastr.success('点击成功');
   }
 
+  /*打开一个弹层*/
+  $scope.openModal = function() {
+    openLandingPageModal();
+  }
+
+  /*初始LandingPage*/
+    var openLandingPageModal = function (obj, parent, cancel) {
+        var tpl = '<div class="modal-header">\
+                    <h3 class="modal-title">初始LandingPage</h3>\
+                </div>\
+                <div class="modal-body">\
+                    <div>\
+                        <input class="form-control" ng-model="address" type="text">\
+                    </div>\
+                    <div>在活动系统或CMS中创建页面，并获取URL</div>\
+                </div>\
+                <div class="modal-footer">\
+                    <button class="btn btn-sm btn-primary" type="button" ng-click="ok()">确定</button>\
+                    <button class="btn btn-sm btn-warning" type="button" ng-click="cancel()">取消</button>\
+                </div>';
+        var modalInstance = $uibModal.open({
+            size: 'ml',// sm ml lg
+            animation: true,
+            template: tpl,
+            controller: ['$scope', '$uibModalInstance', function ($scope, $uibModalInstance) {
+                $scope.ok = function () {
+                    $uibModalInstance.close();
+                };
+
+                $scope.cancel = function () {
+                    if (cancel) {
+                        cancel();
+                    }
+                    $uibModalInstance.dismiss('cancel');
+                };
+
+            }]
+        });
+        modalInstance.opened.then(function () {
+            console.log('modal is opened');
+
+        });
+
+        modalInstance.result.then(function (result) {
+            console.log(result); //result关闭是回传的值   
+        }, function (reason) {
+            console.log(reason);//点击空白区域，总会输出backdrop click，点击取消，则会暑促cancel
+        });
+    }
+
 }])
 
 .controller('UploadCtrl', ['$scope','$filter', '$http', 'UtilsService', 'AlertService', '$timeout', 'Upload', function($scope, $filter, $http, UtilsService, AlertService, $timeout, Upload){
@@ -202,12 +252,13 @@ angular.module('iRestApp.mainControllers', ['xeditable'])
   $scope.download = function () {
         $http.post("/download", {
             filepath: "d:/images/",
-            filename: "工号.xlsx"
+            filename: "Tulips.jpg"
         }, {responseType: "blob"})
-        .success(function (data, status, headers, config) {
-            var blob = new Blob([data], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
-            if (config.data.filename) {
-              var fileName = config.data.filename;
+        .then(function (data, status, headers, config) {
+            //var blob = new Blob([data], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+            var blob = new Blob([data.data], {type: "image/jpeg"});
+            if (data.config.data.filename) {
+              var fileName = data.config.data.filename;
             } else {
               var fileName = 'unknow';  
             }
@@ -345,6 +396,32 @@ angular.module('iRestApp.mainControllers', ['xeditable'])
   });
   }
   $scope.loadForPager();
+
+  $scope.callServer = function (tableState) {
+
+    //ctrl.isLoading = true;
+
+    var pagination = tableState.pagination;
+
+    var start = pagination.start || 0;     // This is NOT the page number, but the index of item in the list that you want to use to display the table.
+    var number = pagination.number || 10;  // Number of entries showed per page.
+    var curPage = start/number + 1;
+
+    // 分页排序：需传入排序的column和order
+    MyUser.myQueryForPager({
+        pageNo:curPage, pageSize: 3, 
+        orderCol: tableState.sort.predicate,
+        order: tableState.sort.reverse ? 'desc' : 'asc'}, function(result){
+      $scope.dataPage2 = result.data;
+      tableState.pagination.numberOfPages = result.totalPage;
+      tableState.pagination.totalItemCount = result.totalRecord;
+    });
+    /*service.getPage(start, number, tableState).then(function (result) {
+      ctrl.displayed = result.data;
+      tableState.pagination.numberOfPages = result.numberOfPages;//set the number of pages so the pagination can update
+      ctrl.isLoading = false;
+    });*/
+  };
 
 }])
 .controller('XEditTableCtrl', ['$scope','$filter','$http', 'AlertService', function($scope, $filter, $http, AlertService){

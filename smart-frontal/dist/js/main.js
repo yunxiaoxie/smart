@@ -12,6 +12,7 @@ angular.module('iRestApp', [
 	'ngFileUpload',
 	'oc.lazyLoad',
 	'ngTable',
+	'smart-table',
 	'toastr',
 	'ui.bootstrap',
 	'ui.bootstrap.datetimepicker',

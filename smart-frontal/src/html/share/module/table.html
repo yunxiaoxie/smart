@@ -96,7 +96,8 @@
               <th>是否成人</th>
             </tr>
           </thead> -->
-          <tbody><!-- 使用'::'单引用 -->
+          <!-- 使用'::'单引用 -->
+          <tbody>
             <tr ng-repeat="row in $data track by $index">
               <td data-title="'姓名'" sortable="'name'">{{row.name}}</td>
               <td data-title="'性别'">{{row.sex | sexFilter}}</td>
@@ -104,6 +105,37 @@
               <td data-title="'地址'">{{row.addr}}</td>
               <td data-title="'出生日期'">{{row.birthday | date:"yyyy-MM-dd"}}</td>
               <td data-title="'是否成人'">{{row.isAdult | trueFilter}}</td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+  </div>
+
+  <hr>
+
+<!-- If you are bringing in data asynchronously (from a remote database, restful endpoint, ajax call, etc) you must use the stSafeSrc attribute. -->
+  <div class="row placeholders">
+    <div class="table-responsive" ng-controller='TableCtrl'>
+        <table st-table="copyData" st-safe-src="data" class="table table-striped table-bordered">
+          <thead>
+            <tr>
+              <th class="st-sort-ascent" st-sort-ascent="reverse" st-sort="name">姓名</th>
+              <th>性别</th>
+              <th st-sort="age">年龄</th>
+              <th>地址</th>
+              <th>出生日期</th>
+              <th>是否成人</th>
+            </tr>
+          </thead>
+          <tbody><!-- 使用'::'单引用 -->
+            <tr ng-repeat="row in copyData track by $index">
+              <td>{{row.name}}</td>
+              <td>{{row.sex | sexFilter}}</td>
+              <td>{{row.age}}</td>
+              <td>{{row.addr}}</td>
+              <td>{{row.birthday | date:"yyyy-MM-dd"}}</td>
+              <td>{{row.isAdult | trueFilter}}</td>
             </tr>
           </tbody>
         </table>
