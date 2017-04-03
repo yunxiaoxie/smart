@@ -102,12 +102,12 @@
 
   <div class="row placeholders">
     <div class="table-responsive" ng-controller='TableCtrl'>
-        <table class="table table-striped table-hover table-bordered">
+        <table class="table table-striped table-hover table-bordered sort-table">
           <thead>
             <tr>
-              <th style="width:10%">姓名</th>
-              <th style="width:8%">性别</th>
-              <th style="width:7%">年龄</th>
+              <th style="width:10%" tb-sort="name">姓名</th>
+              <th style="width:8%" tb-sort="sex">性别</th>
+              <th style="width:7%" tb-sort="age">年龄</th>
               <th style="width:15%">地址</th>
               <th style="width:10%">电话</th>
               <th style="width:8%">是否成人</th>

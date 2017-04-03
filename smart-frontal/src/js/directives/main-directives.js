@@ -571,19 +571,23 @@ you also could build a plugin like this:
 
                 }
             };
-            $scope.first = function() {
+            $scope.first = function($event) {
+                if ($event) $event.preventDefault();
                 if($scope.pgs.currentPg === 1) return;
                 $scope.pgs.currentPg = 1;
             };
-            $scope.prev = function() {
+            $scope.prev = function($event) {
+                if ($event) $event.preventDefault();
                 if($scope.pgs.currentPg === 1) return;
                 $scope.pgs.currentPg -=1;
             };
-            $scope.next = function() {
+            $scope.next = function($event) {
+                if ($event) $event.preventDefault();
                 if($scope.pgs.currentPg >= $scope.lastPg) return;
                 $scope.pgs.currentPg +=1;
             };
-            $scope.last = function() {
+            $scope.last = function($event) {
+                if ($event) $event.preventDefault();
                 if($scope.pgs.currentPg === $scope.lastPg) return;
                 $scope.pgs.currentPg = $scope.lastPg;
             };
@@ -623,6 +627,51 @@ you also could build a plugin like this:
         }]
     };
 }])
+/*table header sort*/
+.directive('tbSort', ['MyUser', function(MyUser) {
+    var tpl = '<a class="title-position" ng-click="theadSort()">\
+                <span ng-transclude></span>\
+                <span class="icon-position both" ng-class=""></span>\
+                </a>';
+    return {
+        restrict: 'EA',
+        templateUrl: "html/share/widgets/qk-table-sort.html",
+        scope: true,
+        transclude: true,
+        controller: ['$rootScope','$scope', function($rootScope, $scope){
+            //current sort and column
+            $scope.$parent.curSort='',$scope.$parent.curCol='';
+            var curSort = '';
+            $scope.theadSort = function() {
+              $scope.$parent.curSort = getCurSort();
+              $scope.$parent.curCol = $scope.getColName();
+              $scope.$emit("sortEvent", $scope.$parent.curCol, $scope.$parent.curSort);
+            }
+
+            var getCurSort = function(){
+              if (!curSort) {
+                curSort = 'asc';
+              }
+              else if (curSort === 'asc') {
+                curSort = 'desc';
+              }
+              else if (curSort === 'desc') {
+                curSort = '';
+              }
+              return curSort;
+            }
+        }],
+        link: function (scope, elem, attrs, ctrl) {
+            if (elem && !elem.hasClass('text-center')) {
+              elem.addClass('text-center');
+            }
+            scope.getColName = function() {
+              return attrs.tbSort;
+            }
+        }
+    };
+}])
+
 // 鼠标导航线
 .directive('myCanvas', [function() {
     return {

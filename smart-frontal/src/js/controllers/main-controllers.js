@@ -423,6 +423,16 @@ angular.module('iRestApp.mainControllers', ['xeditable'])
     });*/
   };
 
+  $scope.$on('sortEvent', function(scope, column, sort){
+    console.log(column, sort);
+    MyUser.myQueryForPager({pageNo:1, pageSize: 3, sortCol: column, sortName: sort}, function(result){
+        $scope.dataPage = result;
+        $timeout(function(){
+          $rootScope.$broadcast('modelInitialized', this);
+        },500);
+    });
+  })
+
 }])
 .controller('XEditTableCtrl', ['$scope','$filter','$http', 'AlertService', function($scope, $filter, $http, AlertService){
   
