@@ -540,7 +540,8 @@ you also could build a plugin like this:
     return {
         restrict: 'EA',
         scope: {
-            record: '='
+            record: '=',
+            evname: '@'
         },
         templateUrl: 'html/share/module/page-control.html',
         controller: ['$window','$rootScope','$scope', '$timeout', function($window, $rootScope, $scope, $timeout){
@@ -598,7 +599,7 @@ you also could build a plugin like this:
                     $scope.$parent.dataPage = result;
                 });*/
                 //$scope.$parent.loadForPager(newValue, $scope.pgs.pageSize);
-                $scope.$emit("reloadPagination", newValue, $scope.pgs.pageSize);
+                $scope.$emit($scope.evname, newValue, $scope.pgs.pageSize);
               }
             });
             $scope.$watch('pgs.pageNo', function(newValue, oldValue){

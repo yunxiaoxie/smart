@@ -398,7 +398,6 @@ angular.module('iRestApp.mainControllers', ['xeditable'])
   $scope.loadForPager();
 
   $scope.$on("reloadPagination", function(scope, no, size){
-    console.log(no, size);
     $scope.loadForPager(no, size);
   });
 
