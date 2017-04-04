@@ -387,8 +387,8 @@ angular.module('iRestApp.mainControllers', ['xeditable'])
   }
   $scope.load();
 
-  $scope.loadForPager = function() {
-    var users = MyUser.myQueryForPager({pageNo:1, pageSize: 3}, function(result){
+  $scope.loadForPager = function(no, size) {
+    MyUser.myQueryForPager({pageNo: no ? no : 1, pageSize: size ? size : 3}, function(result){
       $scope.dataPage = result;
       $timeout(function(){
         $rootScope.$broadcast('modelInitialized', this);
@@ -396,6 +396,11 @@ angular.module('iRestApp.mainControllers', ['xeditable'])
   });
   }
   $scope.loadForPager();
+
+  $scope.$on("reloadPagination", function(scope, no, size){
+    console.log(no, size);
+    $scope.loadForPager(no, size);
+  });
 
   $scope.callServer = function (tableState) {
 

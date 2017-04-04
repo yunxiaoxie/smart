@@ -546,14 +546,15 @@ you also could build a plugin like this:
         controller: ['$window','$rootScope','$scope', '$timeout', function($window, $rootScope, $scope, $timeout){
             var setPages = function (changedPageSize) {
                 // 提交后更新操作的当前的页面和分页大小
-                var dataPage = $scope.$parent.dataPage;
+                //var dataPage = $scope.$parent.dataPage;
+                var dataPage = $scope.record;
                 if (dataPage && dataPage.totalRecord && dataPage.data) {
                     $scope.pgs = {};
                     $scope.pgs.currentPg = dataPage.pageNo;
                     // only for watch
                     $scope.pgs.pageNo = dataPage.pageNo;
                     $scope.pgs.currentSize = changedPageSize || 3;
-                    $scope.pgs.pageSize = $scope.$parent.dataPage.pageSize;
+                    $scope.pgs.pageSize = $scope.record.pageSize;
                     //$scope.record.page.page > 1 ? $scope.previousPg = $scope.record.page.page - 1 : $scope.previousPg = 1;
                     $scope.lastPg = dataPage.totalPage;
                     //$scope.record.page.page < $scope.lastPg ? $scope.nextPg = $scope.record.page.page + 1 : $scope.nextPg = $scope.lastPg;
@@ -593,9 +594,11 @@ you also could build a plugin like this:
             };
             $scope.$watch('pgs.currentPg', function(newValue, oldValue){
               if (newValue) {
-                MyUser.myQueryForPager({pageNo:newValue, pageSize:$scope.pgs.pageSize}, function(result){
+                /*MyUser.myQueryForPager({pageNo:newValue, pageSize:$scope.pgs.pageSize}, function(result){
                     $scope.$parent.dataPage = result;
-                });
+                });*/
+                //$scope.$parent.loadForPager(newValue, $scope.pgs.pageSize);
+                $scope.$emit("reloadPagination", newValue, $scope.pgs.pageSize);
               }
             });
             $scope.$watch('pgs.pageNo', function(newValue, oldValue){
