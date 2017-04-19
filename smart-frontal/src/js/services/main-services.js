@@ -228,4 +228,22 @@ angular.module('iRestApp.mainServices', [])
 	    return UtilsService.querySync(url, {});
     }
 }])
+// for file upload
+.service("UploadService", ['$q', 'Upload', function ($q, Upload) {
+    this.upLoadFile = function (url, postData) {
+        let deferred = $q.defer();
+        Upload.upload({
+            // headers: {
+            //     'apiKey': "opc"
+            // },
+            url: url,
+            data: postData
+        }).success(function (data) {
+            deferred.resolve(data);
+        }).error(function (error) {
+            deferred.reject(error);
+        });
+        return deferred.promise;
+    }
+}])
 ;

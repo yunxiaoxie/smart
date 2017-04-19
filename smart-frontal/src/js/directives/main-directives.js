@@ -669,6 +669,10 @@ you also could build a plugin like this:
             if (elem && !elem.hasClass('text-center')) {
               elem.addClass('text-center');
             }
+            var table = elem.parent().parent().parent()[0];
+            if (table) {
+              $(table).addClass('sort-table');
+            }
             scope.getColName = function() {
               return attrs.tbSort;
             }

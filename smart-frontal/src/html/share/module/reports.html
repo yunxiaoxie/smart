@@ -82,6 +82,14 @@
                 <label class="control-label col-xs-2">科目:</label>
                 <div class="col-xs-2">
                     <qk-checkbox model="formData.book" code='1004' required='false' />
+                    <!-- 利用以下方式，避免复杂封装checkbox, radio -->
+                    <!-- <label class="checkbox-inline" ng-repeat="tag in openInterfaces">
+                    <input type="checkbox"
+                              ng-true-value="'{{tag.dataCode}}'"
+                              name="interface"
+                              ng-model="$parent.formData.interface[tag.dataCode]" />
+                      {{tag.dataName}}
+                    </label> -->
                 </div>
                 <label class="control-label col-xs-2">日期时分秒:</label>
                 <div class="col-xs-4">

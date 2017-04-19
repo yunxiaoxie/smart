@@ -14,8 +14,11 @@
 		                <input type="text" name="userName" ng-model="username" size="31" required>
 		                <i ng-show="myForm.userName.$error.required">*required</i>
 		                <br>Photo:
-		                <input type="file" ngf-select ng-model="picFile" name="file"    
-		                       accept="image/*" ngf-max-size="2MB" required
+		                <input type="file" ngf-select 
+		                       ng-model="picFile" 
+		                       name="file"    
+		                       accept="image/*" 
+		                       ngf-max-size="2MB" required
 		                       ngf-model-invalid="errorFile">
 		                <i ng-show="myForm.file.$error.required">*required</i><br>
 		                <i ng-show="myForm.file.$error.maxSize">File too large 
@@ -111,6 +114,30 @@
 						    </div>
 						</div>
 						<button class="btn btn-primary" ng-click="upload()">开始上传</button>
+		            </div>
+		        </form>
+		    </div>
+		    <hr>
+		    <div class="row">
+		    	<uib-progressbar value="progress" type="success" ng-if="progress">{{progress}}%</uib-progressbar>
+		    	<form class="form-horizontal" name="myForm" method="post" novalidate>
+		            <div class="form-group">
+		              <button class="btn btn-default" ngf-select ng-model="largeFile"
+						        ngf-multiple="false">
+						    选择图片
+						</button>
+						<span>(大文件上传，支持暂停，续传，停止)</span>
+						<div ngf-drop ng-model="data.file" class="cropArea">
+						    <img-crop image="data.file|| data.defaultImage" resule-image="data.file">..拖拽区</img-crop>
+
+						    <div class="col col-sm-4 text-left">
+						        <img ngf-src="data.file || data.defaultImage"
+						             style="width:200px; height: 200px; max-width:500px;"/>
+						    </div>
+						</div>
+						 
+						<button class="btn btn-primary" ng-click="uploadLarge(largeFile)">开始上传</button>
+						<button class="btn btn-primary" ng-click="abort(largeFile)">停止</button>
 		            </div>
 		        </form>
 		    </div>
