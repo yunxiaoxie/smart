@@ -290,6 +290,7 @@ angular.module('iRestApp.mainControllers', ['xeditable'])
   http://www.iana.org/assignments/media-types/media-types.xhtml
   "type":"text/html","application/octet-binary", image/png
   */
+
   $scope.download = function () {
         $http.post("/download", {
             filepath: "d:/images/",
@@ -303,12 +304,19 @@ angular.module('iRestApp.mainControllers', ['xeditable'])
             } else {
               var fileName = 'unknow';  
             }
-            
-            var a = document.createElement("a");
-            document.body.appendChild(a);
-            a.download = fileName;
-            a.href = URL.createObjectURL(blob);
-            a.click();
+            if(window.navigator.msSaveOrOpenBlob) {
+              // for ie only
+              window.navigator.msSaveOrOpenBlob(blob, fileName);
+            } else {
+              var a = document.createElement("a");
+              a.download = fileName;
+              a.href = URL.createObjectURL(blob);
+              //a.click();
+              var evt = document.createEvent("MouseEvents");
+              evt.initEvent("click", true, true);
+              a.dispatchEvent(evt);
+            }
+
         })
     }
   
@@ -558,7 +566,7 @@ $scope.getExce = function(){
   $.ajax({
         type:"post",
         url:"http://127.0.0.1/execption",
-        async:true,
+        async:false,
         contentType: false,    //这个一定要写
         processData: false, //这个也一定要写，不然会报错
         data:{},

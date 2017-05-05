@@ -49,7 +49,7 @@ angular.module('iRestApp.basicServer', [])
     };
 
     $scope.login = function () {
-        var url = "/Login" + "/" + $scope.formData.uname + "/" + $scope.formData.pwd
+        var url = "/sys/Login" + "/" + $scope.formData.uname + "/" + $scope.formData.pwd
         UtilsService.query(url, {}).then(function (result) {
             //  校验数据中的返回数据的 错误码和提示
             if (result.data.code === 10000) {
