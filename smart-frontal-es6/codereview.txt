@@ -1,0 +1,81 @@
+﻿一、File or Dir Name
+    1、HTML:
+         /src/app/views
+         /src/app/templates
+    2、CSS:
+         /src/styles/global.css --global style
+         /src/styles/main.css  --widget style
+         /src/styles/main.xxx.css --for widget xxx style
+    3、JS:
+       1）For plugin, if has no modification, then import from node_modules rather than lib dir.
+       2）For controller, /src/app/controllers/[module].[submodule].controller.js
+       3）For common service, /src/app/services/[module].services.js
+          For business service, /src/app/services/business 
+       4）For directives, /src/app/directives/[action].directives.js
+       5) For filter /src/app/filter/[name].filter.js
+       6) 通用JS置于 www/js/common/文件名  如basic.server.js 等 全局通用部分 尽量和业务逻辑区分开来
+    4、Image
+       www/image/[name].png
+    5、文件名规范
+       .js
+           统一小写,如果多个单词组合可以用.连接  如basic.server.js 注意后缀 controller.js service.js等
+           directives中的js和使用时的js一致  如指令使用时 dashboard-real  文件名应该命名为 dashboard-real.directive.js
+       .css
+           尽量以单词命名 如main.css global.css 如果存在重写组件以组件名.rest.css命名如isteven-multi-select.reset.css前面名字以组件名字为主
+       .html
+           views文件以[module].[submodule].html命名
+           directives的模板以和JS文件名一样的模块名命名如dashboard-real.directive.html
+
+二、编码规范
+     ①命名规范
+     1).camel命名法，形如thisIsAnApple
+     2).pascal命名法，形如ThisIsAnApple
+     3).下划线命名法，形如this_is_an_apple
+     4).中划线命名法，形如this-is-an-apple
+
+     $scope 变量用驼峰命名法 如userName getCustomer
+     $rootScope 变量用需要加上前缀 root_UserName
+
+     a).变量名：必须使用camel命名法
+     b).参数名：必须使用camel命名法
+     c).函数名：必须使用camel命名法
+     d).方法/属性：必须使用camel命名法
+     e).私有（保护）成员：必须以下划线_开头
+     f).常量名：必须使用全部大写的下划线命名法，如IS_DEBUG_ENABLED
+     g).类名：必须使用pascal命名法
+     h).枚举名：必须使用pascal命名法
+     i).枚举的属性：必须使用全部大写的下划线命名法
+     css 样式命名规范
+     a)class名  使用中划线命名法
+     b)尽量不使用!important
+
+     ②ES6标准
+         [尽量做]Arrow functions: <C onPress={() => this.setState({pressed: true})}
+         [尽量做]Block scoping: let greeting = 'hi';
+         Call spread: Math.max(...array);
+         Classes: class C extends React.Component { render() { return <View />; } }
+         [尽量做]Constants: const answer = 42;
+         [项目引入的时候尽量做]Destructuring: var {isActive, style} = this.props;
+         [尽量用,或使用angular.foreach]for...of: for (var num of [1, 2, 3]) {}
+         Modules: import React, { Component } from 'react-native';
+         Computed Properties: var key = 'abc'; var obj = {[key]: 10};
+         Object Consise Method: var obj = { method() { return 10; } };
+         Object Short Notation: var name = 'vjeux'; var obj = { name };
+         Rest Params: function(type, ...args) { }
+         [推荐使用]Template Literals: var who = 'world'; var str = `Hello ${who}`;
+        尽量以ES标准去完成JavaScript编码
+        具体ES6 ES7特性 推荐网站  http://es6.ruanyifeng.com/ 讲的很清楚
+
+     ③注意事项
+      【重要】每个目录属于一个angular module 如controllers文件夹下的文件属于一个module
+       并且每个文件下有一个index.js辅助引入文件,帮助引入至app.js目录中
+       单纯的HTML目录除外
+
+
+三、其他规范以及提醒
+     1、git迁入时 尽量写好注释
+     2、git多人工作于同一个目录文件的时候,写好相应的注释,迁入前 进行本地备份
+     3、合理利用插件，不要乱加插件，插件错误请及时移除 npm 中移除 或者直接删除package中的引入
+     4、减少JQuery引入
+
+

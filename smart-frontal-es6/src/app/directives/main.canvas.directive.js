@@ -1,0 +1,541 @@
+angular.module('directive')
+// 鼠标导航线
+.directive('myCanvas', [function() {
+    return {
+        restrict: 'EA',
+        controller: ['$scope', '$element', '$attrs', '$parse', function ($scope, $element, $attrs, $parse) {
+          //获得cvs元素相对于浏览器圆点的坐标
+          this.winPos2CvsPos = function(cvs,_x,_y){
+            var _box = cvs.getBoundingClientRect();
+            return {
+              x:_x-_box.left*(cvs.width/_box.width),
+              y:_y-_box.top*(cvs.height/_box.height)
+            }
+          },
+          //画导航线
+          this.drawGuideLines = function(ctx, x, y, w, h){
+            ctx.strokeStyle='lightblue';
+            ctx.lineWidth=1;
+            ctx.clearRect(0, 0, w, h);
+            this.drawVerticalLine(ctx, x, h);
+            this.drawHorizontalLine(ctx, y, w);
+          },
+          //画水平线
+          this.drawHorizontalLine = function(ctx, y, w){
+            ctx.beginPath();
+            ctx.moveTo(0,y+.5);
+            ctx.lineTo(w,y+.5);
+            ctx.stroke();
+          },
+          //画垂直线
+          this.drawVerticalLine = function (ctx, x, h) {
+            ctx.beginPath();
+            ctx.moveTo(x +.5, 0)
+            ctx.lineTo(x +.5, h);
+            ctx.stroke();
+          },
+
+          //更新显示结果
+          this.updateReadout = function (x,y, el) {
+            el.innerText = '('+ x.toFixed(0)+','+ y.toFixed(0)+')';
+          },
+          this.lines=[];
+          this.drawLine = function(ctx) {
+            ctx.beginPath();
+            ctx.strokeStyle='black';
+            ctx.lineWidth=3;
+            var self = this;
+            _.each(this.lines, function(line) {
+              _.each(line.points, function(p, i) {
+                if (i == 0) {
+                  ctx.moveTo(p.x, p.y);
+                }
+                ctx.lineTo(p.x, p.y);
+              })
+
+            })
+            ctx.stroke();
+          },
+          this.createLine = function(ctx,point) {
+            if (this.hasNotActiveTrue()) {
+              var line = {active: true, points: []}
+              line.points.push(point);
+              this.lines.push(line);
+            } else {
+              _.each(this.lines, function(line) {
+                if (line.active) {
+                  if (Math.abs(point.x - line.points[0].x) <= 5 && Math.abs(point.y - line.points[0].y) <= 5) {
+                    line.points.push(point);
+                    ctx.closePath();
+                    ctx.stroke();
+                    line.active = false;
+                  } else {
+                    line.points.push(point);
+                  }
+                }
+              })
+            }
+          },
+          this.hasNotActiveTrue = function(){
+            var result = true;
+            _.each(this.lines, function(line){
+              if (line.active) {
+                result = false;
+              }
+            });
+            return result;
+          }
+        }],
+        link: function (scope, elem, attrs, ctrl) {
+            var cvs = elem[0],
+                ctx = cvs.getContext("2d"),
+                width = attrs.width, // or cvs.width
+                height = attrs.height,
+                imgsheet = new Image(),
+                readoutel = elem.context.parentNode.children[0];
+            cvs.onmousemove = function(e){
+              var _loc = ctrl.winPos2CvsPos.call(ctrl, cvs, e.clientX, e.clientY);
+              ctrl.drawGuideLines.call(ctrl, ctx, _loc.x, _loc.y, width, height);
+              ctrl.updateReadout.call(ctrl,_loc.x,_loc.y, readoutel);
+              ctrl.drawLine(ctx);
+            }
+            cvs.onclick = function(e){
+              var _loc = ctrl.winPos2CvsPos.call(ctrl, cvs, e.clientX, e.clientY);
+              ctrl.createLine(ctx, {x:_loc.x.toFixed(0), y:_loc.y.toFixed(0)});
+              ctrl.drawLine(ctx);
+
+            }
+        }
+    };
+}])
+//画多边形
+.directive('paintCanvas', [function() {
+    return {
+        restrict: 'EA',
+        controller: ['$scope', '$element', '$attrs', '$parse', function ($scope, $element, $attrs, $parse) {
+          
+        }],
+        link: function (scope, elem, attrs, ctrl) {
+            var Point = function (x, y) {
+                this.x = x;
+                this.y = y;
+            };
+            var Polygon = function (centerX, centerY, radius, sides, startAngle, strokeStyle, fillStyle, filled) {
+                this.x = centerX;//外接圆心x坐标
+                this.y = centerY;
+                this.radius = radius;//外接圆半径
+                this.sides = sides;//边数
+                this.startAngle = startAngle;//开始角度
+                this.strokeStyle = strokeStyle;
+                this.fillStyle = fillStyle;
+                this.filled = filled;
+            };
+            Polygon.prototype = {
+                getPoints: function () {//获取多边形所有顶点
+                    var points = [],
+                            angle = this.startAngle || 0;
+                    for (var i=0; i < this.sides; ++i) {
+                        points.push(new Point(this.x + this.radius * Math.sin(angle),
+                                this.y - this.radius * Math.cos(angle)));
+                        angle += 2*Math.PI/this.sides;
+                    }
+                    return points;
+                },
+                createPath: function (context) {//创建多边形路径
+                    var points = this.getPoints();
+                    context.beginPath();
+                    context.moveTo(points[0].x, points[0].y);
+                    for (var i=1; i < this.sides; ++i) {
+                        context.lineTo(points[i].x, points[i].y);
+                    }
+                    context.closePath();
+                },
+                stroke: function (context) {//对多边形描边
+                    context.save();
+                    this.createPath(context);
+                    context.strokeStyle = this.strokeStyle;
+                    context.stroke();
+                    context.restore();
+                },
+                fill: function (context) {//填充
+                    context.save();
+                    this.createPath(context);
+                    context.fillStyle = this.fillStyle;
+                    context.fill();
+                    context.restore();
+                },
+                move: function (x, y) {
+                    this.x = x;
+                    this.y = y;
+                },
+            };
+            var canvas = document.getElementById('paintCvs'),
+                  context = canvas.getContext('2d'),
+          //清除按钮
+                  eraseAllButton = document.getElementById('eraseAllButton'),
+          //描边颜色
+                  strokeStyleSelect = document.getElementById('strokeStyleSelect'),
+          //画多边形的开始角度
+                  startAngleSelect = document.getElementById('startAngleSelect'),
+          //填充颜色
+                  fillStyleSelect = document.getElementById('fillStyleSelect'),
+          //不否填充
+                  fillCheckbox = document.getElementById('fillCheckbox'),
+          //进入编辑
+                  editCheckbox = document.getElementById('editCheckbox'),
+          //边数
+                  sidesSelect = document.getElementById('sidesSelect'),
+          //canvas位图数据
+                  drawingSurfaceImageData,
+
+          //记录鼠标按下的位置
+                  mousedown = {},
+          //橡皮筋矩形框
+                  rubberbandRect = {},
+                  dragging = false,//是否在拖动状态
+                  draggingOffsetX,
+                  draggingOffsetY,
+                  sides = 8,
+                  startAngle = 0,
+                  guidewires = true,
+                  editing = false,
+          //保存已绘制的多边形
+                  polygons = [];
+          // Functions..........................................................
+          //画网络线
+          function drawGrid(color, stepx, stepy) {
+              context.save();
+              context.shadowColor = undefined;
+              context.shadowBlur = 0;
+              context.shadowOffsetX = 0;
+              context.shadowOffsetY = 0;
+
+              context.strokeStyle = color;
+              context.fillStyle = '#ffffff';
+              //context2.lineCap = "round";//连接处为圆形
+              context.lineWidth = 1;
+              context.fillRect(0, 0, context.canvas.width, context.canvas.height);
+              context.beginPath();
+              for (var i = stepx + 0.5; i < context.canvas.width; i += stepx) {
+                  context.moveTo(i, 0);
+                  context.lineTo(i, context.canvas.height);
+              }
+              context.stroke();
+              context.beginPath();
+              for (var i = stepy + 0.5; i < context.canvas.height; i += stepy) {
+                  context.moveTo(0, i);
+                  context.lineTo(context.canvas.width, i);
+              }
+              context.stroke();
+              context.restore();
+          }
+          //窗口坐标转canvas坐标
+          function windowToCanvas(x, y) {
+              var bbox = canvas.getBoundingClientRect();
+              return {
+                  x: x - bbox.left * (canvas.width  / bbox.width),
+                  y: y - bbox.top  * (canvas.height / bbox.height)
+              };
+          }
+          // 保存或恢复已绘制的画面...................................
+          function saveDrawingSurface() {
+              drawingSurfaceImageData = context.getImageData(0, 0,canvas.width,canvas.height);
+          }
+          function restoreDrawingSurface() {
+              context.putImageData(drawingSurfaceImageData, 0, 0);
+          }
+          // 画多边形.....................................................
+          function drawPolygon(polygon) {
+              context.beginPath();
+              polygon.createPath(context);
+              polygon.stroke(context);
+              if (fillCheckbox.checked) {
+                  polygon.fill(context);
+              }
+          }
+          // 更新橡皮筋矩形框...................................................
+          function updateRubberbandRectangle(loc) {
+              rubberbandRect.width = Math.abs(loc.x - mousedown.x);
+              rubberbandRect.height = Math.abs(loc.y - mousedown.y);
+              if (loc.x > mousedown.x) rubberbandRect.left = mousedown.x;
+              else   rubberbandRect.left = loc.x;
+              if (loc.y > mousedown.y) rubberbandRect.top = mousedown.y;
+              else   rubberbandRect.top = loc.y;
+          }
+          //以鼠标按下点为圆心，橡皮筋框宽为半径创建多边形
+          function drawRubberbandShape(loc, sides, startAngle) {
+              var polygon = new Polygon(mousedown.x, mousedown.y,
+                      rubberbandRect.width,
+                      parseInt(sidesSelect.value),
+                      (Math.PI / 180) * parseInt(startAngleSelect.value),
+                      context.strokeStyle,
+                      context.fillStyle,
+                      fillCheckbox.checked);
+              drawPolygon(polygon);//画多边形
+
+              if (!dragging) {//保存这个多边形
+                  polygons.push(polygon);
+              }
+          }
+          //更新橡皮筋
+          function updateRubberband(loc, sides, startAngle) {
+              updateRubberbandRectangle(loc);
+              drawRubberbandShape(loc, sides, startAngle);
+          }
+          // 网络线.................................................
+          function drawHorizontalLine (y) {
+              context.beginPath();
+              context.moveTo(0,y+0.5);
+              context.lineTo(context.canvas.width,y+0.5);
+              context.stroke();
+          }
+          function drawVerticalLine (x) {
+              context.beginPath();
+              context.moveTo(x+0.5,0);
+              context.lineTo(x+0.5,context.canvas.height);
+              context.stroke();
+          }
+          function drawGuidewires(x, y) {
+              context.save();
+              context.strokeStyle = 'rgba(0,0,230,0.4)';
+              context.lineWidth = 0.5;
+              drawVerticalLine(x);
+              drawHorizontalLine(y);
+              context.restore();
+          }
+          //绘制保存的所有多边形
+          function drawPolygons() {
+              polygons.forEach( function (polygon) {
+                  drawPolygon(polygon);
+              });
+          }
+          // 开始拖动...........................................................
+          function startDragging(loc) {
+              saveDrawingSurface();
+              mousedown.x = loc.x;
+              mousedown.y = loc.y;
+          }
+          //进入编辑状态
+          function startEditing() {
+              canvas.style.cursor = 'pointer';
+              editing = true;
+          }
+          //退出编辑状态
+          function stopEditing() {
+              canvas.style.cursor = 'crosshair';
+              editing = false;
+          }
+          //事件处理，鼠标按下...................................................
+          canvas.onmousedown = function (e){
+              //窗口坐标转canvas坐标
+              var loc = windowToCanvas(e.clientX, e.clientY);
+              e.preventDefault(); // prevent cursor change
+              if(editing){//在编辑状态时，检查鼠标按下的点在哪个多边形路径中
+                  polygons.forEach( function (polygon) {
+                      polygon.createPath(context);
+                      if (context.isPointInPath(loc.x, loc.y)) {
+                          startDragging(loc);
+                          dragging = polygon;//要拖动的多边形
+                          draggingOffsetX = loc.x - polygon.x;
+                          draggingOffsetY = loc.y - polygon.y;
+                          return;
+                      }
+                  });
+              }
+              else {
+                  startDragging(loc);
+                  dragging = true;
+              }
+          };
+          //鼠标移动
+          canvas.onmousemove = function (e) {
+              var loc = windowToCanvas(e.clientX, e.clientY);
+              e.preventDefault(); // prevent selections
+              if (editing && dragging) {//有一个要拖动的多边形
+                  dragging.x = loc.x - draggingOffsetX;
+                  dragging.y = loc.y - draggingOffsetY;
+                  context.clearRect(0, 0, canvas.width, canvas.height);
+                  drawGrid('lightgray', 10, 10);
+                  drawPolygons();//重画所有多边形
+              }
+              else {
+                  if (dragging) {
+                      restoreDrawingSurface();
+                      updateRubberband(loc, sides, startAngle);
+                      if (guidewires) {
+                          drawGuidewires(mousedown.x, mousedown.y);
+                      }
+                  }
+              }
+          };
+          canvas.onmouseup = function (e) {
+              var loc = windowToCanvas(e.clientX, e.clientY);
+              dragging = false;
+              if (editing) {
+              }
+              else {
+                  restoreDrawingSurface();
+                  updateRubberband(loc);
+              }
+          };
+          eraseAllButton.onclick = function (e) {
+              context.clearRect(0, 0, canvas.width, canvas.height);
+              drawGrid('lightgray', 10, 10);
+              saveDrawingSurface();
+          };
+          strokeStyleSelect.onchange = function (e) {
+              context.strokeStyle = strokeStyleSelect.value;
+          };
+          fillStyleSelect.onchange = function (e) {
+              context.fillStyle = fillStyleSelect.value;
+          };
+          editCheckbox.onchange = function (e) {
+              if (editCheckbox.checked) {
+                  startEditing();
+              }
+              else {
+                  stopEditing();
+              }
+          };
+          // Initialization.....................................................
+          context.strokeStyle = strokeStyleSelect.value;
+          context.fillStyle = fillStyleSelect.value;
+          drawGrid('lightgray', 10, 10);
+          if (navigator.userAgent.indexOf('Opera') === -1)
+              context.shadowColor = 'rgba(0, 0, 0, 0.4)';
+          context.shadowOffsetX = 2;
+          context.shadowOffsetY = 2;
+          context.shadowBlur = 4;
+        }
+    };
+}])
+/*拖动层*/
+.directive('dragLayer', [function() {
+    return {
+        restrict: 'EA',
+        controller: ['$scope', '$element', '$attrs', '$parse', function ($scope, $element, $attrs, $parse) {
+          
+          this.drawDragArea = function(ctx,data){
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.strokeStyle = 'lightgray';
+            ctx.beginPath();
+            ctx.lineWidth="10";
+            ctx.moveTo(data.x, data.y);
+            ctx.lineTo(data.x, data.y+data.cvsHeight);
+            ctx.lineTo(data.x+data.cvsWidth, data.y+data.cvsHeight);
+            ctx.lineTo(data.x+data.cvsWidth, data.y);
+            ctx.closePath();
+            ctx.stroke();
+          }
+        }],
+        link: function ($scope, elem, attrs, ctrl) {
+          var cvs = elem[0],
+              dragging = false,
+              self = this,
+              plusBtn = document.querySelector('#plusBtn'),
+              minusBtn = document.querySelector('#minusBtn'),
+              
+              offsetX = 0,
+              offsetY = 0,
+              ctx = cvs.getContext("2d");
+
+          $scope.$on('bgImgOk', function(e){
+            ctrl.drawDragArea(ctx, $scope.bgImg);
+          });
+          function windowToCanvas(x, y) {
+              var bbox = cvs.getBoundingClientRect();
+              return {
+                x: x - bbox.left * (cvs.width  / bbox.width),
+                y: y - bbox.top  * (cvs.height / bbox.height)
+              };
+          }
+          cvs.onmousedown = function(e){
+              var loc = windowToCanvas(e.clientX, e.clientY);
+              if (ctx.isPointInPath(loc.x, loc.y)){
+                  offsetX = loc.x - $scope.bgImg.x;
+                  offsetY = loc.y - $scope.bgImg.y;
+                  dragging=true;
+              }
+          }
+          cvs.onmousemove = function(e){
+              cvs.style.cursor='pointer';
+              var loc = windowToCanvas(e.clientX, e.clientY);
+              if (dragging){
+                  $scope.bgImg.x = loc.x-offsetX;
+                  $scope.bgImg.y = loc.y-offsetY;
+                  $scope.drawBgImg();
+                  //ctrl.drawDragArea(ctx, $scope.bgImg);
+                  
+              }
+          }
+          cvs.onmouseup = function(e){
+              dragging = false;
+          }
+          cvs.onmouseout = function(){
+            cvs.style.cursor='normal';
+          }
+          plusBtn.onclick = function(e){
+            $scope.bgImg.imgScale += 0.2;
+            if ($scope.bgImg.imgScale>=2) {
+              $scope.bgImg.imgScale = 2;
+            }
+            $scope.drawBgImg();
+          }
+          minusBtn.onclick = function(e){
+            $scope.bgImg.imgScale -= 0.2;
+            if ($scope.bgImg.imgScale<=0) {
+              $scope.bgImg.imgScale = 0.1;
+            }
+            $scope.drawBgImg();
+          }
+        }
+    };
+}])
+/*
+支持：拖动，缩放（中心缩放）; 
+若图片大于等于画布，拖动区域为画布; 若图片小于画布，拖动区域为图片大小.
+注意：有一个窗口缩放比例，一个图片缩放比例。
+*/
+.directive('bgCanvas', [function() {
+    return {
+        restrict: 'EA',
+        controller: ['$scope', '$element', '$attrs', '$parse', function ($scope, $element, $attrs, $parse) {
+          //draw bg
+          $scope.drawBgImg = function () {
+            $scope.bgctx.clearRect(0, 0, $scope.bgctx.canvas.width, $scope.bgctx.canvas.height);
+            $scope.bgctx.globalAlpha=0.5;
+            $scope.bgctx.drawImage($scope._img, 
+              $scope.bgImg.x, $scope.bgImg.y, 
+              $scope.bgImg.imgWidth*$scope.bgImg.imgScale, 
+              $scope.bgImg.imgHeight*$scope.bgImg.imgScale);
+          }
+        }],
+        link: function ($scope, elem, attrs, ctrl) {
+            $scope.bgImg = {
+              x: 0,
+              y: 0,
+              imgScale: 1, //图片缩放比例
+              winScale: 1, //窗口缩放比例
+              cvsWidth: attrs.width ? parseInt(attrs.width) : 800,
+              cvsHeight: attrs.height ? parseInt(attrs.height) : 600
+            }
+            var cvs = elem[0];
+            $scope.bgctx = cvs.getContext("2d");
+            $scope._img = new Image();
+
+            function calcImgScale() {
+              if ($scope._img.width <= $scope.bgImg.cvsWidth && $scope._img.height <= $scope.bgImg.cvsHeight) {
+                $scope.bgImg.imgScale = 1;
+              }
+            }
+
+            $scope._img.src = require("../image/canvasbg.jpg");
+            $scope._img.onload = function(){
+              $scope.drawBgImg.call($scope);
+              $scope.bgImg.imgWidth = $scope._img.width;
+              $scope.bgImg.imgHeight = $scope._img.height;
+              $scope.$emit('bgImgOk', null);
+            }
+        }
+    };
+}])

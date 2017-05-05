@@ -1,0 +1,21 @@
+<h6 class="page-nav" ng-if="record.totalRecord">
+    <span>
+    	每页显示
+        <select ng-options="select.num as select.num for select in selectList" ng-model="pgs.currentSize"></select>
+        &nbsp;条
+    </span>
+    <button class="btn btn-xs btn-strik" ng-disabled="pgs.currentPg==1" ng-click="first()">首页</button>
+    <button class="btn btn-xs btn-strik" ng-disabled="pgs.currentPg==1" ng-click="prev()">上一页</button>
+    <button class="btn btn-xs btn-strik" ng-disabled="pgs.currentPg==lastPg" ng-click="next()">下一页</button>
+    <button class="btn btn-xs btn-strik" ng-disabled="pgs.currentPg==lastPg" ng-click="last()">末页</button>
+    &nbsp;&nbsp;跳转到&nbsp;
+    <select ng-options="spg.num as spg.num for spg in jumpList" ng-model="pgs.pageNo"></select>
+    &nbsp;页，共{{record.totalPage}}页 {{record.totalRecord}}条记录。
+</h6>
+
+<ul class="pager">
+  <li ng-class="{true: 'disabled', false: ''}[pgs.currentPg==1]"><a href="#" ng-click="first($event)">首页</a></li>
+  <li ng-class="{true: 'disabled', false: ''}[pgs.currentPg==1]"><a href="#" ng-click="prev($event)">上一页</a></li>
+  <li ng-class="{true: 'disabled', false: ''}[pgs.currentPg==lastPg]"><a href="#" ng-click="next($event)">下一页</a></li>
+  <li ng-class="{true: 'disabled', false: ''}[pgs.currentPg==lastPg]"><a href="#" ng-click="last($event)">末页</a></li>
+</ul>

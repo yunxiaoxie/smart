@@ -1,0 +1,30 @@
+<div class="container">
+    <div qk-alert></div>
+    <div class="col-md-6 col-md-offset-3 panel panel-default" ng-controller="LoginController">
+        <h1 class="margin-base-vertical">系统登录</h1>
+        <form name="myForm" class="margin-base-vertical" ng-submit="login()" novalidate>
+            <p class="input-group">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                <input type="text" 
+                       class="form-control input-lg" 
+                       name="uname" 
+                       maxlength="10" 
+                       placeholder="用户名" 
+                       ng-model="formData.uname" required />
+            </p>
+            <p class="input-group">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                <input type="password" 
+                       class="form-control input-lg" 
+                       name="pwd" 
+                       maxlength="10" 
+                       placeholder="密码" 
+                       ng-model="formData.pwd" required />
+            </p>
+            <p class="text-center">
+                <button type="submit" class="btn btn-success btn-lg" ng-disabled="myForm.$invalid">登&nbsp;&nbsp;录</button>
+            </p>
+            </span>
+        </form>
+    </div><!-- //main content -->
+</div><!-- //container -->
