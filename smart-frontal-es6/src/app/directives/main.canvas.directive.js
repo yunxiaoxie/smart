@@ -539,3 +539,151 @@ angular.module('directive')
         }
     };
 }])
+/*
+支持：动画 
+*/
+.directive('animationCanvas', ['$interval', function($interval) {
+    return {
+        restrict: 'EA',
+        controller: ['$scope', '$element', '$attrs', '$parse', function ($scope, $element, $attrs, $parse) {
+          $scope.startPoints =[{mac:11,x:10,y:10,phone:13898889882,state:0},{mac:22,x:400,y:10,phone:13898889232,state:0},{mac:33,x:190,y:130,phone:13898889232,state:0},{mac:55,x:455,y:130,phone:13898889232,state:0}];
+          $scope.endPoints =[{mac:11,x:300,y:250,phone:13898889882,state:0},{mac:22,x:300,y:300,phone:13898889232,state:0},{mac:33,x:30,y:230,phone:13898889232,state:0},{mac:44,x:5,y:130,phone:13898889232,state:0}];
+          $scope.init = function(){
+          	_.each($scope.startPoints, function(item){
+			    $scope.draw(item);
+			})
+          }
+          $scope.draw = function(point){
+          	addPointPosition(point);
+          	$scope.ctx.drawImage($scope._img,point.x,point.y,20,20);
+          }
+          $scope.currnetPosition=[];// 当前人的位置
+		  // 只存一个人的当前位置
+		  function addPointPosition(p) {
+		    var person = _.find($scope.currnetPosition, {mac: p.mac});
+		    if (person) {
+		        if (!_.isMatch(p, person)) {
+		            person.mac = p.mac;
+		            person.x = p.x;
+		            person.y = p.y;
+		            person.phone = p.phone;
+		            person.state = p.state;
+		        }
+		    } else {
+		        $scope.currnetPosition.push(_.clone(p));
+		    }
+		  }
+
+		  var speed = 5;
+		  $scope.update = function() {
+			  if (isAllEnd()) {
+			    $interval.cancel($scope.time);
+			    return;
+			  }
+			  $scope.ctx.clearRect(0,0,$scope.cvs.width,$scope.cvs.height);
+			  _.each($scope.endPoints, function(point) {
+			    var originPoint = getOriginPoint(point.mac, $scope.startPoints);
+			        console.log("p2:"+point.x+","+point.y)
+			        if(originPoint) {
+			          if(originPoint.x != point.x || originPoint.y != point.y) {
+			            if (originPoint.x < point.x) originPoint.x += speed;
+			            if (originPoint.x > point.x) originPoint.x -= speed;
+			            if (originPoint.y < point.y) originPoint.y += speed;
+			            if (originPoint.y > point.y) originPoint.y -= speed;
+			            //console.log("mac:"+point.mac+",x="+originPoint.x+",y="+originPoint.y)
+			            $scope.draw(originPoint)  
+			          }else {
+			            $scope.draw(point);
+			          }
+			        }else {
+			          $scope.draw(point);
+			        }
+			          
+			  });
+			  $scope.hasNotActionTrue = true;
+			}
+
+			//比较两个数组中点的值
+			function isAllEnd() {
+			    var result = true;
+			    for (var i=0; i<$scope.startPoints.length; i++) {
+			        // 当前点位置
+			        var currentPoint = getOriginPoint($scope.startPoints[i].mac, $scope.startPoints);
+			        // 目标点位置
+			        var targetPoint = getOriginPoint($scope.startPoints[i].mac, $scope.endPoints);
+			        if (currentPoint && targetPoint && (currentPoint.x != targetPoint.x || currentPoint.y != targetPoint.y)) {
+			            result = false; break;
+			        }
+			    }
+			    return result;
+			}
+
+			function windowToCanvas(x, y) {
+		        var bbox = bgCanvas.getBoundingClientRect();
+		        return { x: x - bbox.left * (bgCanvas.width  / bbox.width),
+		            y: y - bbox.top  * (bgCanvas.height / bbox.height)
+		        };
+		    }
+
+		    // 得到源点
+			function getOriginPoint(name, oriArr){
+			    for (var i=0;i<oriArr.length;i++) {
+			        if (oriArr[i].mac == name) {
+			            return oriArr[i];
+			        }else {
+			            $scope.draw(oriArr[i]);
+			        }
+			    }
+			    return null;
+			}
+
+			// 查找附近的人
+			$scope.getNearbyPerson = function (x,y) {
+			    var range = 20;
+			    var result = null;
+			    _.each($scope.currnetPosition, function(element, index, list) {
+			        if (Math.abs(element.x-x)<=range && Math.abs(element.y-y)<=range) {
+			            result = element;
+			        }
+			    });
+			    return result;
+			}
+			    
+        }],
+        link: function ($scope, elem, attrs, ctrl) {
+            $scope.cvs = elem[0];
+            $scope.ctx = $scope.cvs.getContext("2d");
+            $scope._img = new Image();
+            $scope._img.src = require("../image/monster.png");
+            $scope._img.onload = function(){
+              $scope.init();
+              $scope.time = $interval($scope.update,300);
+            }
+
+            var $cvs = $($scope.cvs);
+            $cvs.mousemove(function(e) { // mouse move handler
+		        var canvasOffset = $cvs.offset();
+		        var canvasX = Math.floor(e.pageX - canvasOffset.left);
+		        var canvasY = Math.floor(e.pageY - canvasOffset.top);
+		        // 设定热区范围
+		        var person = $scope.getNearbyPerson(canvasX, canvasY);
+		        if (person) {
+		            $('#readout').html('I get it:'+person.mac+','+person.x+','+person.y);
+		        } else {
+		            $('#readout').html('');
+		        }
+		        
+		    });
+
+            var pauseBtn = document.querySelector('#pauseBtn');
+            pauseBtn.onclick = function(){
+            	if($scope.hasNotActionTrue){
+				    $interval.cancel($scope.time);
+				    $scope.hasNotActionTrue = false;
+				}else {
+				    $scope.time = $interval($scope.update,300);
+				}
+            }
+        }
+    };
+}])
