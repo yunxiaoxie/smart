@@ -30,7 +30,7 @@ function run($rootScope, $location, $state, $window, $injector, $templateCache) 
     $rootScope.location = $location;
     //监听登录事件
     $rootScope.$on('relogin', function () {
-        $state.go('Login');
+        $state.go('login');
     });
 
 
@@ -50,7 +50,7 @@ function run($rootScope, $location, $state, $window, $injector, $templateCache) 
     };
 
     //监听状态,切换菜单
-    $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+    /*$rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
         //判断平台
         var toMainState = toState.name.split('.')[0],
             fromMainState = fromState.name.split('.')[0],
@@ -69,12 +69,12 @@ function run($rootScope, $location, $state, $window, $injector, $templateCache) 
             event.preventDefault();
             //保存状态名,登录后继续该状态操作
             $rootScope.configures.toState = toState.name;
-            $state.go('Login');
+            $state.go('login');
             return;
         }
         
 
-    })
+    })*/
 }
 
 export default run

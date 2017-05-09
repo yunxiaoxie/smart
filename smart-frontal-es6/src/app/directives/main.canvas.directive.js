@@ -531,10 +531,10 @@ angular.module('directive')
 
             $scope._img.src = require("../image/canvasbg.jpg");
             $scope._img.onload = function(){
-              $scope.drawBgImg.call($scope);
               $scope.bgImg.imgWidth = $scope._img.width;
               $scope.bgImg.imgHeight = $scope._img.height;
               $scope.$emit('bgImgOk', null);
+              $scope.drawBgImg.call($scope);
             }
         }
     };
@@ -555,7 +555,7 @@ angular.module('directive')
           }
           $scope.draw = function(point){
           	addPointPosition(point);
-          	$scope.ctx.drawImage($scope._img,point.x,point.y,20,20);
+          	$scope.ctx.drawImage($scope.monster,point.x,point.y,20,20);
           }
           $scope.currnetPosition=[];// 当前人的位置
 		  // 只存一个人的当前位置
@@ -583,7 +583,7 @@ angular.module('directive')
 			  $scope.ctx.clearRect(0,0,$scope.cvs.width,$scope.cvs.height);
 			  _.each($scope.endPoints, function(point) {
 			    var originPoint = getOriginPoint(point.mac, $scope.startPoints);
-			        console.log("p2:"+point.x+","+point.y)
+			        //console.log("p2:"+point.x+","+point.y)
 			        if(originPoint) {
 			          if(originPoint.x != point.x || originPoint.y != point.y) {
 			            if (originPoint.x < point.x) originPoint.x += speed;
@@ -653,9 +653,9 @@ angular.module('directive')
         link: function ($scope, elem, attrs, ctrl) {
             $scope.cvs = elem[0];
             $scope.ctx = $scope.cvs.getContext("2d");
-            $scope._img = new Image();
-            $scope._img.src = require("../image/monster.png");
-            $scope._img.onload = function(){
+            $scope.monster = new Image();
+            $scope.monster.src = require("../image/monster.png");
+            $scope.monster.onload = function(){
               $scope.init();
               $scope.time = $interval($scope.update,300);
             }
@@ -684,6 +684,125 @@ angular.module('directive')
 				    $scope.time = $interval($scope.update,300);
 				}
             }
+        }
+    };
+}])
+/*刮刮卡*/
+.directive('scratchCard', [function() {
+    return {
+        restrict: 'EA',
+        controller: ['$scope', '$element', '$attrs', '$parse', function ($scope, $element, $attrs, $parse) {
+	        $scope.bindHandler = (function() {
+	            if (window.addEventListener) {
+	                return function(elem, type, handler) {
+	                    //false:在冒泡阶段调用事件处理程序
+	                    elem.addEventListener(type, handler, false);
+	                }
+	            } else if (window.attachEvent) {
+	                return function(elem, type, handler) {
+	                    elem.attachEvent("on" + type, handler);
+	                }
+	            }
+	        })();
+	        $scope.removeHandler = (function() {
+	            if (window.removeEventListener) {
+	                return function(elem, type, handler) {
+	                    elem.removeEventListener(type, handler, false);
+	                }
+	            } else if (window.detachEvent) {
+	                return function(elem, type, handler) {
+	                    elem.detachEvent("on" + type, handler);
+	                }
+	            }
+	        })();
+        }],
+        link: function ($scope, elem, attrs, ctrl) {
+            
+            let cvs = elem[0],
+                ctx = cvs.getContext("2d");
+
+            (function init(){
+            	ctx.fillStyle='#A9AB9D';
+			    ctx.fillRect(10,10,280,180);
+			    ctx.fillStyle='#000';
+			    ctx.font='50px Arial';
+			    ctx.fillText('刮奖区',75,115);
+            })();
+            //刮奖
+            var brush=function(e){
+		        ctx.clearRect(e.offsetX,e.offsetY,20,20);
+		    };
+
+            cvs.onmousedown = function(e){
+		        $scope.bindHandler(cvs,'mousemove',brush,false);
+		    }
+
+            cvs.onmouseup = function(){
+		        $scope.removeHandler(cvs,"mousemove",brush,false);
+		    }
+        }
+    };
+}])
+/*画笔*/
+.directive('painter', [function() {
+    return {
+        restrict: 'EA',
+        controller: ['$scope', '$element', '$attrs', '$parse', function ($scope, $element, $attrs, $parse) {
+	        $scope.windowToCanvas = function(cvs, x, y) {
+		        var bbox = cvs.getBoundingClientRect();
+		        return { x: x - bbox.left * (cvs.width  / bbox.width),
+		            y: y - bbox.top  * (cvs.height / bbox.height)
+		        };
+		    }
+        }],
+        link: function ($scope, elem, attrs, ctrl) {
+            
+            let cvs = elem[0],
+                ctx = cvs.getContext("2d");
+
+            (function init(){
+            	ctx.font='20px Arial';
+    			ctx.strokeText('NICK画笔',100,30);
+            })();
+            var isTouch = "ontouchstart" in window ? true : false;
+		    var StartDraw = isTouch ? "touchstart" : "mousedown",
+		            MoveDraw = isTouch ? "touchmove" : "mousemove",
+		            EndDraw = isTouch ? "touchend" : "mouseup";
+
+		    ctx.strokeStyle='blue';//线色
+		    ctx.lineCap = "round";//连接处为圆形
+		    ctx.lineWidth =10;//线框
+
+		    cvs.addEventListener(StartDraw, function(ev){
+		        ev.preventDefault();
+		        var isX = isTouch ? ev.targetTouches[0].clientX : ev.clientX;
+		        var isY = isTouch ? ev.targetTouches[0].clientY : ev.clientY;
+		        var xy = $scope.windowToCanvas(cvs, isX, isY);
+		        ctx.beginPath();
+		        ctx.moveTo(xy.x, xy.y);
+		        function StartMove(ev){
+		            var isX1 = isTouch ? ev.targetTouches[0].clientX : ev.clientX;
+		            var isY1 = isTouch ? ev.targetTouches[0].clientY : ev.clientY;
+		            var xy1 = $scope.windowToCanvas(cvs, isX1, isY1);
+		            
+		            ctx.lineTo(xy1.x, xy1.y);
+
+		            ctx.stroke();
+		            ctx.beginPath();
+		            ctx.moveTo(xy1.x, xy1.y);
+		        };
+		        function EndMove(ev){
+		            var isX1 = isTouch ? ev.changedTouches[0].clientX : ev.clientX;
+		            var isY1 = isTouch ? ev.changedTouches[0].clientY : ev.clientY;
+		            var xy1 = $scope.windowToCanvas(cvs, isX1, isY1);
+		            ctx.lineTo(xy1.x, xy1.y);
+		            ctx.stroke();
+		            cvs.removeEventListener(MoveDraw, StartMove, false);
+		            cvs.removeEventListener(EndDraw, EndMove, false);
+		        };
+		        cvs.addEventListener(MoveDraw, StartMove, false);
+		        cvs.addEventListener(EndDraw, EndMove, false);
+		    }, false);
         }
     };
 }])

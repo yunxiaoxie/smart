@@ -1,5 +1,5 @@
-TableCtrl.$inject = ['$scope','$rootScope','$timeout', 'UtilsService', 'MyUser', 'MapService', '$filter'];
-function TableCtrl($scope, $rootScope, $timeout, UtilsService, MyUser, MapService, $filter){
+TableCtrl.$inject = ['$scope','$rootScope','$timeout', 'UtilsService', 'MyUser', 'MapService', '$filter', 'TableService'];
+function TableCtrl($scope, $rootScope, $timeout, UtilsService, MyUser, MapService, $filter, TableService){
   
   $scope.checkName = function(data, id) {
     if (id === 2 && data !== 'awesome') {
@@ -33,10 +33,9 @@ function TableCtrl($scope, $rootScope, $timeout, UtilsService, MyUser, MapServic
     //return $scope.groups.length ? null : $http.get('/groups').success(function(data) {
       //$scope.groups = data;
     //});
-    var url = '/dataDic/' + code;
-    UtilsService.querySync(url, {}).then(function (data) {
-        MapService.put(key, data.data);
-        $scope[key] = data;
+    TableService.getDicData(code).then(function (data) {
+        MapService.put(key, data.result);
+        $scope[key] = data.result;
     }, function () {
         $log.error('Not supported code:', code);
     });

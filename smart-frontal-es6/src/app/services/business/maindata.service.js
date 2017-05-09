@@ -2,6 +2,13 @@
  * Created by yunxiaoxie on 17/4/25.
  * 主数据 sevice
  */
+import autotipMixin from '../mixin/autotip.mixin';
+import autotip from '../decorator/autotip.decorator';
+import autotipClass from '../decorator/autotipClass.decorator'
+import autoloadingMixin from '../mixin/autoloading.mixin';
+import autoloading from '../decorator/autoloading.decorator';
+import {traits} from 'traits-decorator';
+
 import {BaseApiMethod, BaseService} from './business.service';
 class ApiMethod extends BaseApiMethod {
 
@@ -41,11 +48,14 @@ class ApiMethod extends BaseApiMethod {
     }
 }
 
-
+@autotipClass("${error}")
+@traits(autotipMixin, autoloadingMixin)
 class MainDataService extends BaseService {
-    constructor(UtilsService, toastr) {
+    constructor(UtilsService, toastr, LoadingService) {
         super();
         this.api = new ApiMethod(UtilsService, toastr);
+        this.setAutoTipMinxinInterface(toastr);
+        this.setLoadingMinxinInterface(LoadingService);
     }
 
     queryPaginationList(arg) {
@@ -77,6 +87,6 @@ class MainDataService extends BaseService {
     }
 }
 
-angular.module('biz-services').factory("MainDataService", ["UtilsService", 'toastr', function (UtilsService, toastr) {
-    return new MainDataService(UtilsService, toastr);
+angular.module('biz-services').factory("MainDataService", ["UtilsService", 'toastr', 'LoadingService', function (UtilsService, toastr, LoadingService) {
+    return new MainDataService(UtilsService, toastr, LoadingService);
 }]);

@@ -6,3 +6,5 @@
  *Login
  */
 export const REST_LOGIN = "/sys/loginsystem/";
+
+export const GET_DATA_DIC = "/dataDic/";

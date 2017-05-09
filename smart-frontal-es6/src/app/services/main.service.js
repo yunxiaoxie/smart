@@ -370,3 +370,14 @@ angular.module('services')
         return deferred.promise;
     }
 }])
+
+.factory('LoadingService', ["$rootScope", function ($rootScope) {
+    return {
+        showLoading: ()=> {
+            $rootScope.isShowLoading = true;
+        },
+        hideLoading: ()=> {
+            $rootScope.isShowLoading = false;
+        }
+    }
+}]);

@@ -48,7 +48,7 @@ function FormDirectiveFactory() {
             var url = '/dataDic/' + $attrs.code;
             UtilsService.querySync(url, {}).then(function (data) {
                 //console.log(data)
-                $scope.data = data.data;
+                $scope.data = data.data.result;
             }, function () {
                 $log.error('Not supported code:', $attrs.code);
             });

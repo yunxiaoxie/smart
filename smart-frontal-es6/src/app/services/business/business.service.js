@@ -17,8 +17,23 @@ class BaseApiMethod {
                     return result;
                 }
                 else {
-                    //TODO 这里需要做数据处理 抛出异常
-                    return def;
+                    throw result;
+                }
+            }
+        );
+    }
+
+    getSync(name, urlPara = "", data = null, def = []) {
+        let util = this.utilsService;
+        var url = util.getIp() + constant[name] + urlPara;
+        return util.querySync(url, data).then(
+            function (data) {
+                var result = data.data;
+                if (result && result.code == '200') {
+                    return result;
+                }
+                else {
+                    throw result;
                 }
             }
         );
@@ -35,7 +50,7 @@ class BaseApiMethod {
                     return result;
                 }
                 else {
-                    throw new Error(result.msg);
+                    throw new Error(result.msg); //throw result;
                 }
             }
         ).catch((e)=>{
@@ -129,5 +144,6 @@ class BaseService {
             }
         );
     }
+    
 }
 export {BaseApiMethod, BaseService};
