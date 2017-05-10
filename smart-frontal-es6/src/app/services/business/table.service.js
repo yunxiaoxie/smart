@@ -2,13 +2,14 @@
  * Created by yunxiaoxie on 17/4/25.
  * 主数据 sevice
  */
+
 import autotipMixin from '../mixin/autotip.mixin';
 import autoloadingMixin from '../mixin/autoloading.mixin';
 
 import autotip from '../decorator/autotip.decorator';
 import autotipClass from '../decorator/autotipClass.decorator'
 import autoloading from '../decorator/autoloading.decorator';
-import {traits} from 'traits-decorator';
+import { traits }  from 'traits-decorator';
 
 import {BaseApiMethod, BaseService} from './business.service';
 class ApiMethod extends BaseApiMethod {

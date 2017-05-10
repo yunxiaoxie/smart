@@ -4,5 +4,21 @@
   ],
   "plugins": [
     "transform-decorators-legacy"
+  ],
+  "ignore":[
+    "jquery.js",
+    "jquery.min.js",
+    "angular.js",
+    "angular.min.js",
+    "angular-sanitize.js",
+    "angular-sanitize.min.js",
+    "angular-ui-router.js",
+    "angular-ui-router.min.js",
+    "angular-messages.js",
+    "angular-messages.min.js",
+    "angular-resource.js",
+    "angular-resource.min.js",
+    "bootstrap.js",
+    "bootstrap.min.js"
   ]
 }

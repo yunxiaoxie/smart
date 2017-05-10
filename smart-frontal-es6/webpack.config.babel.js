@@ -12,7 +12,7 @@ export default {
     output: {
         path: path.resolve(__dirname, 'src'),
         publicPath: '/',
-        filename: '[name].js'
+        filename: '[name].js'   //filename: '[name].[hash].js'
     },
     module: {
         rules: [

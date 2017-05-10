@@ -2,6 +2,7 @@ import sortTpl from '../templates/tablesort.html';
 import paginationTpl from '../templates/pagination-control.html';
 import dateRangePicker from "../templates/date-range-picker.html"
 import * as bootbox from '../../lib/bootbox';
+
 /**
  * Created by yunxiaoxie.
  */
@@ -329,12 +330,13 @@ angular.module('directive')
             }]);
     })(window, window.angular);
     */
-    .directive('ngHolder', function() {
+    .directive('ngHolder', [function() {
         return {
             restrict: 'A',
             link: function(scope, element, attrs) {
                 attrs.$set('data-src', attrs.ngHolder);
-                //Holder.run({images:element.get(0), nocss:true});
+                var holder = require('holderjs');
+                holder.run({images:element[0], nocss:true});
             }
         };
-    })
+    }])

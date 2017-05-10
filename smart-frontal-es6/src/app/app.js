@@ -4,23 +4,23 @@ import uiRouter from 'angular-ui-router';
 import ngMessage from 'angular-messages';
 import ngResource from 'angular-resource';
 import 'angular-xeditable';
-import * as _ from 'lodash';
 import 'angular-ui-bootstrap';
-import UtilsService from './basic.server';
 import uiBootstrap from 'angular-ui-bootstrap';
 import toastr from 'angular-toastr';
 import fileUpload from 'ng-file-upload';
+import 'angular-bootstrap-datetimepicker';
+import 'lodash';
 import 'moment';
 import 'bootstrap';
 import 'holderjs';
 import 'ztree';
-import 'angular-bootstrap-datetimepicker';
+
 
 import '../lib/isteven-multi-select.js';
 import '../../node_modules/metismenu/dist/metisMenu.min';
 
 
-
+import UtilsService from './basic.server';
 import './controllers';
 import './services';
 import './filter/main.filter';
