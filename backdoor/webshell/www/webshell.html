@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>WebShell 1.0.0</title>
+<meta charset=UTF-8 />
+<link rel="stylesheet" href="webshell.css"/>
+<script src="webshell.js"></script>
+<script>
+var is_scroll=false;
+var curr_overlay=0;
+var sel_overlay=1;
+var cy=0;
+window.onload=function() {
+	t=webshell.Terminal("term",15,3,handler);
+	document.onkeypress=t.keypress;
+	document.onkeydown=t.keydown; 
+	//setTimeout(function(){window.scrollTo(0, 1);}, 100);
+	//startMsgAnim('Connecting',0,false);
+};
+
+// Set scroll
+function scroll() {
+	var div=document.getElementById("term");
+	var sp=0;
+	if((curr_overlay>0) && (cy>4))
+		sp=((4-cy)*11)+"px";
+	if (!is_scroll)
+		sp=0;
+	div.style.top=sp;
+}
+// Handler
+function handler(msg,value) {
+	switch(msg) {
+	case 'conn':
+		break;
+	case 'disc':
+		break;
+	case 'curs':
+		cy=value;
+		scroll(cy);
+		break;
+	}
+}
+</script>
+</head>
+<body>
+<div class="container">
+
+<pre id="term"></pre>
+
+</div>
+</body>
+</html>

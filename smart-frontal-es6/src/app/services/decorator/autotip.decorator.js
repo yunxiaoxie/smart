@@ -33,7 +33,7 @@ function autotip(tip) {
                     if (_this.errorTip) {
                         _this.errorTip(tip || getError());
                     }
-                    return {}
+                    return null;
                 });
             }
             else {
