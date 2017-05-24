@@ -806,3 +806,129 @@ angular.module('directive')
         }
     };
 }])
+/*调色板 自定义笔刷*/
+.directive('colorPalette', [function() {
+    return {
+        restrict: 'EA',
+        template: require("../templates/palette.html"),
+        controller: ['$scope', '$element', '$attrs', '$parse', function ($scope, $element, $attrs, $parse) {
+	        $scope.windowToCanvas = function(cvs, x, y) {
+		        var bbox = cvs.getBoundingClientRect();
+		        return { x: x - bbox.left * (cvs.width  / bbox.width),
+		            y: y - bbox.top  * (cvs.height / bbox.height)
+		        };
+		    }
+
+		    //初始化调色板
+		    $scope.drawGradients = function(colorCvs, colorCtx) {
+                var grad = colorCtx.createLinearGradient(20, 0, colorCvs.width - 20, 0);
+                grad.addColorStop(0, 'red');
+                grad.addColorStop(1 / 6, 'orange');
+                grad.addColorStop(2 / 6, 'yellow');
+                grad.addColorStop(3 / 6, 'green');
+                grad.addColorStop(4 / 6, 'aqua');
+                grad.addColorStop(5 / 6, 'blue');
+                grad.addColorStop(1, 'purple');
+                colorCtx.fillStyle=grad;
+                colorCtx.fillRect(0, 0, colorCvs.width, colorCvs.height);
+            }
+        }],
+        link: function ($scope, elem, attrs, ctrl) {
+            let colorCvs = document.querySelector('#color'),
+                colorCtx = colorCvs.getContext("2d"),
+                panelCvs = document.querySelector('#panel'),
+                panelCtx = panelCvs.getContext("2d"),
+                preview = document.querySelector('#preview'),
+                pick = document.querySelector('#pick');
+            $scope.drawGradients(colorCvs, colorCtx);
+            
+            let selColorR = 0, selColorG = 195, selColorB = 135, bMouseDown = false;
+            //冒泡画笔 刷子
+            let BubbleBrush = {
+                // inner variables
+                iPrevX : 0,
+                iPrevY : 0,
+             
+                // initialization function
+                init: function () {
+                    panelCtx.globalCompositeOperation = 'source-over'; //'lighter' is nice too
+                    panelCtx.lineWidth = 1;
+                    panelCtx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+                    panelCtx.lineWidth = 2;
+                },
+                //开始曲线
+                startCurve: function (x, y) {
+                    this.iPrevX = x;
+                    this.iPrevY = y;
+                    panelCtx.fillStyle = 'rgba(' + selColorR + ', ' + selColorG + ', ' + selColorB + ', 0.9)';
+                },
+             
+                draw: function (x, y) {
+                    var iXAbs = Math.abs(x - this.iPrevX);
+                    var iYAbs = Math.abs(y - this.iPrevY);
+             
+                    if (iXAbs > 20 || iYAbs > 20) {
+                        panelCtx.beginPath();
+                        //ctx.arc(this.iPrevX, this.iPrevY, (iXAbs + iYAbs) * 0.5, 0, Math.PI*2, false);
+                        panelCtx.arc(this.iPrevX, this.iPrevY, 5, 0, Math.PI*2, false);
+                        panelCtx.fill();
+                        panelCtx.stroke();
+                        this.iPrevX = x+10;
+                        this.iPrevY = y+10;
+                    }
+                }
+            };
+
+            BubbleBrush.init();
+            
+            $('#color').mousemove(function(e) { // mouse move handler
+                var canvasOffset = $(colorCvs).offset();
+                var canvasX = Math.floor(e.pageX - canvasOffset.left);
+                var canvasY = Math.floor(e.pageY - canvasOffset.top);
+         
+                var imageData = colorCtx.getImageData(canvasX, canvasY, 1, 1);
+                var pixel = imageData.data;
+         
+                var pixelColor = 'rgba('+pixel[0]+', '+pixel[1]+', '+pixel[2]+', '+pixel[3]+')';
+                $('#preview').css('backgroundColor', pixelColor);
+            });
+
+            $('#color').click(function(e) { // mouse click handler
+                var canvasOffset = $(colorCvs).offset();
+                var canvasX = Math.floor(e.pageX - canvasOffset.left);
+                var canvasY = Math.floor(e.pageY - canvasOffset.top);
+         
+                var imageData = colorCtx.getImageData(canvasX, canvasY, 1, 1);
+                var pixel = imageData.data;
+         
+                var pixelColor = 'rgba('+pixel[0]+', '+pixel[1]+', '+pixel[2]+', '+pixel[3]+')';
+                $('#pick').css('backgroundColor', pixelColor);
+         
+                selColorR = pixel[0];
+                selColorG = pixel[1];
+                selColorB = pixel[2];
+            });
+
+            $('#panel').mousedown(function(e) { // mouse down handler
+                bMouseDown = true;
+                var canvasOffset = $(panelCvs).offset();
+                var canvasX = Math.floor(e.pageX - canvasOffset.left);
+                var canvasY = Math.floor(e.pageY - canvasOffset.top);
+         
+                BubbleBrush.startCurve(canvasX, canvasY);
+            });
+            $('#panel').mouseup(function(e) { // mouse up handler
+                bMouseDown = false;
+            });
+            $('#panel').mousemove(function(e) { // mouse move handler
+                if (bMouseDown) {
+                    var canvasOffset = $(panelCvs).offset();
+                    var canvasX = Math.floor(e.pageX - canvasOffset.left);
+                    var canvasY = Math.floor(e.pageY - canvasOffset.top);
+         
+                    BubbleBrush.draw(canvasX, canvasY);
+                }
+            });
+        }
+    };
+}])
