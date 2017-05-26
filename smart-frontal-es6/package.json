@@ -4,7 +4,7 @@
   "description": "angularjs1.x es6 and webpack",
   "main": "index.js",
   "scripts": {
-    "start": "webpack-dev-server --progress --colors --host localhost --port 8083 --inline",
+    "start": "webpack-dev-server --progress --colors --host 0.0.0.0 --port 8083 --inline",
     "test": "",
     "lint": "eslint src/app",
     "sass": "node-sass src/sass/main.scss src/styles/main.css",

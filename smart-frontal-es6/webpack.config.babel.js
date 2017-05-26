@@ -48,8 +48,9 @@ export default {
     },
     devServer: {
         contentBase: path.join(__dirname, "dist"),
+        disableHostCheck: true,
         compress: false,
-        open: true,
+        open: false,
         stats: 'errors-only'
     },
     plugins: [
