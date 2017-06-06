@@ -7,7 +7,7 @@ function autotip(tip) {
             var oldValueResult = oldValue.apply(_this, arguments);
             if (oldValueResult && typeof(oldValueResult.catch) == "function") {
                 return oldValueResult.catch(function (error) {
-                    let errorTip = "";
+                    let errorTip = "", _tip = null;
                     let getError = ()=> {
                         console.log(JSON.stringify(error));
                         if (error.data && error.data.message) {
@@ -26,12 +26,12 @@ function autotip(tip) {
                         //占位符替换
                         if (tip.indexOf("${error}") != -1) {
                             let tipReplace = getError();
-                            tip = tip.replace("${error}", tipReplace);
+                            _tip = tip.replace("${error}", tipReplace);
                         }
                     }
 
                     if (_this.errorTip) {
-                        _this.errorTip(tip || getError());
+                        _this.errorTip(_tip || getError());
                     }
                     return null;
                 });
