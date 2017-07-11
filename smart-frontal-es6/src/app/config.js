@@ -30,6 +30,11 @@ function config($stateProvider, $urlRouterProvider, $locationProvider, $httpProv
         url: '/login',
         template: require("./views/login.html")
     })
+    .state("load", {
+        name: 'load',
+        url: '/load',
+        template: require("./views/load.html")
+    })
     .state("main", {
         name: 'main',
         url: '/main',

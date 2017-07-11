@@ -151,6 +151,15 @@ function FormController($scope, $filter, $http, UtilsService, $timeout, Upload, 
         });
     }
 
+    $scope.jump = function(){
+      let newwin = window.open();
+      newwin.location = "#/load";
+      // ajax
+      $timeout(function() {
+        newwin.location = "http://www.baidu.com";
+      }, 5000);
+    }
+
 }
 
 angular.module('controller')
