@@ -75,7 +75,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr ng-repeat="row in dataPage.data track by $index">
+            <tr ng-repeat="row in dataPage.result.data track by $index">
               <td>{{row.name}}</td>
               <td>{{row.sex | sexFilter}}</td>
               <td>{{row.age}}</td>
@@ -118,7 +118,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr ng-repeat="row in dataPage.data track by $index">
+            <tr ng-repeat="row in dataPage.result.data track by $index">
               <td>
 	              <span editable-text="row.name" e-name="name" e-form="rowform" e-required onbeforesave="checkName($data, row.id)">
 		          	{{ row.name || 'empty' }}
@@ -206,7 +206,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr ng-repeat="row in data track by $index">
+            <tr ng-repeat="row in data.result track by $index">
               <td>
               	<div class="popover-wrapper">
 	              <a editable-text="row.name" e-name="name" e-required onbeforesave="checkAndSubmit({name:$data, id:row.id})">

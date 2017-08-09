@@ -100,7 +100,7 @@
             </tr>
           </thead>
           <tbody><!-- 使用'::'单引用 -->
-            <tr ng-repeat="row in data track by $index">
+            <tr ng-repeat="row in data.result track by $index">
               <td>{{row.name}}</td>
               <td>{{row.sex | sexFilter}}</td>
               <td>{{row.age}}</td>

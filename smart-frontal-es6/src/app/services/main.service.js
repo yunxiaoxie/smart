@@ -135,10 +135,10 @@ angular.module('services')
 　　“delete”:{method:“delete”}
 }*/
 .factory('MyUser', ['$resource', function($resource) {
-    var Users = $resource('/getAllUser', {}, {
+    var Users = $resource('/user/getAllUser', {}, {
         myQuery: {
             method: 'GET',
-            isArray: true,
+            isArray: false,
             transformRequest: function(data){
                 // transform data before request.
                 console.log('transformRequest...');
@@ -149,7 +149,7 @@ angular.module('services')
                 var result = {};
                 var wrapped = angular.fromJson(data);
                 // transform date for angular
-                _.each(wrapped, function(v){
+                _.each(wrapped.result, function(v){
                   if (v.birthday) {
                     v.birthday = new Date(v.birthday);
                   }
@@ -169,7 +169,7 @@ angular.module('services')
         myQueryForPager: {
             method: 'GET',
             isArray: false,
-            url:'/getUserForPager',
+            url:'/user/getUserForPager',
             transformRequest: function(data){
                 // transform data before request.
                 console.log('transformRequest...');
@@ -180,7 +180,7 @@ angular.module('services')
                 var result = {};
                 var wrapped = angular.fromJson(data);
                 // transform date for angular
-                _.each(wrapped.data, function(v){
+                _.each(wrapped.result.data, function(v){
                   if (v.birthday) {
                     v.birthday = new Date(v.birthday);
                   }
@@ -200,7 +200,7 @@ angular.module('services')
         myPost: {
             method: 'POST',
             isArray: false,
-            url:'/saveUser',
+            url:'/user/saveUser',
             headers:{'Content-Type': 'application/json;charset=UTF-8'},
             transformRequest: function(data){
                 // transform data before request.
@@ -229,7 +229,7 @@ angular.module('services')
         myPostSelective: {
             method: 'POST',
             isArray: false,
-            url:'/saveUserSelective',
+            url:'/user/saveUserSelective',
             headers:{'Content-Type': 'application/json;charset=UTF-8'},
             transformRequest: function(data){
                 // transform data before request.
@@ -258,7 +258,7 @@ angular.module('services')
         myPut: {
             method: 'PUT',
             isArray: false,
-            url:'/updateUser',
+            url:'/user/updateUser',
             headers:{'Content-Type': 'application/json;charset=UTF-8'},
             transformRequest: function(data){
                 // transform data before request.
@@ -287,7 +287,7 @@ angular.module('services')
         myPutSelective: {
             method: 'PUT',
             isArray: false,
-            url:'/updateUserSelective',
+            url:'/user/updateUserSelective',
             headers:{'Content-Type': 'application/json;charset=UTF-8'},
             transformRequest: function(data){
                 // transform data before request.
@@ -316,7 +316,7 @@ angular.module('services')
         myDelete: {
             method: 'DELETE',
             isArray: false,
-            url:'/deleteUser',
+            url:'/user/deleteUser',
             headers:{'Content-Type': 'application/json;charset=UTF-8'},
             transformRequest: function(data){
                 // transform data before request.

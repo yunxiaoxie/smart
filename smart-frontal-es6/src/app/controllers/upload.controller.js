@@ -18,7 +18,7 @@ function UploadCtrl($scope, $filter, $http, UtilsService, $timeout, Upload){
     }, function (evt) {
       // Math.min is to fix IE which reports 200% sometimes
       file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
-      console.log("progress:", progress);
+      console.log("progress:", file.progress);
     });
   }
 
