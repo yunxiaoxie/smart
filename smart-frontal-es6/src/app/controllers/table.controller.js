@@ -82,7 +82,7 @@ function TableCtrl($scope, $rootScope, $timeout, UtilsService, MyUser, MapServic
 
   $scope.load = function() {
     var users = MyUser.myQuery({}, function(result){
-      $scope.data = result;
+      $scope.data = result.result;
       
     });
   }
@@ -90,7 +90,7 @@ function TableCtrl($scope, $rootScope, $timeout, UtilsService, MyUser, MapServic
 
   $scope.loadForPager = function(no, size) {
     MyUser.myQueryForPager({pageNo: no ? no : 1, pageSize: size ? size : 3}, function(result){
-      $scope.dataPage = result;
+      $scope.dataPage = result.result;
       $timeout(function(){
         $rootScope.$broadcast('modelInitialized', this);
       },500);

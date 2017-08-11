@@ -649,7 +649,7 @@ angular.module('directive')
               if (newValue) {
                 if ($scope.pgs.currentPg === 1){
                   MyUser.myQueryForPager({pageNo:1, pageSize:newValue}, function(result){
-                    $scope.$parent.dataPage = result;
+                    $scope.$parent.dataPage = result.result;
                     $timeout(function(){
                       setPages(newValue);
                     },500);
