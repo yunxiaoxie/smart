@@ -2,6 +2,8 @@
 /*
  * form controller
  */
+import popoverTpl from "../templates/popover-tpl.html";
+
 FormController.$inject = ['$scope','$filter', '$http', 'UtilsService', '$timeout', 'Upload', 'toastr', '$uibModal'];
 
 function FormController($scope, $filter, $http, UtilsService, $timeout, Upload, toastr, $uibModal) {
@@ -160,6 +162,12 @@ function FormController($scope, $filter, $http, UtilsService, $timeout, Upload, 
       }, 5000);
     }
 
+    $scope.dynamicPopover = {
+      content: 'Hello, World!',
+      template: popoverTpl,
+      templateUrl: "myPopoverTemplate.html",
+      title: 'Title'
+    };
 }
 
 angular.module('controller')

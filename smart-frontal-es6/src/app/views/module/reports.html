@@ -1,3 +1,16 @@
+<!-- 移入弹层模板，将它独立为单独文件不能加载 -->
+<script type="text/ng-template" id="myPopoverTemplate.html">
+    <div>{{dynamicPopover.content}}</div>
+    <div class="form-group">
+      <label>Popup Title:</label>
+      <input type="text" ng-model="dynamicPopover.title" class="form-control"><br>
+      <button 
+        type="button"
+        class="btn btn-default"
+        ng-click="dynamicPopover.$open=false">Click me to hide popover</button>
+    </div>
+</script>
+
 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 <div class="container" ng-controller="FormController">
     <div qk-alert></div>
@@ -276,6 +289,23 @@
                         ng-click="clickMenuItem2(row)"
                         >{{row.name}}</li>
                   </ul>
+                </div>
+
+                <div class="btn-group">
+                  <button 
+                              type="button"
+                              uib-popover-template="dynamicPopover.templateUrl" 
+                              popover-title="{{dynamicPopover.title}}" 
+                              popover-hoverable="true"
+                              popover-is-open="dynamicPopover.$open"
+                              class="btn btn-default">Popover Template</button>
+                  <button 
+                              type="button"
+                              uib-popover-template="dynamicPopover.templateUrl" 
+                              popover-title="{{dynamicPopover.title}}" 
+                              popover-hoverable="true"
+                              popover-is-open="dynamicPopover.$open2"
+                              class="btn btn-default">Popover Template2</button>
                 </div>
             </div>
             <div class="form-group">
